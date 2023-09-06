@@ -36,6 +36,11 @@ public class PackagesAddOnsPhoneServicesController {
     @Autowired
     private PackageAddonPhoneServService packageAddonPhoneServService;
 
+    /*
+    some of the main methods for Package Plans, Add-Ons and (Phone) Services
+    there are plenty methods that they can apply to
+     */
+
     @Operation(tags = "PackagesAddOnsPhoneServices Controller", summary = "Get package by packageCode")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "package/getPackagePlanByPackageCode/{packageCode}" , produces =  MediaType.APPLICATION_JSON_VALUE)

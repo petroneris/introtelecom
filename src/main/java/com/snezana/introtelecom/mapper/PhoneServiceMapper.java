@@ -1,8 +1,6 @@
 package com.snezana.introtelecom.mapper;
 
-import com.snezana.introtelecom.dto.AddOnDTO;
 import com.snezana.introtelecom.dto.PhoneServiceDTO;
-import com.snezana.introtelecom.entity.AddOn;
 import com.snezana.introtelecom.entity.PhoneService;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
