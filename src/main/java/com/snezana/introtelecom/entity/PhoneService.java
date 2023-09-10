@@ -3,11 +3,9 @@ package com.snezana.introtelecom.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -24,4 +22,7 @@ public class PhoneService {
 
     @Column(name = "service_price", precision = 10 ,scale =2 , nullable = false)
     private BigDecimal servicePrice;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="phoneService")
+    private Set<ServiceDetailRecord> serviceDetailRecords;
 }

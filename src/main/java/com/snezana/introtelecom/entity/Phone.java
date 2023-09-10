@@ -39,4 +39,13 @@ public class Phone {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "phones")
     private Set<Customer> customers = new HashSet<>();
 
+    @OneToMany(mappedBy = "phone")
+    private Set<PackageFrame> packageFrames;
+
+    @OneToMany(mappedBy = "phone")
+    private Set<AddonFrame> addonFrames;
+
+    @OneToMany(mappedBy = "phone")
+    private Set<ServiceDetailRecord> serviceDetailRecords;
+
 }
