@@ -1,5 +1,6 @@
 package com.snezana.introtelecom.dto;
 
+import com.snezana.introtelecom.entity.AddOn;
 import com.snezana.introtelecom.entity.Phone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,15 +14,18 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PackageFrameSaveDTO {
+public class AddonFrameSaveDTO {
 
     @NotBlank
     private String phone;
 
     @NotBlank
-    private LocalDateTime packfrStartDateTime;
+    private String addOn;
 
     @NotBlank
-    private LocalDateTime packfrEndDateTime;
+    private LocalDateTime addfrStartDateTime;
+
+    @NotBlank
+    private LocalDateTime addfrEndDateTime;
 
 }
