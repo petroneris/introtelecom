@@ -12,7 +12,7 @@ public class UserLoginDTO {
     @NotBlank
     private String username;
     @NotBlank
-    @Schema(format = "password")
+//    @Schema(format = "password")
     private String password;
 
 }

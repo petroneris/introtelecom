@@ -6,6 +6,7 @@ public enum RestAPIErrorMessage implements GeneralErrorMessage{
     WRONG_ITEM("Date could not be deleted!"),
     ITEM_IS_NOT_UNIQUE("Item is not unique!"),
     ITEMS_NOT_MATCH("Items not match!"),
+    INVALID_DATE_TIME_FORMAT("DateTime input is not valid!"),
     VALUE_CANNOT_BE_NEGATIVE("Value cannot be negative!"),
     PARAMETER_CANNOT_BE_NULL("Parameter cannot be null"),
             ;
