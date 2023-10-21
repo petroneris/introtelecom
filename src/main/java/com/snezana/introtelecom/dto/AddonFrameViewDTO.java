@@ -18,12 +18,12 @@ public class AddonFrameViewDTO {
     private Long addfrId;
     private String phone;
     private String addOn;
-    private int addfrCls;
-    private int addfrSms;
-    private BigDecimal addfrInt;
-    private BigDecimal addfrAsm;
-    private BigDecimal addfrIcl;
-    private BigDecimal addfrRmg;
+    private String addfrCls;
+    private String addfrSms;
+    private String addfrInt;
+    private String addfrAsm;
+    private String addfrIcl;
+    private String addfrRmg;
     private LocalDateTime addfrStartDateTime;
     private LocalDateTime addfrEndDateTime;
     private String addfrStatus;

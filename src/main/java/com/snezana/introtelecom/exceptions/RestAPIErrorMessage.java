@@ -7,6 +7,7 @@ public enum RestAPIErrorMessage implements GeneralErrorMessage{
     ITEM_IS_NOT_UNIQUE("Item is not unique!"),
     ITEMS_NOT_MATCH("Items not match!"),
     INVALID_DATE_TIME_FORMAT("DateTime input is not valid!"),
+    INVALID_STARTDATETIME_OR_ENDDATETIME("Invalid StartDateTime or EndDatetime!"),
     VALUE_CANNOT_BE_NEGATIVE("Value cannot be negative!"),
     PARAMETER_CANNOT_BE_NULL("Parameter cannot be null"),
             ;

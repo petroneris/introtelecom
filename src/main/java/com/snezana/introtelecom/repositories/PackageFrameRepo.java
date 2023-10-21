@@ -13,13 +13,18 @@ public interface PackageFrameRepo extends JpaRepository<PackageFrame, Long> {
 
     PackageFrame findByPackfrId (Long packfrId);
 
-    List<PackageFrame> findByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeIsLessThanEqual (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
+    List<PackageFrame> findByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
 
     List<PackageFrame> findByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqual (String phoneNumber, LocalDateTime packfrStartDateTime);
 
-    List<PackageFrame> findByPhone_PackagePlan_PackageCodeAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeIsLessThanEqual (String packageCode, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
+    List<PackageFrame> findByPhone_PackagePlan_PackageCodeAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual (String packageCode, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
 
     List<PackageFrame> findByPhone_PackagePlan_PackageCodeAndPackfrStartDateTimeGreaterThanEqual (String packageCode, LocalDateTime packfrStartDateTime);
+
+    Optional<PackageFrame> findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
+
+    PackageFrame findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
+
 
     @Query(
             "SELECT " +

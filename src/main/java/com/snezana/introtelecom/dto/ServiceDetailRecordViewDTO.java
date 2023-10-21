@@ -24,6 +24,6 @@ public class ServiceDetailRecordViewDTO {
     private int duration;
     private int msgAmount;
     private BigDecimal mbAmount;
-    private BigDecimal sdrunitPrice;
-    private BigDecimal sdrtotalPrice;
+    private String sdrNote;
+
 }

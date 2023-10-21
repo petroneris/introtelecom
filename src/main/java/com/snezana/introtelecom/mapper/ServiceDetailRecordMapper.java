@@ -19,7 +19,7 @@ public interface ServiceDetailRecordMapper {
 
     @Mapping(target = "phone", ignore = true)
     @Mapping(target = "phoneService", ignore = true)
-    ServiceDetailRecord serviceDetailRecordSaveDtoToServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDto, @MappingTarget ServiceDetailRecord serviceDetailRecord, @Context PhoneRepo phoneRepo, @Context PhoneService phoneService);
+    ServiceDetailRecord serviceDetailRecordSaveDtoToServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDto, @MappingTarget ServiceDetailRecord serviceDetailRecord, @Context PhoneRepo phoneRepo, @Context PhoneServiceRepo phoneServiceRepo);
 
     @BeforeMapping
     default void beforeServiceDetailRecordSaveDtoToServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDto, @MappingTarget ServiceDetailRecord serviceDetailRecord,

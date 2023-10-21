@@ -4,7 +4,6 @@ import com.snezana.introtelecom.dto.*;
 import com.snezana.introtelecom.entity.PackagePlan;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.entity.User;
-import com.snezana.introtelecom.enums.PackageCodeType;
 import com.snezana.introtelecom.enums.StatusType;
 import com.snezana.introtelecom.mapper.PhoneMapper;
 import com.snezana.introtelecom.mapper.UserMapper;
@@ -77,10 +76,10 @@ public class UserPhoneServiceImpl implements UserPhoneService {
     public void changePhoneStatus(String phoneNumber) {
         phoneValidationService.controlThePhoneExists(phoneNumber);
         Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
-        if (phone.getPhoneStatus().equals(StatusType.ACTIVE.getStatus())){
-            phone.setPhoneStatus(StatusType.INACTIVE.getStatus());
+        if (phone.getPhoneStatus().equals(StatusType.PRESENT.getStatus())){
+            phone.setPhoneStatus(StatusType.NOT_IN_USE.getStatus());
         } else {
-            phone.setPhoneStatus(StatusType.ACTIVE.getStatus());
+            phone.setPhoneStatus(StatusType.PRESENT.getStatus());
         }
         String note = "Phone status changed in the date " + LocalDateTime.now();
         phone.setNote(note);
@@ -163,10 +162,10 @@ public class UserPhoneServiceImpl implements UserPhoneService {
     public void changeUserStatus(String phoneNumber) {
         phoneValidationService.controlThePhoneExists(phoneNumber);
         User user = userRepo.findByPhoneNumber(phoneNumber);
-        if (user.getUserStatus().equals(StatusType.ACTIVE.getStatus())){
-            user.setUserStatus(StatusType.INACTIVE.getStatus());
+        if (user.getUserStatus().equals(StatusType.PRESENT.getStatus())){
+            user.setUserStatus(StatusType.NOT_IN_USE.getStatus());
         } else {
-            user.setUserStatus(StatusType.ACTIVE.getStatus());
+            user.setUserStatus(StatusType.PRESENT.getStatus());
         }
         userRepo.save(user);
     }

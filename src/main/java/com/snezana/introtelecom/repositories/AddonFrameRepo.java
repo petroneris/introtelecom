@@ -13,15 +13,17 @@ public interface AddonFrameRepo extends JpaRepository<AddonFrame, Long> {
 
     AddonFrame findByAddfrId (Long addfrId);
 
-    List<AddonFrame> findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeIsLessThanEqual (String phoneNumber, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
+    List<AddonFrame> findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual (String phoneNumber, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
 
     List<AddonFrame> findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqual(String phoneNumber, LocalDateTime addfrStartDateTime);
 
-    List<AddonFrame> findByPhone_PhoneNumberAndAddOn_AddonCode (String phoneNumber, String addonCode);
+    List<AddonFrame> findByAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual (String addonCode, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
 
-    List<AddonFrame> findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeIsLessThanEqualAndAddOn_AddonCode (String phoneNumber, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime, String addonCode);
+    List<AddonFrame> findByAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqual (String addonCode, LocalDateTime addfrStartDateTime);
 
-    List<AddonFrame> findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqualAndAddOn_AddonCode (String phoneNumber, LocalDateTime addfrStartDateTime, String addonCode);
+    Optional<AddonFrame> findByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual (String phoneNumber, String addonCode, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
+
+    List<AddonFrame> findAddonFramesByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual (String phoneNumber, String addonCode, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
 
     @Query(
             "SELECT " +

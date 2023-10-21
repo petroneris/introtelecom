@@ -19,6 +19,8 @@ public interface FramesSDRService {
 
     List<PackageFrameViewDTO> findPackageFramesByPackageCodeStartTime (String packageCode, LocalDateTime packfrStartDateTime);
 
+    void changePackageFrameStatus (Long packfrId);
+
     void deletePackageFrame (Long packfrId);
 
 
@@ -31,27 +33,23 @@ public interface FramesSDRService {
 
     List<AddonFrameViewDTO> findAddonFramesByPhoneNumberStartTime (String phoneNumber, LocalDateTime addfrStartDateTime);
 
-    List<AddonFrameViewDTO> findAddonFramesByPhoneNumberAddonCode (String phoneNumber, String addonCode);
+    List<AddonFrameViewDTO> findAddonFramesByAddonCodeStartTimeEndTime (String addonCode, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
 
-    List<AddonFrameViewDTO> findAddonFramesByPhoneNumberStartTimeEndTimeAddonCode (String phoneNumber, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime, String addonCode);
+    List<AddonFrameViewDTO> findAddonFramesByAddonCodeStartTime (String addonCode, LocalDateTime addfrStartDateTime);
 
-    List<AddonFrameViewDTO> findAddonFramesByPhoneNumberStartTimeAddonCode (String phoneNumber, LocalDateTime addfrStartDateTime, String addonCode);
+    void changeAddonFrameStatus (Long addfrId);
 
-    void deleteAddonFame (Long addfrId);
+    void deleteAddonFrame (Long addfrId);
 
 
 
-    void saveNewServiceDetailRecord (final ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO);
-
-    void updateServiceDetailRecord (final ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO, Long sdrId);
+    String saveNewServiceDetailRecord (final ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO);
 
     ServiceDetailRecordViewDTO findServiceDetailRecordById (Long sdrId);
 
     List<ServiceDetailRecordViewDTO> findServiceDetailRecordsByPhoneNumberStartTimeEndTime (String phoneNumber, LocalDateTime sdrStartDateTime, LocalDateTime sdrEndDateTime);
 
     List<ServiceDetailRecordViewDTO> findServiceDetailRecordsByPhoneNumberStartTime (String phoneNumber, LocalDateTime addfrStartDateTime);
-
-    List<ServiceDetailRecordViewDTO> findServiceDetailRecordsByPhoneNumberServiceCode (String phoneNumber, String serviceCode);
 
     List<ServiceDetailRecordViewDTO> findServiceDetailRecordsByPhoneNumberStartTimeEndTimeServiceCode (String phoneNumber, LocalDateTime sdrStartDateTime, LocalDateTime sdrEndDateTime, String serviceCode);
 

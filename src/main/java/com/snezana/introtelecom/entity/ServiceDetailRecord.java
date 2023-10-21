@@ -44,10 +44,6 @@ public class ServiceDetailRecord {
     @Column(name = "mb_amount", precision = 8 ,scale =2 , nullable = false)
     private BigDecimal mbAmount;
 
-    @Column(name = "sdrunit_price", precision = 10 ,scale =2 , nullable = false)
-    private BigDecimal sdrunitPrice;
-
-    @Column(name = "sdrtotal_price", precision = 10 ,scale =2 , nullable = false)
-    private BigDecimal sdrtotalPrice;
-
+    @Column(name = "sdr_note", nullable = false)
+    private String sdrNote;
 }

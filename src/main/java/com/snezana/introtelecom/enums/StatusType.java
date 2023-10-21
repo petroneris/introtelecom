@@ -1,7 +1,7 @@
 package com.snezana.introtelecom.enums;
 
 public enum StatusType {
-    ACTIVE("ACTIVE"), INACTIVE("INACTIVE");
+    PRESENT("ACTIVE"), NOT_IN_USE("INACTIVE");
     private String status;
 
     private  StatusType(String status){

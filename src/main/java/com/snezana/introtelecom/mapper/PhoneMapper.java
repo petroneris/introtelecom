@@ -10,7 +10,6 @@ import com.snezana.introtelecom.enums.StatusType;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.repositories.PackagePlanRepo;
-import com.snezana.introtelecom.repositories.PhoneRepo;
 import org.mapstruct.*;
 
 import java.time.LocalDateTime;
@@ -38,7 +37,7 @@ public interface PhoneMapper {
                     .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Package code = " + phoneSaveDto.getPackagePlan() + " is not found."));
             phone.setPackagePlan(packagePlan);
             phone.setPhoneStartDateTime(LocalDateTime.now());
-            phone.setPhoneStatus(StatusType.ACTIVE.getStatus());
+            phone.setPhoneStatus(StatusType.PRESENT.getStatus());
             if (phoneSaveDto.getPackagePlan().equals(PackageCodeType.ADM.getPackageCode())){
                 phone.setNote("Admin phone for support");
             } else {

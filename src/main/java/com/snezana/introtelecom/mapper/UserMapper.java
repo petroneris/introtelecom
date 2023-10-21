@@ -1,25 +1,18 @@
 package com.snezana.introtelecom.mapper;
 
 
-import com.snezana.introtelecom.dto.PhoneViewDTO;
-import com.snezana.introtelecom.dto.UserChangePasswordDTO;
 import com.snezana.introtelecom.dto.UserSaveDTO;
 import com.snezana.introtelecom.dto.UserViewDTO;
-import com.snezana.introtelecom.entity.PackagePlan;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.entity.Role;
 import com.snezana.introtelecom.entity.User;
 import com.snezana.introtelecom.enums.StatusType;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
-import com.snezana.introtelecom.repositories.PackagePlanRepo;
 import com.snezana.introtelecom.repositories.PhoneRepo;
 import com.snezana.introtelecom.repositories.RoleRepo;
 import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
@@ -41,7 +34,7 @@ public interface UserMapper {
                     .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Phone = " + userSaveDto.getPhone() + " is not found."));
 //            phone.setUser(user);
             user.setPhone(phone);
-            user.setUserStatus(StatusType.ACTIVE.getStatus());
+            user.setUserStatus(StatusType.PRESENT.getStatus());
         }
     }
 

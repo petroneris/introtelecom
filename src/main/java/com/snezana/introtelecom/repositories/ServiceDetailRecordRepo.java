@@ -17,11 +17,12 @@ public interface ServiceDetailRecordRepo extends JpaRepository<ServiceDetailReco
 
     List<ServiceDetailRecord> findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqual (String phoneNumber, LocalDateTime addfrStartDateTime);
 
-    List<ServiceDetailRecord> findByPhone_PhoneNumberAndPhoneService_ServiceCode (String phoneNumber, String serviceCode);
-
     List<ServiceDetailRecord> findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode (String phoneNumber, LocalDateTime sdrStartDateTime, LocalDateTime sdrEndDateTime, String serviceCode);
 
     List<ServiceDetailRecord> findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndPhoneService_ServiceCode (String phoneNumber, LocalDateTime sdrStartDateTime, String serviceCode);
+
+//    Optional<ServiceDetailRecord> findServiceDetailRecordByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeGreaterThanEqualAndPhoneService_ServiceCode (String phoneNumber, LocalDateTime sdrStartDateTime, LocalDateTime sdrEndDateTime, String serviceCode);
+    Optional<ServiceDetailRecord> findServiceDetailRecordByPhone_PhoneNumberAndSdrStartDateTimeEqualsAndSdrEndDateTimeEqualsAndPhoneService_ServiceCode (String phoneNumber, LocalDateTime sdrStartDateTime, LocalDateTime sdrEndDateTime, String serviceCode);
 
     @Query(
             "SELECT " +
