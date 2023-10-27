@@ -25,7 +25,7 @@ public class CustomRestAPIExceptionHandler extends ResponseEntityExceptionHandle
     public final ResponseEntity<Object> handleAll(Exception ex, WebRequest webRequest){
         log.info("Exception");
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("error_message", "error occurred!");
+        errorMap.put("error_message", "ERROR OCCURED!");
         errorMap.put("description", ex.getLocalizedMessage());
         RestAPIResponse<Map<String, String>> restAPIResponse = RestAPIResponse.error(errorMap);
         return new ResponseEntity<>(restAPIResponse, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,7 +56,7 @@ public class CustomRestAPIExceptionHandler extends ResponseEntityExceptionHandle
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.info("MethodArgumentNotValidException");
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("error_message","Validation is failed!");
+        errorMap.put("error_message","VALIDATION IS FAILED!");
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errorMap.put(error.getField(), error.getDefaultMessage());
         });
@@ -69,7 +69,7 @@ public class CustomRestAPIExceptionHandler extends ResponseEntityExceptionHandle
 
     private RestAPIResponse<Map<String, String>> getErrorData (GeneralException ex){
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("error_message", ex.getErrorMessage().toString());
+        errorMap.put("error_message", ex.getErrorMessage().toString().toUpperCase());
         errorMap.put("description", ex.getDescription());
         RestAPIResponse<Map<String, String>> restAPIResponse = RestAPIResponse.error(errorMap);
         return restAPIResponse;

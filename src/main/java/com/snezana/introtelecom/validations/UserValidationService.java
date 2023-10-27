@@ -2,12 +2,11 @@ package com.snezana.introtelecom.validations;
 
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.entity.User;
-import com.snezana.introtelecom.enums.PackageCodeType;
+import com.snezana.introtelecom.enums.PackagePlanType;
 import com.snezana.introtelecom.exceptions.IllegalItemFieldException;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.repositories.PackagePlanRepo;
-import com.snezana.introtelecom.repositories.PhoneRepo;
 import com.snezana.introtelecom.repositories.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,7 @@ public class UserValidationService {
     }
 
     public void checkIfUserIsAdmin(String packageCode) {
-        if(packageCode.equals(PackageCodeType.ADM.getPackageCode())) {
+        if(packageCode.equals(PackagePlanType.ADM.getPackageCode())) {
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "Can't delete this user!");
         }
     }
@@ -73,7 +72,7 @@ public class UserValidationService {
     public void checkIfUserIsCustomer (String username){
         User user = userRepo.findByUsername(username);
         Phone phone = user.getPhone();
-        if(phone.getPackagePlan().getPackageCode().equals((PackageCodeType.ADM.getPackageCode()))){
+        if(phone.getPackagePlan().getPackageCode().equals((PackagePlanType.ADM.getPackageCode()))){
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "There is no customer with that username!");
         }
     }

@@ -2,18 +2,21 @@ package com.snezana.introtelecom.services;
 
 import com.snezana.introtelecom.dto.*;
 import com.snezana.introtelecom.entity.*;
-import com.snezana.introtelecom.enums.PackageCodeType;
+import com.snezana.introtelecom.enums.AddonCode;
+import com.snezana.introtelecom.enums.PackagePlanType;
+import com.snezana.introtelecom.enums.SDRCode;
 import com.snezana.introtelecom.enums.StatusType;
 import com.snezana.introtelecom.mapper.AddonFrameMapper;
 import com.snezana.introtelecom.mapper.PackageFrameMapper;
 import com.snezana.introtelecom.mapper.ServiceDetailRecordMapper;
 import com.snezana.introtelecom.repositories.*;
-import com.snezana.introtelecom.utility.HowFarApartTwoLocalDateTime;
-import com.snezana.introtelecom.utility.ResultingAmountOfService;
-import com.snezana.introtelecom.utility.SdrAmountAux;
+import com.snezana.introtelecom.utils.SomeUtils;
 import com.snezana.introtelecom.validations.FramesSDRValidationService;
 import com.snezana.introtelecom.validations.PackageAddonPhoneServValidationService;
 import com.snezana.introtelecom.validations.PhoneValidationService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -237,14 +240,18 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         /////////////////////////////////////////////////////////
         Phone phone = phoneRepo.findByPhoneNumber(serviceDetailRecordSaveDTO.getPhone());
         String packageCode = phone.getPackagePlan().getPackageCode();
-        String serviceCode = serviceDetailRecordSaveDTO.getPhoneService();
-        String addonCode = findAddonCode(serviceCode);
+        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
+        String serviceCodeStr = serviceDetailRecordSaveDTO.getPhoneService();
+        log.info("serviceCode = " +serviceCodeStr);
+        SDRCode serviceCode = SDRCode.valueOf(serviceCodeStr);
+        AddonCode addonCode = findAddonCodeFromServiceCode(serviceCode);
+        log.info("addonCode = " +addonCode);
         log.info("in save sdr");
-        int duration = HowFarApartTwoLocalDateTime.howFarApart(serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
+        int duration = SomeUtils.howFarApartTwoLocalDateTime(serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
         log.info("duration = " +duration);
         serviceDetailRecord.setDuration(duration);
-        SdrAmountAux result = new SdrAmountAux(duration, serviceDetailRecordSaveDTO.getMsgAmount(), serviceDetailRecordSaveDTO.getMbAmount(), new BigDecimal("0.00"), "", serviceCode, false);
-        if ((((packageCode.equals(PackageCodeType.PST13.getPackageCode()) || packageCode.equals(PackageCodeType.PST14.getPackageCode()))&&(serviceCode.equals("SDRCLS") || serviceCode.equals("SDRSMS"))) || ((packageCode.equals(PackageCodeType.PST14.getPackageCode()))&& serviceCode.equals("SDRINT")))) {
+        SdrAmountCalc result = new SdrAmountCalc(duration, serviceDetailRecordSaveDTO.getMsgAmount(), serviceDetailRecordSaveDTO.getMbAmount(), new BigDecimal("0.00"), "", serviceCodeStr, false);
+        if (((packagePlanType==PackagePlanType.PST13 || packagePlanType==PackagePlanType.PST14) && (serviceCode==SDRCode.SDRCLS || serviceCode==SDRCode.SDRSMS)) || (packagePlanType==PackagePlanType.PST14 && serviceCode==SDRCode.SDRINT)) {
             log.info("not unlimited!");
         } else {
             Month currentMonth = serviceDetailRecordSaveDTO.getSdrStartDateTime().getMonth();
@@ -252,44 +259,54 @@ public class FramesSDRServiceImpl implements FramesSDRService {
             LocalDateTime monthlyStartDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0, 0, 0);
             LocalDateTime monthlyEndDateTime = monthlyStartDateTime.plusMonths(1);
             PackageFrame monthlyPackageFrame = packageFrameRepo.findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
-            List<AddonFrame> addonFrameList = addonFrameRepo.findAddonFramesByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phone.getPhoneNumber(), addonCode, monthlyStartDateTime, monthlyEndDateTime);
+            List<AddonFrame> addonFrameList = addonFrameRepo.findAddonFramesByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phone.getPhoneNumber(), addonCode.name(), monthlyStartDateTime, monthlyEndDateTime);
             log.info("addonFrameList is size = " +addonFrameList.size());
-            ResultingAmountOfService frameInput = inputAmount(monthlyPackageFrame, addonFrameList, serviceCode);
-            SdrAmountAux sdrOutput = outputAmount(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime, serviceCode);
-            result = checkEoSforThisPhoneService(serviceDetailRecordSaveDTO, frameInput, sdrOutput, duration);
+            FramesInputTotal frameInput = inputAmountOfFrames(monthlyPackageFrame, addonFrameList, serviceCode);
+            SdrAmountCalc sdrOutput = outputAmountOfSDRs(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime, serviceCode);
+            result = checkEOSforThisSDR(serviceDetailRecordSaveDTO, frameInput, sdrOutput, duration);
         }
-        if (result.isEos()) {
-            if(!serviceCode.equals("SDRSMS")) {
-                if (!(duration == result.getAuxDuration())) {
-                    Duration durationMin = Duration.ofMinutes(result.getAuxDuration());
+        if (result.isSdrEOS()) {
+            if(!(serviceCode==SDRCode.SDRSMS)) {
+                if (!(duration == result.getSdrDurationAmount())) {
+                    Duration durationMin = Duration.ofMinutes(result.getSdrDurationAmount());
                     LocalDateTime endDateTime = serviceDetailRecordSaveDTO.getSdrStartDateTime().plus(durationMin);
                     serviceDetailRecordSaveDTO.setSdrEndDateTime(endDateTime);
-                    serviceDetailRecord.setDuration(result.getAuxDuration());
+                    serviceDetailRecord.setDuration(result.getSdrDurationAmount());
                     log.info("not the same duration!");
                 }
             }
-            if (serviceCode.equals("SDRINT") || serviceCode.equals("SDRASM")) {
-                serviceDetailRecordSaveDTO.setMbAmount(result.getAuxMBamount());
+            if (serviceCode==SDRCode.SDRINT || serviceCode==SDRCode.SDRASM) {
+                serviceDetailRecordSaveDTO.setMbAmount(result.getSdrMBamount());
             }
-            if (serviceCode.equals("SDRSMS")) {
-                serviceDetailRecordSaveDTO.setMsgAmount(result.getAuxMsgAmount());
+            if (serviceCode==SDRCode.SDRSMS) {
+                serviceDetailRecordSaveDTO.setMsgAmount(result.getSdrMsgAmount());
             }
-            if (result.getServiceCode().equals("SDRCLS")) {
-                message = "Call is interrupted by EOS";
-            } else if (result.getServiceCode().equals("SDRSMS")) {
-                message = "SMS is interrupted by EOS, the message could not be sent";
-            } else if (result.getServiceCode().equals("SDRINT")) {
-                message = "Internet service is interrupted by EOS";
-            } else if (result.getServiceCode().equals("SDRASM")) {
-                message = "Application or social media is interrupted by EOS";
-            } else if (result.getServiceCode().equals("SDRICLCZ1") || result.getServiceCode().equals("SDRICLCZ2")) {
-                message = "International call is interrupted by EOS";
-            } else if (result.getServiceCode().equals("SDRRMGCZ1") || result.getServiceCode().equals("SDRRMGCZ2")) {
-                message = "Roaming call is interrupted by EOS";
+            SDRCode resultSdrCode = SDRCode.valueOf(result.getServiceCode());
+            switch (resultSdrCode) {
+                case SDRCLS:
+                    message = "Call is interrupted by EOS";
+                    break;
+                case SDRSMS:
+                    message = "SMS is interrupted by EOS, the message could not be sent";
+                    break;
+                case SDRINT:
+                    message = "Internet service is interrupted by EOS";
+                    break;
+                case SDRASM:
+                    message = "Application or social media is interrupted by EOS";
+                    break;
+                case SDRICLCZ1:
+                case SDRICLCZ2:
+                    message = "International call is interrupted by EOS";
+                    break;
+                case SDRRMGCZ1:
+                case SDRRMGCZ2:
+                    message = "Roaming call is interrupted by EOS";
+                    break;
             }
         }
         log.info("save function");
-        serviceDetailRecord.setSdrNote(result.getNote());
+        serviceDetailRecord.setSdrNote(result.getEosNote());
         serviceDetailRecordMapper.serviceDetailRecordSaveDtoToServiceDetailRecord(serviceDetailRecordSaveDTO, serviceDetailRecord, phoneRepo, phoneServiceRepo);
         serviceDetailRecordRepo.save(serviceDetailRecord);
         return message;
@@ -351,423 +368,483 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     void setPackageFrameByPackageCode(PackageFrame packageFrame) {
         packageFrame.setPackfrStatus(StatusType.PRESENT.getStatus());
         String packageCode = packageFrame.getPhone().getPackagePlan().getPackageCode();
-        switch (packageCode) {
-            case "01":
-                packageFrame.setPackfrCls(200);
-                packageFrame.setPackfrSms(200);
-                packageFrame.setPackfrInt(new BigDecimal("0.00"));
-                packageFrame.setPackfrIcl(new BigDecimal("0.00"));
-                packageFrame.setPackfrRmg(new BigDecimal("0.00"));
-                packageFrame.setPackfrAsm(new BigDecimal("0.00"));
+        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
+        switch (packagePlanType) {
+            case PRP01:
+                setMonthlyPackageFrameQuota (packageFrame, 200, 200, "0.00", "0.00", "0.00", "0.00");
                 break;
-            case "02":
-                packageFrame.setPackfrCls(200);
-                packageFrame.setPackfrSms(200);
-                packageFrame.setPackfrInt(new BigDecimal("10000.00"));
-                packageFrame.setPackfrIcl(new BigDecimal("0.00"));
-                packageFrame.setPackfrRmg(new BigDecimal("0.00"));
-                packageFrame.setPackfrAsm(new BigDecimal("0.00"));
+            case PRP02:
+                setMonthlyPackageFrameQuota (packageFrame, 200, 200, "10000.00", "0.00", "0.00", "0.00");
                 break;
-            case "11":
-                packageFrame.setPackfrCls(300);
-                packageFrame.setPackfrSms(300);
-                packageFrame.setPackfrInt(new BigDecimal("10000.00"));
-                packageFrame.setPackfrIcl(new BigDecimal("200.00"));
-                packageFrame.setPackfrRmg(new BigDecimal("200.00"));
-                packageFrame.setPackfrAsm(new BigDecimal("0.00"));
+            case PST11:
+                setMonthlyPackageFrameQuota (packageFrame, 300, 300, "10000.00", "0.00", "200.00", "200.00");
                 break;
-            case "12":
-                packageFrame.setPackfrCls(400);
-                packageFrame.setPackfrSms(400);
-                packageFrame.setPackfrInt(new BigDecimal("10000.00"));
-                packageFrame.setPackfrIcl(new BigDecimal("200.00"));
-                packageFrame.setPackfrRmg(new BigDecimal("200.00"));
-                packageFrame.setPackfrAsm(new BigDecimal("5000.00"));
+            case PST12:
+                setMonthlyPackageFrameQuota (packageFrame, 400, 400, "10000.00", "5000.00", "200.00", "200.00");
                 break;
-            case "13":
-                packageFrame.setPackfrCls(-1);
-                packageFrame.setPackfrSms(-1);
-                packageFrame.setPackfrInt(new BigDecimal("15000.00"));
-                packageFrame.setPackfrIcl(new BigDecimal("200.00"));
-                packageFrame.setPackfrRmg(new BigDecimal("200.00"));
-                packageFrame.setPackfrAsm(new BigDecimal("5000.00"));
+            case PST13:
+                setMonthlyPackageFrameQuota (packageFrame, -1, -1, "15000.00", "5000.00", "200.00", "200.00");
                 break;
-            case "14":
-                packageFrame.setPackfrCls(-1);
-                packageFrame.setPackfrSms(-1);
-                packageFrame.setPackfrInt(new BigDecimal("-1.00"));
-                packageFrame.setPackfrIcl(new BigDecimal("200.00"));
-                packageFrame.setPackfrRmg(new BigDecimal("200.00"));
-                packageFrame.setPackfrAsm(new BigDecimal("10000.00"));
+            case PST14:
+                setMonthlyPackageFrameQuota (packageFrame, -1, -1, "-1.00", "10000.00", "200.00", "200.00");
                 break;
             default:
         }
+    }
+
+    void setMonthlyPackageFrameQuota (PackageFrame packageFrame, int monthlyQuotaCls, int monthlyQuotaSms, String monthlyQuotaInt, String monthlyQuotaAsm, String monthlyQuotaIcl, String monthlyQuotaRmg){
+        packageFrame.setPackfrCls(monthlyQuotaCls);
+        packageFrame.setPackfrSms(monthlyQuotaSms);
+        packageFrame.setPackfrInt(new BigDecimal(monthlyQuotaInt));
+        packageFrame.setPackfrAsm(new BigDecimal(monthlyQuotaAsm));
+        packageFrame.setPackfrIcl(new BigDecimal(monthlyQuotaIcl));
+        packageFrame.setPackfrRmg(new BigDecimal(monthlyQuotaRmg));
+
     }
 
     void setAddonFrameByAddonCode(AddonFrame addonFrame) {
         addonFrame.setAddfrStatus(StatusType.PRESENT.getStatus());
-        String addonCode = addonFrame.getAddOn().getAddonCode();
+        String addonCodeStr = addonFrame.getAddOn().getAddonCode();
+        AddonCode addonCode = AddonCode.valueOf(addonCodeStr);
         switch (addonCode) {
-            case "ADDCLS":
-                addonFrame.setAddfrCls(100);
-                addonFrame.setAddfrSms(0);
-                addonFrame.setAddfrInt(new BigDecimal("0.00"));
-                addonFrame.setAddfrIcl(new BigDecimal("0.00"));
-                addonFrame.setAddfrRmg(new BigDecimal("0.00"));
-                addonFrame.setAddfrAsm(new BigDecimal("0.00"));
+            case ADDCLS:
+                setAddonFrameQuota(addonFrame, 100, 0, "0.00", "0.00", "0.00", "0.00");
                 break;
-            case "ADDSMS":
-                addonFrame.setAddfrCls(0);
-                addonFrame.setAddfrSms(100);
-                addonFrame.setAddfrInt(new BigDecimal("0.00"));
-                addonFrame.setAddfrIcl(new BigDecimal("0.00"));
-                addonFrame.setAddfrRmg(new BigDecimal("0.00"));
-                addonFrame.setAddfrAsm(new BigDecimal("0.00"));
+            case ADDSMS:
+                setAddonFrameQuota(addonFrame, 0, 100, "0.00", "0.00", "0.00", "0.00");
                 break;
-            case "ADDINT":
-                addonFrame.setAddfrCls(0);
-                addonFrame.setAddfrSms(0);
-                addonFrame.setAddfrInt(new BigDecimal("5000.00"));
-                addonFrame.setAddfrIcl(new BigDecimal("0.00"));
-                addonFrame.setAddfrRmg(new BigDecimal("0.00"));
-                addonFrame.setAddfrAsm(new BigDecimal("0.00"));
+            case ADDINT:
+                setAddonFrameQuota(addonFrame, 0, 0, "5000.00", "0.00", "0.00", "0.00");
                 break;
-            case "ADDASM":
-                addonFrame.setAddfrCls(0);
-                addonFrame.setAddfrSms(0);
-                addonFrame.setAddfrInt(new BigDecimal("0.00"));
-                addonFrame.setAddfrIcl(new BigDecimal("0.00"));
-                addonFrame.setAddfrRmg(new BigDecimal("0.00"));
-                addonFrame.setAddfrAsm(new BigDecimal("5000.00"));
+            case ADDASM:
+                setAddonFrameQuota(addonFrame, 0, 0, "0.00", "5000.00", "0.00", "0.00");
                 break;
-            case "ADDICL":
-                addonFrame.setAddfrCls(0);
-                addonFrame.setAddfrSms(0);
-                addonFrame.setAddfrInt(new BigDecimal("0.00"));
-                addonFrame.setAddfrIcl(new BigDecimal("200.00"));
-                addonFrame.setAddfrRmg(new BigDecimal("0.00"));
-                addonFrame.setAddfrAsm(new BigDecimal("0.00"));
+            case ADDICL:
+                setAddonFrameQuota(addonFrame, 0, 0, "0.00", "0.00", "200.00", "0.00");
                 break;
-            case "ADDRMG":
-                addonFrame.setAddfrCls(0);
-                addonFrame.setAddfrSms(0);
-                addonFrame.setAddfrInt(new BigDecimal("0.00"));
-                addonFrame.setAddfrIcl(new BigDecimal("0.00"));
-                addonFrame.setAddfrRmg(new BigDecimal("200.00"));
-                addonFrame.setAddfrAsm(new BigDecimal("0.00"));
+            case ADDRMG:
+                setAddonFrameQuota(addonFrame, 0, 0, "0.00", "0.00", "0.00", "200.00");
                 break;
             default:
         }
     }
 
+    void setAddonFrameQuota (AddonFrame addonFrame, int quotaCls, int quotaSms, String quotaInt, String quotaAsm, String quotaIcl, String quotaRmg){
+        addonFrame.setAddfrCls(quotaCls);
+        addonFrame.setAddfrSms(quotaSms);
+        addonFrame.setAddfrInt(new BigDecimal(quotaInt));
+        addonFrame.setAddfrAsm(new BigDecimal(quotaAsm));
+        addonFrame.setAddfrIcl(new BigDecimal(quotaIcl));
+        addonFrame.setAddfrRmg(new BigDecimal(quotaRmg));
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-    String findAddonCode(String serviceCode) {
-        String addonCode = "";
-        switch (serviceCode) {
-            case "SDRCLS":
-                addonCode = "ADDCLS";
+    AddonCode findAddonCodeFromServiceCode(SDRCode sdrCode) {
+        AddonCode addonCode;
+        switch (sdrCode) {
+            case SDRCLS:
+                addonCode = AddonCode.ADDCLS;
                 break;
-            case "SDRSMS":
-                addonCode = "ADDSMS";
+            case SDRSMS:
+                addonCode = AddonCode.ADDSMS;
                 break;
-            case "SDRINT":
-                addonCode = "ADDINT";
+            case SDRINT:
+                addonCode = AddonCode.ADDINT;
                 break;
-            case "SDRASM":
-                addonCode = "ADDASM";
+            case SDRASM:
+                addonCode = AddonCode.ADDASM;
                 break;
-            case "SDRICLCZ1":
-            case "SDRICLCZ2":
-                addonCode = "ADDICL";
+            case SDRICLCZ1:
+            case SDRICLCZ2:
+                addonCode = AddonCode.ADDICL;
                 break;
-            case "SDRRMGCZ1":
-            case "SDRRMGCZ2":
-                addonCode = "ADDRMG";
+            case SDRRMGCZ1:
+            case SDRRMGCZ2:
+                addonCode = AddonCode.ADDRMG;
                 break;
             default:
-                addonCode = "";
+                addonCode = AddonCode.ADDNULL;
                 break;
         }
         return addonCode;
     }
 
-    public ResultingAmountOfService inputAmount(PackageFrame packageFrame, List<AddonFrame> addonFrameList, String serviceCode) {
-        ResultingAmountOfService inputAm = new ResultingAmountOfService(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
-        int cls = 0;
-        int sms = 0;
-        BigDecimal intr = new BigDecimal("0.00");
-        BigDecimal asm = new BigDecimal("0.00");
-        BigDecimal icl = new BigDecimal("0.00");
-        BigDecimal rmg = new BigDecimal("0.00");
-        cls = cls + packageFrame.getPackfrCls();
-        sms = sms + packageFrame.getPackfrSms();
-        intr = intr.add(packageFrame.getPackfrInt());
-        asm = asm.add(packageFrame.getPackfrAsm());
-        icl = icl.add(packageFrame.getPackfrIcl());
-        log.info("icl no af = " +icl);
-        rmg = rmg.add(packageFrame.getPackfrRmg());
-        log.info("rmg no af = " +rmg);
-        if ( addonFrameList.size()>0) {
+//    FramesInputTotal inputAmountOfFrames(PackageFrame packageFrame, List<AddonFrame> addonFrameList, String serviceCode) {
+//        FramesInputTotal inputAm = new FramesInputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
+//        int inputCls = 0;
+//        int inputSms = 0;
+//        BigDecimal inputInt = new BigDecimal("0.00");
+//        BigDecimal inputAsm = new BigDecimal("0.00");
+//        BigDecimal inputIcl = new BigDecimal("0.00");
+//        BigDecimal inputRmg = new BigDecimal("0.00");
+//        inputCls = inputCls + packageFrame.getPackfrCls();
+//        inputSms = inputSms + packageFrame.getPackfrSms();
+//        inputInt = inputInt.add(packageFrame.getPackfrInt());
+//        inputAsm = inputAsm.add(packageFrame.getPackfrAsm());
+//        inputIcl = inputIcl.add(packageFrame.getPackfrIcl());
+//        log.info("icl no af = " +inputIcl);
+//        inputRmg = inputRmg.add(packageFrame.getPackfrRmg());
+//        log.info("rmg no af = " +inputRmg);
+//        if (!addonFrameList.isEmpty()) {
+//            for (AddonFrame af : addonFrameList) {
+//                if (serviceCode.equals("SDRCLS")) {
+//                    inputCls = inputCls + af.getAddfrCls();
+//                } else if (serviceCode.equals("SDRSMS")) {
+//                    inputSms = inputSms + af.getAddfrSms();
+//                } else if (serviceCode.equals("SDRINT")) {
+//                    inputInt = inputInt.add(af.getAddfrInt());
+//                } else if (serviceCode.equals("SDRASM")) {
+//                    inputAsm = inputAsm.add(af.getAddfrAsm());
+//                } else if (serviceCode.equals("SDRICLCZ1") || serviceCode.equals("SDRICLCZ2")) {
+//                    inputIcl = inputIcl.add(af.getAddfrIcl());
+//                    log.info("icl with af = " +inputIcl);
+//                } else if (serviceCode.equals("SDRRMGCZ1") || serviceCode.equals("SDRRMGCZ2")) {
+//                    inputRmg = inputRmg.add(af.getAddfrRmg());
+//                    log.info("rmg with af = " +inputRmg);
+//                }
+//            }
+//        }
+//        inputAm.setInputCls(inputCls);
+//        log.info("inputAm CLS = " +inputCls);
+//        inputAm.setInputSms(inputSms);
+//        log.info("inputAm SMS = " +inputSms);
+//        inputAm.setInputInt(inputInt);
+//        log.info("inputAm INT = " +inputInt);
+//        inputAm.setInputAsm(inputAsm);
+//        log.info("inputAm ASM = " +inputAsm);
+//        inputAm.setInputIcl(inputIcl);
+//        log.info("inputAm ICL = " +inputIcl);
+//        inputAm.setInputRmg(inputRmg);
+//        log.info("inputAm RMG = " +inputRmg);
+//        return inputAm;
+//    }
+
+    FramesInputTotal inputAmountOfFrames(PackageFrame packageFrame, List<AddonFrame> addonFrameList, SDRCode serviceCode) {
+        FramesInputTotal inputResult = new FramesInputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
+        int inputCls = packageFrame.getPackfrCls();
+        int inputSms = packageFrame.getPackfrSms();
+        BigDecimal inputInt = packageFrame.getPackfrInt();
+        BigDecimal inputAsm = packageFrame.getPackfrAsm();
+        BigDecimal inputIcl = packageFrame.getPackfrIcl();
+        log.info("icl no af = " +inputIcl);
+        BigDecimal inputRmg = packageFrame.getPackfrRmg();
+        log.info("rmg no af = " +inputRmg);
+        if (!addonFrameList.isEmpty()) {
             for (AddonFrame af : addonFrameList) {
-                if (serviceCode.equals("SDRCLS")) {
-                    cls = cls + af.getAddfrCls();
-                } else if (serviceCode.equals("SDRSMS")) {
-                    sms = sms + af.getAddfrSms();
-                } else if (serviceCode.equals("SDRINT")) {
-                    intr = intr.add(af.getAddfrInt());
-                } else if (serviceCode.equals("SDRASM")) {
-                    asm = asm.add(af.getAddfrAsm());
-                } else if (serviceCode.equals("SDRICLCZ1") || serviceCode.equals("SDRICLCZ2")) {
-                    icl = icl.add(af.getAddfrIcl());
-                    log.info("icl with af = " +icl);
-                } else if (serviceCode.equals("SDRRMGCZ1") || serviceCode.equals("SDRRMGCZ2")) {
-                    rmg = rmg.add(af.getAddfrRmg());
-                    log.info("rmg with af = " +rmg);
+                switch (serviceCode) {
+                    case SDRCLS:
+                        inputCls = inputCls + af.getAddfrCls();
+                        break;
+                    case SDRSMS:
+                        inputSms = inputSms + af.getAddfrSms();
+                        break;
+                    case SDRINT:
+                        inputInt = inputInt.add(af.getAddfrInt());
+                        break;
+                    case SDRASM:
+                        inputAsm = inputAsm.add(af.getAddfrAsm());
+                        break;
+                    case SDRICLCZ1:
+                    case SDRICLCZ2:
+                        inputIcl = inputIcl.add(af.getAddfrIcl());
+                        log.info("icl with af = " + inputIcl);
+                        break;
+                    case SDRRMGCZ1:
+                    case SDRRMGCZ2:
+                        inputRmg = inputRmg.add(af.getAddfrRmg());
+                        log.info("rmg with af = " + inputRmg);
+                        break;
                 }
             }
         }
-        inputAm.setAmountCls(cls);
-        log.info("inputAm CLS = " +cls);
-        inputAm.setAmountSms(sms);
-        log.info("inputAm SMS = " +sms);
-        inputAm.setAmountInt(intr);
-        log.info("inputAm INT = " +intr);
-        inputAm.setAmountAsm(asm);
-        log.info("inputAm ASM = " +asm);
-        inputAm.setAmountIcl(icl);
-        log.info("inputAm ICL = " +icl);
-        inputAm.setAmountRmg(rmg);
-        log.info("inputAm RMG = " +rmg);
-        return inputAm;
+        inputResult.setInputCls(inputCls);
+        log.info("inputAm CLS = " +inputCls);
+        inputResult.setInputSms(inputSms);
+        log.info("inputAm SMS = " +inputSms);
+        inputResult.setInputInt(inputInt);
+        log.info("inputAm INT = " +inputInt);
+        inputResult.setInputAsm(inputAsm);
+        log.info("inputAm ASM = " +inputAsm);
+        inputResult.setInputIcl(inputIcl);
+        log.info("inputAm ICL = " +inputIcl);
+        inputResult.setInputRmg(inputRmg);
+        log.info("inputAm RMG = " +inputRmg);
+        return inputResult;
     }
 
-    public SdrAmountAux outputAmount(String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime monthlyEndDateTime, String serviceCode) {
-        SdrAmountAux outputAux = new SdrAmountAux(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), "", "", false);
-        int unitPriceICLCZ1 = 15;
-        int unitPriceICLCZ2 = 20;
-        int unitPriceRMGCZ1 = 4;
-        int unitPriceRMGCZ2 = 8;
+     SdrAmountCalc outputAmountOfSDRs (String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime monthlyEndDateTime, SDRCode serviceCode) {
+        SdrAmountCalc outputResult = new SdrAmountCalc(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), "", "", false);
         int duration = 0;
-        int duration1 = 0;
-        int duration2 = 0;
+        int durationCZ1 = 0;
+        int durationCZ2 = 0;
         int msgAmount = 0;
         BigDecimal mbAmount = new BigDecimal("0.00");
         BigDecimal priceAmount = new BigDecimal("0.00");
-        BigDecimal priceAmountICLCZ1 = new BigDecimal(unitPriceICLCZ1);
-        BigDecimal priceAmountICLCZ2 = new BigDecimal(unitPriceICLCZ2);
-        BigDecimal priceAmountRMGCZ1 = new BigDecimal(unitPriceRMGCZ1);
-        BigDecimal priceAmountRMGCZ2 = new BigDecimal(unitPriceRMGCZ2);
-        if (serviceCode.equals("SDRCLS")) {
-            List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode);
-            if (serviceDetailRecordList.size()>0) {
-                for (ServiceDetailRecord sdr : serviceDetailRecordList) {
-                    duration = duration + sdr.getDuration();
-                }
-                outputAux.setAuxDuration(duration);
-            }
-        } else if (serviceCode.equals("SDRSMS")) {
-            List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode);
-            if (serviceDetailRecordList.size()>0) {
-                for (ServiceDetailRecord sdr : serviceDetailRecordList) {
-                    msgAmount = msgAmount + sdr.getMsgAmount();
-                }
-                outputAux.setAuxMsgAmount(msgAmount);
-
-            }
-        } else if (serviceCode.equals("SDRINT") || serviceCode.equals("SDRASM")) {
-            List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode);
-            if (serviceDetailRecordList.size()>0) {
-                for (ServiceDetailRecord sdr : serviceDetailRecordList) {
-                    mbAmount = mbAmount.add(sdr.getMbAmount());
-                }
-                outputAux.setAuxMBamount(mbAmount);
-            }
-        } else if (serviceCode.equals("SDRICLCZ1") || serviceCode.equals("SDRICLCZ2")) {
-            List<ServiceDetailRecord> serviceDetailRecordList1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, "SDRICLCZ1");
-            if (serviceDetailRecordList1.size()>0) {
-                for (ServiceDetailRecord sdr : serviceDetailRecordList1) {
-                    duration1 = duration1 + sdr.getDuration();
-                }
-            }
-            log.info("ICL duration1= " +duration1);
-            priceAmountICLCZ1 = priceAmountICLCZ1.multiply(new BigDecimal(duration1));
-            log.info("ICL priceAmountICLCZ1= " +priceAmountICLCZ1);
-            List<ServiceDetailRecord> serviceDetailRecordList2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, "SDRICLCZ2");
-            if (serviceDetailRecordList2.size()>0) {
-                for (ServiceDetailRecord sdr : serviceDetailRecordList2) {
-                    duration2 = duration2 + sdr.getDuration();
-                }
-            }
-            log.info("ICL duration2= " +duration2);
-            priceAmountICLCZ2 = priceAmountICLCZ2.multiply(new BigDecimal(duration2));
-            log.info("ICL priceAmountICLCZ2= " +priceAmountICLCZ2);
-            priceAmount = priceAmount.add(priceAmountICLCZ1).add(priceAmountICLCZ2);
-            log.info("ICL priceAmount= " +priceAmount);
-            outputAux.setAuxPrice(priceAmount);
-        } else if (serviceCode.equals("SDRRMGCZ1") || serviceCode.equals("SDRRMGCZ2")) {
-            List<ServiceDetailRecord> serviceDetailRecordList1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, "SDRRMGCZ1");
-            if (serviceDetailRecordList1.size()>0) {
-                for (ServiceDetailRecord sdr : serviceDetailRecordList1) {
-                    duration1 = duration1 + sdr.getDuration();
-                }
-            }
-            log.info("RMG duration1= " +duration1);
-            priceAmountRMGCZ1 = priceAmountRMGCZ1.multiply(new BigDecimal(duration1));
-            log.info("RMG priceAmountRMGCZ1= " +priceAmountRMGCZ1);
-            List<ServiceDetailRecord> serviceDetailRecordList2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, "SDRRMGCZ2");
-            if (serviceDetailRecordList2.size()>0) {
-                for (ServiceDetailRecord sdr : serviceDetailRecordList2) {
-                    duration2 = duration2 + sdr.getDuration();
-                }
-            }
-            log.info("RMG duration2= " +duration2);
-            priceAmountRMGCZ2 = priceAmountRMGCZ2.multiply(new BigDecimal(duration2));
-            log.info("RMG priceAmountRMGCZ2= " +priceAmountRMGCZ2);
-            priceAmount = priceAmount.add(priceAmountRMGCZ1).add(priceAmountRMGCZ2);
-            log.info("RMG priceAmount= " +priceAmount);
-            outputAux.setAuxPrice(priceAmount);
-        }
-        log.info("outputAux, duration = " +outputAux.getAuxDuration() + ", msgAmount = " +outputAux.getAuxMsgAmount() + ", MBamount = " +outputAux.getAuxMBamount() + ", price = " +outputAux.getAuxPrice() + ", note = " +outputAux.getNote() + ", servoceCode = " +outputAux.getServiceCode() + ", eos = " +outputAux.isEos());
-        return outputAux;
+        BigDecimal priceICLCZ1 = new BigDecimal(UNIT_PRICE_ICLCZ1);
+        BigDecimal priceICLCZ2 = new BigDecimal(UNIT_PRICE_ICLCZ2);
+        BigDecimal priceRMGCZ1 = new BigDecimal(UNIT_PRICE_RMGCZ1);
+        BigDecimal priceRMGCZ2 = new BigDecimal(UNIT_PRICE_RMGCZ2);
+        switch (serviceCode) {
+             case SDRCLS: {
+                 List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode.name());
+                 if (!serviceDetailRecordList.isEmpty()) {
+                     for (ServiceDetailRecord sdr : serviceDetailRecordList) {
+                         duration = duration + sdr.getDuration();
+                     }
+                     outputResult.setSdrDurationAmount(duration);
+                 }
+                 break;
+             }
+             case SDRSMS: {
+                 List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode.name());
+                 if (!serviceDetailRecordList.isEmpty()) {
+                     for (ServiceDetailRecord sdr : serviceDetailRecordList) {
+                         msgAmount = msgAmount + sdr.getMsgAmount();
+                     }
+                     outputResult.setSdrMsgAmount(msgAmount);
+                 }
+                 break;
+             }
+             case SDRINT:
+             case SDRASM: {
+                 List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode.name());
+                 if (!serviceDetailRecordList.isEmpty()) {
+                     for (ServiceDetailRecord sdr : serviceDetailRecordList) {
+                         mbAmount = mbAmount.add(sdr.getMbAmount());
+                     }
+                     outputResult.setSdrMBamount(mbAmount);
+                 }
+                 break;
+             }
+             case SDRICLCZ1:
+             case SDRICLCZ2: {
+                 List<ServiceDetailRecord> serviceDetailRecordList1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRICLCZ1.name());
+                 if (!serviceDetailRecordList1.isEmpty()) {
+                     for (ServiceDetailRecord sdr : serviceDetailRecordList1) {
+                         durationCZ1 = durationCZ1 + sdr.getDuration();
+                     }
+                 }
+                 log.info("ICL duration1= " + durationCZ1);
+                 priceICLCZ1 = priceICLCZ1.multiply(new BigDecimal(durationCZ1));
+                 log.info("ICL priceAmountICLCZ1= " + priceICLCZ1);
+                 List<ServiceDetailRecord> serviceDetailRecordList2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRICLCZ2.name());
+                 if (!serviceDetailRecordList2.isEmpty()) {
+                     for (ServiceDetailRecord sdr : serviceDetailRecordList2) {
+                         durationCZ2 = durationCZ2 + sdr.getDuration();
+                     }
+                 }
+                 log.info("ICL duration2= " + durationCZ2);
+                 priceICLCZ2 = priceICLCZ2.multiply(new BigDecimal(durationCZ2));
+                 log.info("ICL priceAmountICLCZ2= " + priceICLCZ2);
+                 priceAmount = priceAmount.add(priceICLCZ1).add(priceICLCZ2);
+                 log.info("ICL priceAmount= " + priceAmount);
+                 outputResult.setSdrPriceAmount(priceAmount);
+                 break;
+             }
+             case SDRRMGCZ1:
+             case SDRRMGCZ2: {
+                 List<ServiceDetailRecord> serviceDetailRecordList1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRRMGCZ1.name());
+                 if (!serviceDetailRecordList1.isEmpty()) {
+                     for (ServiceDetailRecord sdr : serviceDetailRecordList1) {
+                         durationCZ1 = durationCZ1 + sdr.getDuration();
+                     }
+                 }
+                 log.info("RMG duration1= " + durationCZ1);
+                 priceRMGCZ1 = priceRMGCZ1.multiply(new BigDecimal(durationCZ1));
+                 log.info("RMG priceAmountRMGCZ1= " + priceRMGCZ1);
+                 List<ServiceDetailRecord> serviceDetailRecordList2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRRMGCZ2.name());
+                 if (!serviceDetailRecordList2.isEmpty()) {
+                     for (ServiceDetailRecord sdr : serviceDetailRecordList2) {
+                         durationCZ2 = durationCZ2 + sdr.getDuration();
+                     }
+                 }
+                 log.info("RMG duration2= " + durationCZ2);
+                 priceRMGCZ2 = priceRMGCZ2.multiply(new BigDecimal(durationCZ2));
+                 log.info("RMG priceAmountRMGCZ2= " + priceRMGCZ2);
+                 priceAmount = priceAmount.add(priceRMGCZ1).add(priceRMGCZ2);
+                 log.info("RMG priceAmount= " + priceAmount);
+                 outputResult.setSdrPriceAmount(priceAmount);
+                 break;
+             }
+         }
+        log.info("outputResult, duration = " +outputResult.getSdrDurationAmount() + ", msgAmount = " +outputResult.getSdrMsgAmount() + ", MBamount = " +outputResult.getSdrMBamount() + ", price = " +outputResult.getSdrPriceAmount() + ", note = " +outputResult.getEosNote() + ", serviceCode = " +outputResult.getServiceCode() + ", eos = " +outputResult.isSdrEOS());
+        return outputResult;
     }
 
-    SdrAmountAux checkEoSforThisPhoneService (ServiceDetailRecordSaveDTO sdrSaveDTO, ResultingAmountOfService ras, SdrAmountAux sdrAa, int duration) {
-        int unitPriceICLCZ1 = 15;
-        int unitPriceICLCZ2 = 20;
-        int unitPriceRMGCZ1 = 4;
-        int unitPriceRMGCZ2 = 8;
-        BigDecimal priceAmountICLCZ1 = new BigDecimal(unitPriceICLCZ1);
-        BigDecimal priceAmountICLCZ2 = new BigDecimal(unitPriceICLCZ2);
-        BigDecimal priceAmountRMGCZ1 = new BigDecimal(unitPriceRMGCZ1);
-        BigDecimal priceAmountRMGCZ2 = new BigDecimal(unitPriceRMGCZ2);
-        SdrAmountAux result = new SdrAmountAux(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), "", "", false);
-        String serviceCode = sdrSaveDTO.getPhoneService();
-        if (serviceCode.equals("SDRCLS")) {
-            log.info("info - CLS");
-            if (ras.getAmountCls() < (sdrAa.getAuxDuration() + duration)) {
-                duration = ras.getAmountCls() - sdrAa.getAuxDuration();
-                result.setAuxDuration(duration);
-                result.setNote("EOS termination");
-                result.setServiceCode("SDRCLS");
-                result.setEos(true);
-                log.info("CLS EOS - true");
-            }
-        } else if (serviceCode.equals("SDRSMS")) {
-            log.info("info - SMS");
-            if (ras.getAmountSms() < (sdrAa.getAuxMsgAmount() + sdrSaveDTO.getMsgAmount())) {
-                result.setNote("EOS termination");
-                result.setAuxMsgAmount(0);
-                result.setServiceCode("SDRSMS");
-                result.setEos(true);
-                log.info("SMS EOS - true");
-            }
-        } else if (serviceCode.equals("SDRINT")) {
-            log.info("info - INT");
-            BigDecimal pfAfMB = ras.getAmountInt();
-            BigDecimal deltaMB = pfAfMB.subtract(sdrAa.getAuxMBamount());
-            BigDecimal sdrMB = sdrAa.getAuxMBamount().add(sdrSaveDTO.getMbAmount());
-            if (pfAfMB.compareTo(sdrMB) == -1) {
-                if (duration > 1) {
-                    duration = duration / 2;
+    SdrAmountCalc checkEOSforThisSDR(ServiceDetailRecordSaveDTO sdrSaveDTO, FramesInputTotal framesInput, SdrAmountCalc sdrOutput, int duration) {
+        BigDecimal priceICLCZ1 = new BigDecimal(UNIT_PRICE_ICLCZ1);
+        BigDecimal priceICLCZ2 = new BigDecimal(UNIT_PRICE_ICLCZ2);
+        BigDecimal priceRMGCZ1 = new BigDecimal(UNIT_PRICE_RMGCZ1);
+        BigDecimal priceRMGCZ2 = new BigDecimal(UNIT_PRICE_RMGCZ2);
+        SdrAmountCalc result = new SdrAmountCalc(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), "", "", false);
+        String serviceCodeStr = sdrSaveDTO.getPhoneService();
+        SDRCode serviceCode = SDRCode.valueOf(serviceCodeStr);
+        switch (serviceCode) {
+            case SDRCLS:
+                log.info("info - CLS");
+                if (framesInput.getInputCls() < (sdrOutput.getSdrDurationAmount() + duration)) {
+                    duration = framesInput.getInputCls() - sdrOutput.getSdrDurationAmount();
+                    result.setSdrDurationAmount(duration);
+                    result.setEosNote("EOS termination");
+                    result.setServiceCode(SDRCode.SDRCLS.name());
+                    result.setSdrEOS(true);
+                    log.info("CLS EOS - true");
                 }
-                result.setNote("EOS termination");
-                result.setAuxMBamount(deltaMB);
-                result.setAuxDuration(duration);
-                result.setServiceCode("SDRINT");
-                result.setEos(true);
-                log.info("INT EOS - true");
-            }
-        } else if (serviceCode.equals("SDRASM")) {
-            log.info("info - ASM");
-            BigDecimal pfAfMB = ras.getAmountAsm();
-            BigDecimal deltaMB = pfAfMB.subtract(sdrAa.getAuxMBamount());
-            BigDecimal sdrMB = sdrAa.getAuxMBamount().add(sdrSaveDTO.getMbAmount());
-            if (pfAfMB.compareTo(sdrMB) == -1) {
-                if (duration > 1) {
-                    duration = duration / 2;
+                break;
+            case SDRSMS:
+                log.info("info - SMS");
+                if (framesInput.getInputSms() < (sdrOutput.getSdrMsgAmount() + sdrSaveDTO.getMsgAmount())) {
+                    result.setEosNote("EOS termination");
+                    result.setSdrMsgAmount(0);
+                    result.setServiceCode(SDRCode.SDRSMS.name());
+                    result.setSdrEOS(true);
+                    log.info("SMS EOS - true");
                 }
-                result.setNote("EOS termination");
-                result.setAuxMBamount(deltaMB);
-                result.setAuxDuration(duration);
-                result.setServiceCode("SDRASM");
-                result.setEos(true);
-                log.info("ASM EOS - true");
+                break;
+            case SDRINT: {
+                log.info("info - INT");
+                BigDecimal inputMB = framesInput.getInputInt();
+                BigDecimal deltaMB = inputMB.subtract(sdrOutput.getSdrMBamount());
+                BigDecimal outputMB = sdrOutput.getSdrMBamount().add(sdrSaveDTO.getMbAmount());
+                if (inputMB.compareTo(outputMB) < 0) {
+                    if (duration > 1) {
+                        duration = duration / 2;
+                    }
+                    result.setEosNote("EOS termination");
+                    result.setSdrMBamount(deltaMB);
+                    result.setSdrDurationAmount(duration);
+                    result.setServiceCode(SDRCode.SDRINT.name());
+                    result.setSdrEOS(true);
+                    log.info("INT EOS - true");
+                }
+                break;
             }
-        } else if (serviceCode.equals("SDRICLCZ1") || serviceCode.equals("SDRICLCZ2")) {
-            log.info("info - ICL");
-            BigDecimal pfAfPrice = ras.getAmountIcl();
-            log.info("ICL pfAfPrice= " +pfAfPrice);
-            BigDecimal sdrPrice1 = new BigDecimal(duration);
-            if (serviceCode.equals("SDRICLCZ1")) {
-                sdrPrice1 = sdrPrice1.multiply(priceAmountICLCZ1);
-            } else {
-                sdrPrice1 = sdrPrice1.multiply(priceAmountICLCZ2);
+            case SDRASM: {
+                log.info("info - ASM");
+                BigDecimal inputMB = framesInput.getInputAsm();
+                BigDecimal deltaMB = inputMB.subtract(sdrOutput.getSdrMBamount());
+                BigDecimal outputMB = sdrOutput.getSdrMBamount().add(sdrSaveDTO.getMbAmount());
+                if (inputMB.compareTo(outputMB) < 0) {
+                    if (duration > 1) {
+                        duration = duration / 2;
+                    }
+                    result.setEosNote("EOS termination");
+                    result.setSdrMBamount(deltaMB);
+                    result.setSdrDurationAmount(duration);
+                    result.setServiceCode(SDRCode.SDRASM.name());
+                    result.setSdrEOS(true);
+                    log.info("ASM EOS - true");
+                }
+                break;
             }
-            log.info("ICL sdrPrice1= " +sdrPrice1);
-            BigDecimal sdrPrice = sdrAa.getAuxPrice().add(sdrPrice1);
-            log.info("ICL sdrPrice= " +sdrPrice);
-            if (pfAfPrice.compareTo(sdrPrice) == -1) {
-                BigDecimal sdrDeltaPrice = pfAfPrice.subtract(sdrAa.getAuxPrice());
-                log.info("ICL sdrDeltaPrice= " +sdrDeltaPrice);
-                BigDecimal durationBD = new BigDecimal(1);
-                durationBD = durationBD.multiply(sdrDeltaPrice);
-                log.info("ICL before divide durationBD= " +durationBD);
-                if (serviceCode.equals("SDRICLCZ1")) {
-                    durationBD = durationBD.divide(priceAmountICLCZ1, 2, RoundingMode.UP);
-                    result.setServiceCode("SDRICLCZ1");
+            case SDRICLCZ1:
+            case SDRICLCZ2: {
+                log.info("info - ICL");
+                BigDecimal inputPrice = framesInput.getInputIcl();
+                log.info("ICL pfAfPrice= " + inputPrice);
+                BigDecimal thisSdrPrice = new BigDecimal(duration);
+                if (serviceCode.equals(SDRCode.SDRICLCZ1)) {
+                    thisSdrPrice = thisSdrPrice.multiply(priceICLCZ1);
                 } else {
-                    durationBD = durationBD.divide(priceAmountICLCZ2, 2, RoundingMode.UP);
-                    result.setServiceCode("SDRICLCZ2");
+                    thisSdrPrice = thisSdrPrice.multiply(priceICLCZ2);
                 }
-                log.info("ICL durationBD= " +durationBD);
-                duration = durationBD.intValue();
-                log.info("ICL duration= " +duration);
-                result.setAuxDuration(duration);
-                result.setNote("EOS termination");
-                result.setEos(true);
-                log.info("ICL EOS - true");
+                log.info("ICL sdrPrice1= " + thisSdrPrice);
+                BigDecimal outputPrice = sdrOutput.getSdrPriceAmount().add(thisSdrPrice);
+                log.info("ICL sdrPrice= " + outputPrice);
+                if (inputPrice.compareTo(outputPrice) < 0) {
+                    BigDecimal deltaPrice = inputPrice.subtract(sdrOutput.getSdrPriceAmount());
+                    log.info("ICL sdrDeltaPrice= " + deltaPrice);
+                    BigDecimal durationBD = new BigDecimal(1);
+                    durationBD = durationBD.multiply(deltaPrice);
+                    log.info("ICL before divide durationBD= " + durationBD);
+                    if (serviceCode.equals(SDRCode.SDRICLCZ1)) {
+                        durationBD = durationBD.divide(priceICLCZ1, 2, RoundingMode.UP);
+                        result.setServiceCode(SDRCode.SDRICLCZ1.name());
+                    } else {
+                        durationBD = durationBD.divide(priceICLCZ2, 2, RoundingMode.UP);
+                        result.setServiceCode(SDRCode.SDRICLCZ2.name());
+                    }
+                    log.info("ICL durationBD= " + durationBD);
+                    duration = durationBD.intValue();
+                    log.info("ICL duration= " + duration);
+                    result.setSdrDurationAmount(duration);
+                    result.setEosNote("EOS termination");
+                    result.setSdrEOS(true);
+                    log.info("ICL EOS - true");
+                }
+                break;
             }
-        } else if (serviceCode.equals("SDRRMGCZ1") || serviceCode.equals("SDRRMGCZ2")) {
-            log.info("info - RMG");
-            BigDecimal pfAfPrice = ras.getAmountRmg();
-            log.info("RMG pfAfPrice= " +pfAfPrice);
-            BigDecimal sdrPrice1 = new BigDecimal(duration);
-            if (serviceCode.equals("SDRRMGCZ1")) {
-                sdrPrice1 = sdrPrice1.multiply(priceAmountRMGCZ1);
-            } else {
-                sdrPrice1 = sdrPrice1.multiply(priceAmountRMGCZ2);
-            }
-            log.info("RMG sdrPrice1= " +sdrPrice1);
-            BigDecimal sdrPrice = sdrAa.getAuxPrice().add(sdrPrice1);
-            log.info("RMG sdrPrice= " +sdrPrice);
-            if (pfAfPrice.compareTo(sdrPrice) == -1) {
-                BigDecimal sdrDeltaPrice = pfAfPrice.subtract(sdrAa.getAuxPrice());
-                log.info("RMG sdrDeltaPrice= " +sdrDeltaPrice);
-                BigDecimal durationBD = new BigDecimal(1);
-                durationBD = durationBD.multiply(sdrDeltaPrice);
-                log.info("RMG before divide durationBD= " +durationBD);
-                if (serviceCode.equals("SDRRMGCZ1")) {
-                    durationBD = durationBD.divide(priceAmountRMGCZ1, 2, RoundingMode.UP);
-                    result.setServiceCode("SDRRMGCZ1");
+            case SDRRMGCZ1:
+            case SDRRMGCZ2: {
+                log.info("info - RMG");
+                BigDecimal inputPrice = framesInput.getInputRmg();
+                log.info("RMG pfAfPrice= " + inputPrice);
+                BigDecimal thisSdrPrice = new BigDecimal(duration);
+                if (serviceCode.equals(SDRCode.SDRRMGCZ1)) {
+                    thisSdrPrice = thisSdrPrice.multiply(priceRMGCZ1);
                 } else {
-                    durationBD = durationBD.divide(priceAmountRMGCZ2, 2, RoundingMode.UP);
-                    result.setServiceCode("SDRRMGCZ2");
+                    thisSdrPrice = thisSdrPrice.multiply(priceRMGCZ2);
                 }
-                log.info("RMG durationBD= " +durationBD);
-                duration = durationBD.intValue();
-                log.info("RMG duration= " +duration);
-                result.setAuxDuration(duration);
-                result.setNote("EOS termination");
-                result.setEos(true);
-                log.info("RMG EOS - true");
+                log.info("RMG sdrPrice1= " + thisSdrPrice);
+                BigDecimal outputPrice = sdrOutput.getSdrPriceAmount().add(thisSdrPrice);
+                log.info("RMG sdrPrice= " + outputPrice);
+                if (inputPrice.compareTo(outputPrice) < 0) {
+                    BigDecimal deltaPrice = inputPrice.subtract(sdrOutput.getSdrPriceAmount());
+                    log.info("RMG sdrDeltaPrice= " + deltaPrice);
+                    BigDecimal durationBD = new BigDecimal(1);
+                    durationBD = durationBD.multiply(deltaPrice);
+                    log.info("RMG before divide durationBD= " + durationBD);
+                    if (serviceCode.equals(SDRCode.SDRRMGCZ1)) {
+                        durationBD = durationBD.divide(priceRMGCZ1, 2, RoundingMode.UP);
+                        result.setServiceCode(SDRCode.SDRRMGCZ1.name());
+                    } else {
+                        durationBD = durationBD.divide(priceRMGCZ2, 2, RoundingMode.UP);
+                        result.setServiceCode(SDRCode.SDRRMGCZ2.name());
+                    }
+                    log.info("RMG durationBD= " + durationBD);
+                    duration = durationBD.intValue();
+                    log.info("RMG duration= " + duration);
+                    result.setSdrDurationAmount(duration);
+                    result.setEosNote("EOS termination");
+                    result.setSdrEOS(true);
+                    log.info("RMG EOS - true");
+                }
+                break;
             }
         }
-        log.info("result, duration = " +result.getAuxDuration() + ", msgAmount = " +result.getAuxMsgAmount() + ", MBamount = " +result.getAuxMBamount() + ", price = " +result.getAuxPrice() + ", note = " +result.getNote() + ", servoceCode = " +result.getServiceCode() + ", eos = " +result.isEos());
+        log.info("result, duration = " +result.getSdrDurationAmount() + ", msgAmount = " +result.getSdrMsgAmount() + ", MBamount = " +result.getSdrMBamount() + ", price = " +result.getSdrPriceAmount() + ", note = " +result.getEosNote() + ", servoceCode = " +result.getServiceCode() + ", eos = " +result.isSdrEOS());
         return result;
     }
 
+}
 
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+class FramesInputTotal {
+
+    private int inputCls;
+    private int inputSms;
+    private BigDecimal inputInt;
+    private BigDecimal inputAsm;
+    private BigDecimal inputIcl;
+    private BigDecimal inputRmg;
+
+}
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+class SdrAmountCalc {
+
+    private int sdrDurationAmount;
+    private int sdrMsgAmount;
+    private BigDecimal sdrMBamount;
+    private BigDecimal sdrPriceAmount;
+    private String eosNote;
+    private String serviceCode;
+    private boolean sdrEOS;
 }

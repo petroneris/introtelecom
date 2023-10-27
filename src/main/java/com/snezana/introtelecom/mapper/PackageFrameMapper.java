@@ -4,7 +4,7 @@ import com.snezana.introtelecom.dto.PackageFrameSaveDTO;
 import com.snezana.introtelecom.dto.PackageFrameViewDTO;
 import com.snezana.introtelecom.entity.PackageFrame;
 import com.snezana.introtelecom.entity.Phone;
-import com.snezana.introtelecom.enums.PackageCodeType;
+import com.snezana.introtelecom.enums.PackagePlanType;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.repositories.PhoneRepo;
@@ -18,7 +18,7 @@ import java.util.List;
 public interface PackageFrameMapper {
 
     @Mapping(target = "phone", ignore = true)
-    PackageFrame packageFrameSaveDtoToPackageFrame(PackageFrameSaveDTO packageFrameSaveDto, @MappingTarget PackageFrame packageFrame, @Context PhoneRepo phoneRepo);
+    void packageFrameSaveDtoToPackageFrame(PackageFrameSaveDTO packageFrameSaveDto, @MappingTarget PackageFrame packageFrame, @Context PhoneRepo phoneRepo);
 
     @BeforeMapping
     default void beforePackageFrameSaveDtoToPackageFrame(PackageFrameSaveDTO packageFrameSaveDto, @MappingTarget PackageFrame packageFrame,
@@ -53,16 +53,17 @@ public interface PackageFrameMapper {
         Phone phone = packageFrame.getPhone();
         packageFrameViewDTO.setPhone(phone.getPhoneNumber());
         String packageCode = phone.getPackagePlan().getPackageCode();
+        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
         packageFrameViewDTO.setPackageCode(packageCode);
         BigDecimal divisor = new BigDecimal("1000");
-        if (packageCode.equals(PackageCodeType.PST13.getPackageCode()) || packageCode.equals(PackageCodeType.PST14.getPackageCode())){
+        if (packagePlanType==PackagePlanType.PST13 || packagePlanType==PackagePlanType.PST14){
             packageFrameViewDTO.setPackfrCls("UNLIMITED");
             packageFrameViewDTO.setPackfrSms("UNLIMITED");
         } else {
             packageFrameViewDTO.setPackfrCls(packageFrame.getPackfrCls() + " min");
             packageFrameViewDTO.setPackfrSms(packageFrame.getPackfrSms() + " msg");
         }
-        if (packageCode.equals(PackageCodeType.PST14.getPackageCode())){
+        if (packagePlanType==PackagePlanType.PST14){
             packageFrameViewDTO.setPackfrInt("UNLIMITED");
         } else {
             BigDecimal gbInternet = packageFrame.getPackfrInt().divide(divisor);

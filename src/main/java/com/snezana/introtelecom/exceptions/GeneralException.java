@@ -12,6 +12,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 public class GeneralException extends RuntimeException{
-    private GeneralErrorMessage errorMessage;
+    private RestAPIErrorMessage errorMessage;
     private String description;
 }

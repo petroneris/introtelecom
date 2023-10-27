@@ -7,6 +7,11 @@ import java.util.List;
 
 public interface FramesSDRService {
 
+    public static final int UNIT_PRICE_ICLCZ1 = 15;
+    public static final int UNIT_PRICE_ICLCZ2 = 20;
+    public static final int UNIT_PRICE_RMGCZ1 = 4;
+    public static final int UNIT_PRICE_RMGCZ2 = 8;
+
     void saveNewPackageFrame (final PackageFrameSaveDTO packageFrameSaveDTO);
 
     PackageFrameViewDTO findPackageFrameById (Long packfrId);

@@ -1,13 +1,10 @@
 package com.snezana.introtelecom.validations;
 
-import com.snezana.introtelecom.entity.Admin;
 import com.snezana.introtelecom.entity.Customer;
 import com.snezana.introtelecom.entity.Phone;
-import com.snezana.introtelecom.enums.PackageCodeType;
 import com.snezana.introtelecom.exceptions.IllegalItemFieldException;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
-import com.snezana.introtelecom.repositories.AdminRepo;
 import com.snezana.introtelecom.repositories.CustomerRepo;
 import com.snezana.introtelecom.repositories.PhoneRepo;
 import lombok.RequiredArgsConstructor;

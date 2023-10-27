@@ -1,9 +1,7 @@
 package com.snezana.introtelecom.validations;
 
-import com.snezana.introtelecom.entity.Customer;
-import com.snezana.introtelecom.entity.PackagePlan;
 import com.snezana.introtelecom.entity.Phone;
-import com.snezana.introtelecom.enums.PackageCodeType;
+import com.snezana.introtelecom.enums.PackagePlanType;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.exceptions.IllegalItemFieldException;
@@ -44,14 +42,14 @@ public class PhoneValidationService {
 
     public void controlIsTheAdminPackageCode (String phoneNumber) {
         Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
-        if (!phone.getPackagePlan().getPackageCode().equals(PackageCodeType.ADM.getPackageCode())){
+        if (!phone.getPackagePlan().getPackageCode().equals(PackagePlanType.ADM.getPackageCode())){
             throw new IllegalItemFieldException(RestAPIErrorMessage.ITEMS_NOT_MATCH, "This phone number hasn't admin package code!");
         }
     }
 
     public void checkThatPhoneHasCustomersPackageCode (String phoneNumber){
         Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
-        if(phone.getPackagePlan().getPackageCode().equals((PackageCodeType.ADM.getPackageCode()))){
+        if(phone.getPackagePlan().getPackageCode().equals((PackagePlanType.ADM.getPackageCode()))){
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "This phone has no customer's package code!");
         }
     }

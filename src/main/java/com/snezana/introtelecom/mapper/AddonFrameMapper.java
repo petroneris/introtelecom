@@ -5,14 +5,13 @@ import com.snezana.introtelecom.dto.AddonFrameViewDTO;
 import com.snezana.introtelecom.entity.AddOn;
 import com.snezana.introtelecom.entity.AddonFrame;
 import com.snezana.introtelecom.entity.Phone;
-import com.snezana.introtelecom.enums.PackageCodeType;
+import com.snezana.introtelecom.enums.AddonCode;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.repositories.AddOnRepo;
 import com.snezana.introtelecom.repositories.PhoneRepo;
 import org.mapstruct.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
@@ -61,55 +60,32 @@ public interface AddonFrameMapper {
         Phone phone = addonFrame.getPhone();
         addonFrameViewDTO.setPhone(phone.getPhoneNumber());
         AddOn addOn = addonFrame.getAddOn();
-        String addonCode = addOn.getAddonCode();
-        addonFrameViewDTO.setAddOn(addonCode);
+        String addonCodeStr = addOn.getAddonCode();
+        AddonCode addonCode = AddonCode.valueOf(addonCodeStr);
+        addonFrameViewDTO.setAddOn(addonCodeStr);
+        addonFrameViewDTO.setAddfrCls("0");
+        addonFrameViewDTO.setAddfrSms("0");
+        addonFrameViewDTO.setAddfrInt("0.00");
+        addonFrameViewDTO.setAddfrAsm("0.00");
+        addonFrameViewDTO.setAddfrIcl("0.00");
+        addonFrameViewDTO.setAddfrRmg("0.00");
         switch (addonCode) {
-            case "ADDCLS":
+            case ADDCLS:
                 addonFrameViewDTO.setAddfrCls("calls 100min -> 100cu");
-                addonFrameViewDTO.setAddfrSms(" / ");
-                addonFrameViewDTO.setAddfrInt(" / ");
-                addonFrameViewDTO.setAddfrAsm(" / ");
-                addonFrameViewDTO.setAddfrIcl(" / ");
-                addonFrameViewDTO.setAddfrRmg(" / ");
                 break;
-            case "ADDSMS":
-                addonFrameViewDTO.setAddfrCls(" / ");
+            case ADDSMS:
                 addonFrameViewDTO.setAddfrSms("sms 100msg -> 100cu");
-                addonFrameViewDTO.setAddfrInt(" / ");
-                addonFrameViewDTO.setAddfrAsm(" / ");
-                addonFrameViewDTO.setAddfrIcl(" / ");
-                addonFrameViewDTO.setAddfrRmg(" / ");
                 break;
-            case "ADDINT":
-                addonFrameViewDTO.setAddfrCls(" / ");
-                addonFrameViewDTO.setAddfrSms(" / ");
+            case ADDINT:
                 addonFrameViewDTO.setAddfrInt("internet 5GB -> 200cu");
-                addonFrameViewDTO.setAddfrAsm(" / ");
-                addonFrameViewDTO.setAddfrIcl(" / ");
-                addonFrameViewDTO.setAddfrRmg(" / ");
                 break;
-            case "ADDASM":
-                addonFrameViewDTO.setAddfrCls(" / ");
-                addonFrameViewDTO.setAddfrSms(" / ");
-                addonFrameViewDTO.setAddfrInt(" / ");
+            case ADDASM:
                 addonFrameViewDTO.setAddfrAsm("app and social media 5GB -> 200cu");
-                addonFrameViewDTO.setAddfrIcl(" / ");
-                addonFrameViewDTO.setAddfrRmg(" / ");
                 break;
-            case "ADDICL":
-                addonFrameViewDTO.setAddfrCls(" / ");
-                addonFrameViewDTO.setAddfrSms(" / ");
-                addonFrameViewDTO.setAddfrInt(" / ");
-                addonFrameViewDTO.setAddfrAsm(" / ");
+            case ADDICL:
                 addonFrameViewDTO.setAddfrIcl("international calls -> 200cu");
-                addonFrameViewDTO.setAddfrRmg(" / ");
                 break;
-            case "ADDRMG":
-                addonFrameViewDTO.setAddfrCls(" / ");
-                addonFrameViewDTO.setAddfrSms(" / ");
-                addonFrameViewDTO.setAddfrInt(" / ");
-                addonFrameViewDTO.setAddfrAsm(" / ");
-                addonFrameViewDTO.setAddfrIcl(" / ");
+            case ADDRMG:
                 addonFrameViewDTO.setAddfrRmg("roaming -> 200cu");
                 break;
                 default:

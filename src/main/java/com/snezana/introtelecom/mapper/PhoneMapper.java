@@ -5,7 +5,7 @@ import com.snezana.introtelecom.dto.PhoneSaveDTO;
 import com.snezana.introtelecom.dto.PhoneViewDTO;
 import com.snezana.introtelecom.entity.PackagePlan;
 import com.snezana.introtelecom.entity.Phone;
-import com.snezana.introtelecom.enums.PackageCodeType;
+import com.snezana.introtelecom.enums.PackagePlanType;
 import com.snezana.introtelecom.enums.StatusType;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
@@ -38,7 +38,7 @@ public interface PhoneMapper {
             phone.setPackagePlan(packagePlan);
             phone.setPhoneStartDateTime(LocalDateTime.now());
             phone.setPhoneStatus(StatusType.PRESENT.getStatus());
-            if (phoneSaveDto.getPackagePlan().equals(PackageCodeType.ADM.getPackageCode())){
+            if (phoneSaveDto.getPackagePlan().equals(PackagePlanType.ADM.getPackageCode())){
                 phone.setNote("Admin phone for support");
             } else {
                 phone.setNote("");
