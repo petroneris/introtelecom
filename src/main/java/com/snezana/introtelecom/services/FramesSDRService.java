@@ -7,12 +7,8 @@ import java.util.List;
 
 public interface FramesSDRService {
 
-    public static final int UNIT_PRICE_ICLCZ1 = 15;
-    public static final int UNIT_PRICE_ICLCZ2 = 20;
-    public static final int UNIT_PRICE_RMGCZ1 = 4;
-    public static final int UNIT_PRICE_RMGCZ2 = 8;
 
-    void saveNewPackageFrame (final PackageFrameSaveDTO packageFrameSaveDTO);
+    void saveNewPackageFrame (PackageFrameSaveDTO packageFrameSaveDTO);
 
     PackageFrameViewDTO findPackageFrameById (Long packfrId);
 
@@ -30,7 +26,7 @@ public interface FramesSDRService {
 
 
 
-    void saveNewAddonFame (final AddonFrameSaveDTO addonFrameSaveDTO);
+    void saveNewAddonFame (AddonFrameSaveDTO addonFrameSaveDTO);
 
     AddonFrameViewDTO findAddonFrameById (Long addfrId);
 
@@ -48,7 +44,7 @@ public interface FramesSDRService {
 
 
 
-    String saveNewServiceDetailRecord (final ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO);
+    String saveNewServiceDetailRecord (ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO);
 
     ServiceDetailRecordViewDTO findServiceDetailRecordById (Long sdrId);
 

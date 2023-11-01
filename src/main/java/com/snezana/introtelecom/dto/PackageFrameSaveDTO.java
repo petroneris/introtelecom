@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class PackageFrameSaveDTO {
 
     @NotBlank
-    private String phone;
+    private String phoneNumber;
 
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class PackageFrameViewDTO {
 
     private Long packfrId;
-    private String phone;
+    private String phoneNumber;
     private String packageCode;
     private String packfrCls;
     private String packfrSms;

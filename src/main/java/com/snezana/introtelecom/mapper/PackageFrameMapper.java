@@ -5,73 +5,128 @@ import com.snezana.introtelecom.dto.PackageFrameViewDTO;
 import com.snezana.introtelecom.entity.PackageFrame;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.enums.PackagePlanType;
-import com.snezana.introtelecom.exceptions.ItemNotFoundException;
-import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
+import com.snezana.introtelecom.enums.StatusType;
 import com.snezana.introtelecom.repositories.PhoneRepo;
 import org.mapstruct.*;
+import org.slf4j.Logger;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface PackageFrameMapper {
+public abstract class PackageFrameMapper {
+    Logger log = org.slf4j.LoggerFactory.getLogger(PackageFrameMapper.class);
 
-    @Mapping(target = "phone", ignore = true)
-    void packageFrameSaveDtoToPackageFrame(PackageFrameSaveDTO packageFrameSaveDto, @MappingTarget PackageFrame packageFrame, @Context PhoneRepo phoneRepo);
+    public abstract PackageFrame packageFrameSaveDtoToPackageFrame(PackageFrameSaveDTO packageFrameSaveDto, @Context PhoneRepo phoneRepo);
 
-    @BeforeMapping
-    default void beforePackageFrameSaveDtoToPackageFrame(PackageFrameSaveDTO packageFrameSaveDto, @MappingTarget PackageFrame packageFrame,
-                                           @Context PhoneRepo phoneRepo) {
-        if (packageFrameSaveDto.getPhone() != null && (packageFrame.getPhone() == null || !packageFrame.getPhone().getPhoneNumber().equals(packageFrameSaveDto.getPhone()))) {
-            final Phone phone = phoneRepo.findByPhoneNumberOpt(packageFrameSaveDto.getPhone())
-                    .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Phone = " + packageFrameSaveDto.getPhone() + " is not found."));
-            packageFrame.setPhone(phone);
+    @AfterMapping
+    protected void afterPackageFrameSaveDtoToPackageFrame(PackageFrameSaveDTO packageFrameSaveDto, @MappingTarget PackageFrame packageFrame, @Context PhoneRepo phoneRepo) {
+        Phone phone = phoneRepo.findByPhoneNumber(packageFrameSaveDto.getPhoneNumber());
+        packageFrame.setPhone(phone);
+        packageFrame.setPackfrStatus(StatusType.PRESENT.getStatus());
+        setPackageFrameByPackageCode(packageFrame);
+    }
+
+    @Mapping(source = "packageFrame", target = "packfrCls", qualifiedByName = "calls")
+    @Mapping(source = "packageFrame", target = "packfrSms", qualifiedByName = "messages")
+    @Mapping(source = "packageFrame", target = "packfrInt", qualifiedByName = "internet")
+    @Mapping(source = "packageFrame", target = "packfrAsm", qualifiedByName = "appSocialMedia")
+    @Mapping(source = "packageFrame", target = "packfrIcl", qualifiedByName = "internationalCalls")
+    @Mapping(source = "packageFrame", target = "packfrRmg", qualifiedByName = "roaming")
+    public abstract PackageFrameViewDTO packageFrameToPackageFrameViewDTO(PackageFrame packageFrame);
+
+    public abstract List<PackageFrameViewDTO> packageFramesToPackageFramesViewDTO(List<PackageFrame> packageFrameList);
+
+
+    @Named("calls")
+    public static String clsConversion (PackageFrame packageFrame) {
+        if (packageFrame.getPackfrCls() < 0) {
+            return "UNLIMITED";
+        } else {
+            return packageFrame.getPackfrCls() + " min";
         }
     }
 
-    @Mapping(target = "phone", ignore = true)
-    @Mapping(target = "packfrCls", ignore = true)
-    @Mapping(target = "packfrSms", ignore = true)
-    @Mapping(target = "packfrInt", ignore = true)
-    @Mapping(target = "packfrAsm", ignore = true)
-    @Mapping(target = "packfrIcl", ignore = true)
-    @Mapping(target = "packfrRmg", ignore = true)
-    PackageFrameViewDTO packageFrameToPackageFrameViewDTO(PackageFrame packageFrame);
+    @Named("messages")
+    public static String smsConversion (PackageFrame packageFrame) {
+        if (packageFrame.getPackfrSms() < 0) {
+            return "UNLIMITED";
+        } else {
+            return packageFrame.getPackfrSms() + " msg";
+        }
+    }
 
-    @Mapping(target = "phone", ignore = true)
-    @Mapping(target = "packfrCls", ignore = true)
-    @Mapping(target = "packfrSms", ignore = true)
-    @Mapping(target = "packfrInt", ignore = true)
-    @Mapping(target = "packfrAsm", ignore = true)
-    @Mapping(target = "packfrIcl", ignore = true)
-    @Mapping(target = "packfrRmg", ignore = true)
-    List<PackageFrameViewDTO> packageFrameToPackageFrameViewDTO (List<PackageFrame> packageFrameList);
-
-    @BeforeMapping
-    default void packageFrameToPackageFrameViewDTO(PackageFrame packageFrame, @MappingTarget PackageFrameViewDTO packageFrameViewDTO){
-        Phone phone = packageFrame.getPhone();
-        packageFrameViewDTO.setPhone(phone.getPhoneNumber());
-        String packageCode = phone.getPackagePlan().getPackageCode();
-        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
-        packageFrameViewDTO.setPackageCode(packageCode);
+    @Named("internet")
+    public static String intConversion (PackageFrame packageFrame) {
         BigDecimal divisor = new BigDecimal("1000");
-        if (packagePlanType==PackagePlanType.PST13 || packagePlanType==PackagePlanType.PST14){
-            packageFrameViewDTO.setPackfrCls("UNLIMITED");
-            packageFrameViewDTO.setPackfrSms("UNLIMITED");
+        if (packageFrame.getPackfrInt().compareTo(new BigDecimal(0)) < 0) {
+            return "UNLIMITED";
         } else {
-            packageFrameViewDTO.setPackfrCls(packageFrame.getPackfrCls() + " min");
-            packageFrameViewDTO.setPackfrSms(packageFrame.getPackfrSms() + " msg");
+            BigDecimal gbInternet = packageFrame.getPackfrInt().divide(divisor, 2, RoundingMode.UP);
+            return gbInternet + " GB";
         }
-        if (packagePlanType==PackagePlanType.PST14){
-            packageFrameViewDTO.setPackfrInt("UNLIMITED");
-        } else {
-            BigDecimal gbInternet = packageFrame.getPackfrInt().divide(divisor);
-            packageFrameViewDTO.setPackfrInt(gbInternet + " GB");
-        }
-        packageFrameViewDTO.setPackfrIcl(packageFrame.getPackfrIcl().toString() + " cu");
-        packageFrameViewDTO.setPackfrRmg(packageFrame.getPackfrRmg().toString() + " cu");
-        BigDecimal gbAppSocialMedia = packageFrame.getPackfrAsm().divide(divisor);
-        packageFrameViewDTO.setPackfrAsm(gbAppSocialMedia + " GB");
     }
+
+    @Named("appSocialMedia")
+    public static String asmConversion (PackageFrame packageFrame) {
+        BigDecimal divisor = new BigDecimal("1000");
+        BigDecimal gbAppSocialMedia = packageFrame.getPackfrAsm().divide(divisor, 2, RoundingMode.UP);
+        return gbAppSocialMedia + " GB";
+    }
+
+    @Named("internationalCalls")
+    public static String iclConversion (PackageFrame packageFrame) {
+        return packageFrame.getPackfrIcl() + " cu";
+    }
+
+    @Named("roaming")
+    public static String rmgConversion (PackageFrame packageFrame) {
+        return packageFrame.getPackfrRmg() + " cu";
+    }
+
+
+    @BeforeMapping
+    protected void beforePackageFrameToPackageFrameViewDTO(PackageFrame packageFrame, @MappingTarget PackageFrameViewDTO packageFrameViewDTO){
+        packageFrameViewDTO.setPhoneNumber(packageFrame.getPhone().getPhoneNumber());
+        packageFrameViewDTO.setPackageCode(packageFrame.getPhone().getPackagePlan().getPackageCode());
+    }
+
+    private void setMonthlyPackageFrameQuota (PackageFrame packageFrame, int monthlyQuotaCls, int monthlyQuotaSms, String monthlyQuotaInt, String monthlyQuotaAsm, String monthlyQuotaIcl, String monthlyQuotaRmg){
+        packageFrame.setPackfrCls(monthlyQuotaCls);
+        packageFrame.setPackfrSms(monthlyQuotaSms);
+        packageFrame.setPackfrInt(new BigDecimal(monthlyQuotaInt));
+        packageFrame.setPackfrAsm(new BigDecimal(monthlyQuotaAsm));
+        packageFrame.setPackfrIcl(new BigDecimal(monthlyQuotaIcl));
+        packageFrame.setPackfrRmg(new BigDecimal(monthlyQuotaRmg));
+
+    }
+
+    private void setPackageFrameByPackageCode(PackageFrame packageFrame) {
+        String packageCode = packageFrame.getPhone().getPackagePlan().getPackageCode();
+        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
+        switch (packagePlanType) {
+            case PRP01:
+                setMonthlyPackageFrameQuota(packageFrame, 200, 200, "0.00", "0.00", "0.00", "0.00");
+                break;
+            case PRP02:
+                setMonthlyPackageFrameQuota(packageFrame, 200, 200, "10000.00", "0.00", "0.00", "0.00");
+                break;
+            case PST11:
+                setMonthlyPackageFrameQuota(packageFrame, 300, 300, "10000.00", "0.00", "200.00", "200.00");
+                break;
+            case PST12:
+                setMonthlyPackageFrameQuota(packageFrame, 400, 400, "10000.00", "5000.00", "200.00", "200.00");
+                break;
+            case PST13:
+                setMonthlyPackageFrameQuota(packageFrame, -1, -1, "15000.00", "5000.00", "200.00", "200.00");
+                break;
+            case PST14:
+                setMonthlyPackageFrameQuota(packageFrame, -1, -1, "-1.00", "10000.00", "200.00", "200.00");
+                break;
+            default:
+        }
+    }
+
 }

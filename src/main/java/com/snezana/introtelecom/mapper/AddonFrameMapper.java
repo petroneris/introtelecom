@@ -6,90 +6,107 @@ import com.snezana.introtelecom.entity.AddOn;
 import com.snezana.introtelecom.entity.AddonFrame;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.enums.AddonCode;
-import com.snezana.introtelecom.exceptions.ItemNotFoundException;
-import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
+import com.snezana.introtelecom.enums.StatusType;
 import com.snezana.introtelecom.repositories.AddOnRepo;
 import com.snezana.introtelecom.repositories.PhoneRepo;
 import org.mapstruct.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface AddonFrameMapper {
+public abstract class AddonFrameMapper {
 
-    @Mapping(target = "phone", ignore = true)
-    @Mapping(target = "addOn", ignore = true)
-    AddonFrame addonFrameSaveDtoToAddonFrame(AddonFrameSaveDTO addonFrameSaveDto, @MappingTarget AddonFrame addonFrame, @Context PhoneRepo phoneRepo, @Context AddOnRepo addOnRepo);
+
+    public abstract AddonFrame addonFrameSaveDtoToAddonFrame(AddonFrameSaveDTO addonFrameSaveDto, @Context PhoneRepo phoneRepo, @Context AddOnRepo addOnRepo);
 
     @BeforeMapping
-    default void beforeAddonFrameSaveDtoToAddonFrame(AddonFrameSaveDTO addonFrameSaveDto, @MappingTarget AddonFrame addonFrame,
+    protected void beforeAddonFrameSaveDtoToAddonFrame(AddonFrameSaveDTO addonFrameSaveDto, @MappingTarget AddonFrame addonFrame,
                                                          @Context PhoneRepo phoneRepo, @Context AddOnRepo addOnRepo) {
-        if (addonFrameSaveDto.getPhone() != null && (addonFrame.getPhone() == null || !addonFrame.getPhone().getPhoneNumber().equals(addonFrameSaveDto.getPhone()))) {
-            final Phone phone = phoneRepo.findByPhoneNumberOpt(addonFrameSaveDto.getPhone())
-                    .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Phone = " + addonFrameSaveDto.getPhone() + " is not found."));
-            addonFrame.setPhone(phone);
-            final AddOn addOn = addOnRepo.findByAddonCodeOpt(addonFrameSaveDto.getAddOn())
-                    .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "AddOn code = " + addonFrameSaveDto.getAddOn() + " is not found."));
-            addonFrame.setAddOn(addOn);
-        }
+        Phone phone = phoneRepo.findByPhoneNumber(addonFrameSaveDto.getPhoneNumber());
+        addonFrame.setPhone(phone);
+        AddOn addOn = addOnRepo.findByAddonCode(addonFrameSaveDto.getAddonCode());
+        addonFrame.setAddOn(addOn);
+        addonFrame.setAddfrStatus(StatusType.PRESENT.getStatus());
     }
 
-    @Mapping(target = "phone", ignore = true)
-    @Mapping(target = "addOn", ignore = true)
-    @Mapping(target = "addfrCls", ignore = true)
-    @Mapping(target = "addfrSms", ignore = true)
-    @Mapping(target = "addfrInt", ignore = true)
-    @Mapping(target = "addfrAsm", ignore = true)
-    @Mapping(target = "addfrIcl", ignore = true)
-    @Mapping(target = "addfrRmg", ignore = true)
-    AddonFrameViewDTO addonFrameToAddonFrameViewDTO(AddonFrame addonFrame);
-
-    @Mapping(target = "phone", ignore = true)
-    @Mapping(target = "addOn", ignore = true)
-    @Mapping(target = "addfrCls", ignore = true)
-    @Mapping(target = "addfrSms", ignore = true)
-    @Mapping(target = "addfrInt", ignore = true)
-    @Mapping(target = "addfrAsm", ignore = true)
-    @Mapping(target = "addfrIcl", ignore = true)
-    @Mapping(target = "addfrRmg", ignore = true)
-    List<AddonFrameViewDTO> addonFrameToAddonFrameViewDTO (List<AddonFrame> addonFrameList);
-
-    @BeforeMapping
-    default void addonFrameToAddonFrameViewDTO(AddonFrame addonFrame, @MappingTarget AddonFrameViewDTO addonFrameViewDTO){
-        Phone phone = addonFrame.getPhone();
-        addonFrameViewDTO.setPhone(phone.getPhoneNumber());
-        AddOn addOn = addonFrame.getAddOn();
-        String addonCodeStr = addOn.getAddonCode();
+    @AfterMapping
+    protected void afterAddonFrameSaveDtoToAddonFrame(@MappingTarget AddonFrame addonFrame) {
+        String addonCodeStr = addonFrame.getAddOn().getAddonCode();
         AddonCode addonCode = AddonCode.valueOf(addonCodeStr);
-        addonFrameViewDTO.setAddOn(addonCodeStr);
-        addonFrameViewDTO.setAddfrCls("0");
-        addonFrameViewDTO.setAddfrSms("0");
-        addonFrameViewDTO.setAddfrInt("0.00");
-        addonFrameViewDTO.setAddfrAsm("0.00");
-        addonFrameViewDTO.setAddfrIcl("0.00");
-        addonFrameViewDTO.setAddfrRmg("0.00");
         switch (addonCode) {
             case ADDCLS:
-                addonFrameViewDTO.setAddfrCls("calls 100min -> 100cu");
+                setAddonFrameQuota(addonFrame, 100, 0, "0.00", "0.00", "0.00", "0.00");
                 break;
             case ADDSMS:
-                addonFrameViewDTO.setAddfrSms("sms 100msg -> 100cu");
+                setAddonFrameQuota(addonFrame, 0, 100, "0.00", "0.00", "0.00", "0.00");
                 break;
             case ADDINT:
-                addonFrameViewDTO.setAddfrInt("internet 5GB -> 200cu");
+                setAddonFrameQuota(addonFrame, 0, 0, "5000.00", "0.00", "0.00", "0.00");
                 break;
             case ADDASM:
-                addonFrameViewDTO.setAddfrAsm("app and social media 5GB -> 200cu");
+                setAddonFrameQuota(addonFrame, 0, 0, "0.00", "5000.00", "0.00", "0.00");
                 break;
             case ADDICL:
-                addonFrameViewDTO.setAddfrIcl("international calls -> 200cu");
+                setAddonFrameQuota(addonFrame, 0, 0, "0.00", "0.00", "200.00", "0.00");
                 break;
             case ADDRMG:
-                addonFrameViewDTO.setAddfrRmg("roaming -> 200cu");
+                setAddonFrameQuota(addonFrame, 0, 0, "0.00", "0.00", "0.00", "200.00");
                 break;
-                default:
-
+            default:
         }
     }
+
+    private void setAddonFrameQuota (AddonFrame addonFrame, int quotaCls, int quotaSms, String quotaInt, String quotaAsm, String quotaIcl, String quotaRmg){
+        addonFrame.setAddfrCls(quotaCls);
+        addonFrame.setAddfrSms(quotaSms);
+        addonFrame.setAddfrInt(new BigDecimal(quotaInt));
+        addonFrame.setAddfrAsm(new BigDecimal(quotaAsm));
+        addonFrame.setAddfrIcl(new BigDecimal(quotaIcl));
+        addonFrame.setAddfrRmg(new BigDecimal(quotaRmg));
+    }
+
+    public abstract AddonFrameViewDTO addonFrameToAddonFrameViewDTO(AddonFrame addonFrame);
+
+
+    public abstract List<AddonFrameViewDTO> addonFramesToAddonFramesViewDTO(List<AddonFrame> addonFrameList);
+
+    @BeforeMapping
+    protected void beforeAddonFrameToAddonFrameViewDTO(AddonFrame addonFrame, @MappingTarget AddonFrameViewDTO addonFrameViewDTO) {
+        addonFrameViewDTO.setPhoneNumber(addonFrame.getPhone().getPhoneNumber());
+        addonFrameViewDTO.setAddonCode(addonFrame.getAddOn().getAddonCode());
+        addonFrameViewDTO.setAddfrStatus(addonFrame.getAddfrStatus());
+    }
+
+
+    @AfterMapping
+    protected void afterAddonFrameToAddonFrameViewDTO(AddonFrame addonFrame, @MappingTarget AddonFrameViewDTO addonFrameViewDTO) {
+        AddonCode addonCode = AddonCode.valueOf(addonFrameViewDTO.getAddonCode());
+        switch (addonCode) {
+            case ADDCLS:
+                addonFrameViewDTO.setAddfrCls("calls " + addonFrame.getAddfrCls() + "min -> 100.00cu");
+                break;
+            case ADDSMS:
+                addonFrameViewDTO.setAddfrSms("sms " + addonFrame.getAddfrSms() + "msg -> 100.00cu");
+                break;
+            case ADDINT:
+                BigDecimal gbInternet = addonFrame.getAddfrInt().divide(new BigDecimal("1000"), 2, RoundingMode.UP);
+                addonFrameViewDTO.setAddfrInt("internet " + gbInternet + "GB -> 200.00cu");
+                break;
+            case ADDASM:
+                BigDecimal gbAppSocialMedia = addonFrame.getAddfrAsm().divide(new BigDecimal("1000"), 2, RoundingMode.UP);
+                addonFrameViewDTO.setAddfrAsm("app and social media " + gbAppSocialMedia + "GB -> 200.00cu");
+                break;
+            case ADDICL:
+                addonFrameViewDTO.setAddfrIcl("international calls -> " + addonFrame.getAddfrIcl() + "cu");
+                break;
+            case ADDRMG:
+                addonFrameViewDTO.setAddfrRmg("roaming -> " + addonFrame.getAddfrRmg() + "cu");
+                break;
+            default:
+        }
+    }
+
 }

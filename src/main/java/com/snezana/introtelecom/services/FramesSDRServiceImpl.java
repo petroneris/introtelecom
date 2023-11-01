@@ -34,6 +34,11 @@ import java.util.List;
 public class FramesSDRServiceImpl implements FramesSDRService {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(FramesSDRServiceImpl.class);
 
+    public static final int UNIT_PRICE_ICLCZ1 = 15;
+    public static final int UNIT_PRICE_ICLCZ2 = 20;
+    public static final int UNIT_PRICE_RMGCZ1 = 4;
+    public static final int UNIT_PRICE_RMGCZ2 = 8;
+
 
     @Autowired
     PhoneValidationService phoneValidationService;
@@ -73,15 +78,13 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 
     @Override
     public void saveNewPackageFrame(PackageFrameSaveDTO packageFrameSaveDTO) {
-        phoneValidationService.controlThePhoneExists(packageFrameSaveDTO.getPhone());
-        phoneValidationService.checkThatPhoneHasCustomersPackageCode(packageFrameSaveDTO.getPhone());
+        phoneValidationService.controlThePhoneExists(packageFrameSaveDTO.getPhoneNumber());
+        phoneValidationService.checkThatPhoneHasCustomersPackageCode(packageFrameSaveDTO.getPhoneNumber());
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(packageFrameSaveDTO.getPackfrStartDateTime());
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(packageFrameSaveDTO.getPackfrEndDateTime());
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(packageFrameSaveDTO.getPackfrStartDateTime(), packageFrameSaveDTO.getPackfrEndDateTime());
-        framesSDRValidationService.controlTheMonthlyPackageFrameExistsAlready(packageFrameSaveDTO.getPhone(), packageFrameSaveDTO.getPackfrStartDateTime(), packageFrameSaveDTO.getPackfrEndDateTime());
-        PackageFrame packageFrame = new PackageFrame();
-        packageFrameMapper.packageFrameSaveDtoToPackageFrame(packageFrameSaveDTO, packageFrame, phoneRepo);
-        setPackageFrameByPackageCode(packageFrame);
+        framesSDRValidationService.controlTheMonthlyPackageFrameExistsAlready(packageFrameSaveDTO.getPhoneNumber(), packageFrameSaveDTO.getPackfrStartDateTime(), packageFrameSaveDTO.getPackfrEndDateTime());
+        PackageFrame packageFrame = packageFrameMapper.packageFrameSaveDtoToPackageFrame(packageFrameSaveDTO, phoneRepo);
         packageFrameRepo.save(packageFrame);
     }
 
@@ -89,8 +92,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     public PackageFrameViewDTO findPackageFrameById(Long packfrId) {
         framesSDRValidationService.controlThePackageFrameExists(packfrId);
         PackageFrame packageFrame = packageFrameRepo.findByPackfrId(packfrId);
-        PackageFrameViewDTO packageFrameViewDTO = packageFrameMapper.packageFrameToPackageFrameViewDTO(packageFrame);
-        return packageFrameViewDTO;
+        return packageFrameMapper.packageFrameToPackageFrameViewDTO(packageFrame);
     }
 
     @Override
@@ -98,16 +100,14 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         phoneValidationService.controlThePhoneExists(phoneNumber);
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(packfrStartDateTime, packfrEndDateTime);
         List<PackageFrame> packageFrameList = packageFrameRepo.findByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual(phoneNumber, packfrStartDateTime, packfrEndDateTime);
-        List<PackageFrameViewDTO> packageFrameViewDTOList = packageFrameMapper.packageFrameToPackageFrameViewDTO(packageFrameList);
-        return packageFrameViewDTOList;
+        return packageFrameMapper.packageFramesToPackageFramesViewDTO(packageFrameList);
     }
 
     @Override
     public List<PackageFrameViewDTO> findPackageFramesByPhoneNumberStartTime(String phoneNumber, LocalDateTime packfrStartDateTime) {
         phoneValidationService.controlThePhoneExists(phoneNumber);
         List<PackageFrame> packageFrameList = packageFrameRepo.findByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqual(phoneNumber, packfrStartDateTime);
-        List<PackageFrameViewDTO> packageFrameViewDTOList = packageFrameMapper.packageFrameToPackageFrameViewDTO(packageFrameList);
-        return packageFrameViewDTOList;
+        return packageFrameMapper.packageFramesToPackageFramesViewDTO(packageFrameList);
     }
 
     @Override
@@ -115,16 +115,14 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         phoneValidationService.controlThePackageCodeExists(packageCode);
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(packfrStartDateTime, packfrEndDateTime);
         List<PackageFrame> packageFrameList = packageFrameRepo.findByPhone_PackagePlan_PackageCodeAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual(packageCode, packfrStartDateTime, packfrEndDateTime);
-        List<PackageFrameViewDTO> packageFrameViewDTOList = packageFrameMapper.packageFrameToPackageFrameViewDTO(packageFrameList);
-        return packageFrameViewDTOList;
+        return packageFrameMapper.packageFramesToPackageFramesViewDTO(packageFrameList);
     }
 
     @Override
     public List<PackageFrameViewDTO> findPackageFramesByPackageCodeStartTime(String packageCode, LocalDateTime packfrStartDateTime) {
         phoneValidationService.controlThePackageCodeExists(packageCode);
         List<PackageFrame> packageFrameList = packageFrameRepo.findByPhone_PackagePlan_PackageCodeAndPackfrStartDateTimeGreaterThanEqual(packageCode, packfrStartDateTime);
-        List<PackageFrameViewDTO> packageFrameViewDTOList = packageFrameMapper.packageFrameToPackageFrameViewDTO(packageFrameList);
-        return packageFrameViewDTOList;
+        return packageFrameMapper.packageFramesToPackageFramesViewDTO(packageFrameList);
     }
 
     @Override
@@ -146,19 +144,17 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         packageFrameRepo.delete(packageFrame);
     }
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void saveNewAddonFame(AddonFrameSaveDTO addonFrameSaveDTO) {
-        phoneValidationService.controlThePhoneExists(addonFrameSaveDTO.getPhone());
-        packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonFrameSaveDTO.getAddOn());
-        phoneValidationService.checkThatPhoneHasCustomersPackageCode(addonFrameSaveDTO.getPhone());
+        phoneValidationService.controlThePhoneExists(addonFrameSaveDTO.getPhoneNumber());
+        packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonFrameSaveDTO.getAddonCode());
+        phoneValidationService.checkThatPhoneHasCustomersPackageCode(addonFrameSaveDTO.getPhoneNumber());
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(addonFrameSaveDTO.getAddfrStartDateTime());
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(addonFrameSaveDTO.getAddfrEndDateTime());
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(addonFrameSaveDTO.getAddfrStartDateTime(), addonFrameSaveDTO.getAddfrEndDateTime());
-        framesSDRValidationService.controlTheAddonFrameHasAlreadyGiven(addonFrameSaveDTO.getPhone(), addonFrameSaveDTO.getAddOn(), addonFrameSaveDTO.getAddfrStartDateTime(), addonFrameSaveDTO.getAddfrEndDateTime());
-        AddonFrame addonFrame = new AddonFrame();
-        addonFrameMapper.addonFrameSaveDtoToAddonFrame(addonFrameSaveDTO, addonFrame, phoneRepo, addOnRepo);
-        setAddonFrameByAddonCode(addonFrame);
+        framesSDRValidationService.controlTheAddonFrameHasAlreadyGiven(addonFrameSaveDTO.getPhoneNumber(), addonFrameSaveDTO.getAddonCode(), addonFrameSaveDTO.getAddfrStartDateTime(), addonFrameSaveDTO.getAddfrEndDateTime());
+        AddonFrame addonFrame = addonFrameMapper.addonFrameSaveDtoToAddonFrame(addonFrameSaveDTO, phoneRepo, addOnRepo);
         addonFrameRepo.save(addonFrame);
     }
 
@@ -166,8 +162,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     public AddonFrameViewDTO findAddonFrameById(Long addfrId) {
         framesSDRValidationService.controlTheAddonFrameExists(addfrId);
         AddonFrame addonFrame = addonFrameRepo.findByAddfrId(addfrId);
-        AddonFrameViewDTO addonFrameViewDTO = addonFrameMapper.addonFrameToAddonFrameViewDTO(addonFrame);
-        return addonFrameViewDTO;
+        return addonFrameMapper.addonFrameToAddonFrameViewDTO(addonFrame);
     }
 
     @Override
@@ -175,16 +170,14 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         phoneValidationService.controlThePhoneExists(phoneNumber);
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(addfrStartDateTime, addfrEndDateTime);
         List<AddonFrame> addonFrameList = addonFrameRepo.findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phoneNumber, addfrStartDateTime, addfrEndDateTime);
-        List<AddonFrameViewDTO> addonFrameViewDTOList = addonFrameMapper.addonFrameToAddonFrameViewDTO(addonFrameList);
-        return addonFrameViewDTOList;
+        return addonFrameMapper.addonFramesToAddonFramesViewDTO(addonFrameList);
     }
 
     @Override
     public List<AddonFrameViewDTO> findAddonFramesByPhoneNumberStartTime(String phoneNumber, LocalDateTime addfrStartDateTime) {
         phoneValidationService.controlThePhoneExists(phoneNumber);
         List<AddonFrame> addonFrameList = addonFrameRepo.findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqual(phoneNumber, addfrStartDateTime);
-        List<AddonFrameViewDTO> addonFrameViewDTOList = addonFrameMapper.addonFrameToAddonFrameViewDTO(addonFrameList);
-        return addonFrameViewDTOList;
+        return addonFrameMapper.addonFramesToAddonFramesViewDTO(addonFrameList);
     }
 
     @Override
@@ -192,16 +185,14 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonCode);
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(addfrStartDateTime, addfrEndDateTime);
         List<AddonFrame> addonFrameList = addonFrameRepo.findByAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(addonCode, addfrStartDateTime, addfrEndDateTime);
-        List<AddonFrameViewDTO> addonFrameViewDTOList = addonFrameMapper.addonFrameToAddonFrameViewDTO(addonFrameList);
-        return addonFrameViewDTOList;
+        return addonFrameMapper.addonFramesToAddonFramesViewDTO(addonFrameList);
     }
 
     @Override
     public List<AddonFrameViewDTO> findAddonFramesByAddonCodeStartTime(String addonCode, LocalDateTime addfrStartDateTime) {
         packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonCode);
         List<AddonFrame> addonFrameList = addonFrameRepo.findByAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqual(addonCode, addfrStartDateTime);
-        List<AddonFrameViewDTO> addonFrameViewDTOList = addonFrameMapper.addonFrameToAddonFrameViewDTO(addonFrameList);
-        return addonFrameViewDTOList;
+        return addonFrameMapper.addonFramesToAddonFramesViewDTO(addonFrameList);
     }
 
     @Override
@@ -224,93 +215,93 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    @Override
-    public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO) {
-        String message = "Not EOS";
-        phoneValidationService.controlThePhoneExists(serviceDetailRecordSaveDTO.getPhone());
-        packageAddonPhoneServValidationService.controlThePhoneServiceCodeExists(serviceDetailRecordSaveDTO.getPhoneService());
-        phoneValidationService.checkThatPhoneHasCustomersPackageCode(serviceDetailRecordSaveDTO.getPhone());
-        framesSDRValidationService.controlTheLocalDateTimeInputIsValid(serviceDetailRecordSaveDTO.getSdrStartDateTime());
-        framesSDRValidationService.controlTheLocalDateTimeInputIsValid(serviceDetailRecordSaveDTO.getSdrEndDateTime());
-        framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
-        log.info("above controlTheServiceDetailRecordAlreadyExists");
-        framesSDRValidationService.controlTheServiceDetailRecordAlreadyExists(serviceDetailRecordSaveDTO.getPhone(), serviceDetailRecordSaveDTO.getPhoneService(), serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
-        log.info("above phone");
-        ServiceDetailRecord serviceDetailRecord = new ServiceDetailRecord();
-        /////////////////////////////////////////////////////////
-        Phone phone = phoneRepo.findByPhoneNumber(serviceDetailRecordSaveDTO.getPhone());
-        String packageCode = phone.getPackagePlan().getPackageCode();
-        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
-        String serviceCodeStr = serviceDetailRecordSaveDTO.getPhoneService();
-        log.info("serviceCode = " +serviceCodeStr);
-        SDRCode serviceCode = SDRCode.valueOf(serviceCodeStr);
-        AddonCode addonCode = findAddonCodeFromServiceCode(serviceCode);
-        log.info("addonCode = " +addonCode);
-        log.info("in save sdr");
-        int duration = SomeUtils.howFarApartTwoLocalDateTime(serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
-        log.info("duration = " +duration);
-        serviceDetailRecord.setDuration(duration);
-        SdrAmountCalc result = new SdrAmountCalc(duration, serviceDetailRecordSaveDTO.getMsgAmount(), serviceDetailRecordSaveDTO.getMbAmount(), new BigDecimal("0.00"), "", serviceCodeStr, false);
-        if (((packagePlanType==PackagePlanType.PST13 || packagePlanType==PackagePlanType.PST14) && (serviceCode==SDRCode.SDRCLS || serviceCode==SDRCode.SDRSMS)) || (packagePlanType==PackagePlanType.PST14 && serviceCode==SDRCode.SDRINT)) {
-            log.info("not unlimited!");
-        } else {
-            Month currentMonth = serviceDetailRecordSaveDTO.getSdrStartDateTime().getMonth();
-            int currentYear = serviceDetailRecordSaveDTO.getSdrStartDateTime().getYear();
-            LocalDateTime monthlyStartDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0, 0, 0);
-            LocalDateTime monthlyEndDateTime = monthlyStartDateTime.plusMonths(1);
-            PackageFrame monthlyPackageFrame = packageFrameRepo.findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
-            List<AddonFrame> addonFrameList = addonFrameRepo.findAddonFramesByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phone.getPhoneNumber(), addonCode.name(), monthlyStartDateTime, monthlyEndDateTime);
-            log.info("addonFrameList is size = " +addonFrameList.size());
-            FramesInputTotal frameInput = inputAmountOfFrames(monthlyPackageFrame, addonFrameList, serviceCode);
-            SdrAmountCalc sdrOutput = outputAmountOfSDRs(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime, serviceCode);
-            result = checkEOSforThisSDR(serviceDetailRecordSaveDTO, frameInput, sdrOutput, duration);
-        }
-        if (result.isSdrEOS()) {
-            if(!(serviceCode==SDRCode.SDRSMS)) {
-                if (!(duration == result.getSdrDurationAmount())) {
-                    Duration durationMin = Duration.ofMinutes(result.getSdrDurationAmount());
-                    LocalDateTime endDateTime = serviceDetailRecordSaveDTO.getSdrStartDateTime().plus(durationMin);
-                    serviceDetailRecordSaveDTO.setSdrEndDateTime(endDateTime);
-                    serviceDetailRecord.setDuration(result.getSdrDurationAmount());
-                    log.info("not the same duration!");
-                }
-            }
-            if (serviceCode==SDRCode.SDRINT || serviceCode==SDRCode.SDRASM) {
-                serviceDetailRecordSaveDTO.setMbAmount(result.getSdrMBamount());
-            }
-            if (serviceCode==SDRCode.SDRSMS) {
-                serviceDetailRecordSaveDTO.setMsgAmount(result.getSdrMsgAmount());
-            }
-            SDRCode resultSdrCode = SDRCode.valueOf(result.getServiceCode());
-            switch (resultSdrCode) {
-                case SDRCLS:
-                    message = "Call is interrupted by EOS";
-                    break;
-                case SDRSMS:
-                    message = "SMS is interrupted by EOS, the message could not be sent";
-                    break;
-                case SDRINT:
-                    message = "Internet service is interrupted by EOS";
-                    break;
-                case SDRASM:
-                    message = "Application or social media is interrupted by EOS";
-                    break;
-                case SDRICLCZ1:
-                case SDRICLCZ2:
-                    message = "International call is interrupted by EOS";
-                    break;
-                case SDRRMGCZ1:
-                case SDRRMGCZ2:
-                    message = "Roaming call is interrupted by EOS";
-                    break;
-            }
-        }
-        log.info("save function");
-        serviceDetailRecord.setSdrNote(result.getEosNote());
-        serviceDetailRecordMapper.serviceDetailRecordSaveDtoToServiceDetailRecord(serviceDetailRecordSaveDTO, serviceDetailRecord, phoneRepo, phoneServiceRepo);
-        serviceDetailRecordRepo.save(serviceDetailRecord);
-        return message;
+@Override
+public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO) {
+    String message = "Not EOS";
+    phoneValidationService.controlThePhoneExists(serviceDetailRecordSaveDTO.getPhoneNumber());
+    packageAddonPhoneServValidationService.controlThePhoneServiceCodeExists(serviceDetailRecordSaveDTO.getServiceCode());
+    phoneValidationService.checkThatPhoneHasCustomersPackageCode(serviceDetailRecordSaveDTO.getPhoneNumber());
+    framesSDRValidationService.controlTheLocalDateTimeInputIsValid(serviceDetailRecordSaveDTO.getSdrStartDateTime());
+    framesSDRValidationService.controlTheLocalDateTimeInputIsValid(serviceDetailRecordSaveDTO.getSdrEndDateTime());
+    framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
+    log.info("above controlTheServiceDetailRecordAlreadyExists");
+    framesSDRValidationService.controlTheServiceDetailRecordAlreadyExists(serviceDetailRecordSaveDTO.getPhoneNumber(), serviceDetailRecordSaveDTO.getServiceCode(), serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
+    log.info("above phone");
+    ServiceDetailRecord serviceDetailRecord = new ServiceDetailRecord();
+    /////////////////////////////////////////////////////////
+    Phone phone = phoneRepo.findByPhoneNumber(serviceDetailRecordSaveDTO.getPhoneNumber());
+    String packageCode = phone.getPackagePlan().getPackageCode();
+    PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
+    String serviceCodeStr = serviceDetailRecordSaveDTO.getServiceCode();
+    log.info("serviceCode = " + serviceCodeStr);
+    SDRCode serviceCode = SDRCode.valueOf(serviceCodeStr);
+    AddonCode addonCode = findAddonCodeFromServiceCode(serviceCode);
+    log.info("addonCode = " + addonCode);
+    log.info("in save sdr");
+    int duration = SomeUtils.howFarApartTwoLocalDateTime(serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
+    log.info("duration = " + duration);
+    serviceDetailRecord.setDuration(duration);
+    SdrAmountCalc result = new SdrAmountCalc(duration, serviceDetailRecordSaveDTO.getMsgAmount(), serviceDetailRecordSaveDTO.getMbAmount(), new BigDecimal("0.00"), "", serviceCodeStr, false);
+    if (((packagePlanType == PackagePlanType.PST13 || packagePlanType == PackagePlanType.PST14) && (serviceCode == SDRCode.SDRCLS || serviceCode == SDRCode.SDRSMS)) || (packagePlanType == PackagePlanType.PST14 && serviceCode == SDRCode.SDRINT)) {
+        log.info("not unlimited!");
+    } else {
+        Month currentMonth = serviceDetailRecordSaveDTO.getSdrStartDateTime().getMonth();
+        int currentYear = serviceDetailRecordSaveDTO.getSdrStartDateTime().getYear();
+        LocalDateTime monthlyStartDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0, 0, 0);
+        LocalDateTime monthlyEndDateTime = monthlyStartDateTime.plusMonths(1);
+        PackageFrame monthlyPackageFrame = packageFrameRepo.findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
+        List<AddonFrame> addonFrameList = addonFrameRepo.findAddonFramesByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phone.getPhoneNumber(), addonCode.name(), monthlyStartDateTime, monthlyEndDateTime);
+        log.info("addonFrameList is size = " + addonFrameList.size());
+        FramesInputTotal frameInput = inputAmountOfFrames(monthlyPackageFrame, addonFrameList, serviceCode);
+        SdrAmountCalc sdrOutput = outputAmountOfSDRs(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime, serviceCode);
+        result = checkEOSforThisSDR(serviceDetailRecordSaveDTO, frameInput, sdrOutput, duration);
     }
+    if (result.isSdrEOS()) {
+        if (!(serviceCode == SDRCode.SDRSMS)) {
+            if (!(duration == result.getSdrDurationAmount())) {
+                Duration durationMin = Duration.ofMinutes(result.getSdrDurationAmount());
+                LocalDateTime endDateTime = serviceDetailRecordSaveDTO.getSdrStartDateTime().plus(durationMin);
+                serviceDetailRecordSaveDTO.setSdrEndDateTime(endDateTime);
+                serviceDetailRecord.setDuration(result.getSdrDurationAmount());
+                log.info("not the same duration!");
+            }
+        }
+        if (serviceCode == SDRCode.SDRINT || serviceCode == SDRCode.SDRASM) {
+            serviceDetailRecordSaveDTO.setMbAmount(result.getSdrMBamount());
+        }
+        if (serviceCode == SDRCode.SDRSMS) {
+            serviceDetailRecordSaveDTO.setMsgAmount(result.getSdrMsgAmount());
+        }
+        SDRCode resultSdrCode = SDRCode.valueOf(result.getServiceCode());
+        switch (resultSdrCode) {
+            case SDRCLS:
+                message = "Call is interrupted by EOS";
+                break;
+            case SDRSMS:
+                message = "SMS is interrupted by EOS, the message could not be sent";
+                break;
+            case SDRINT:
+                message = "Internet service is interrupted by EOS";
+                break;
+            case SDRASM:
+                message = "Application or social media is interrupted by EOS";
+                break;
+            case SDRICLCZ1:
+            case SDRICLCZ2:
+                message = "International call is interrupted by EOS";
+                break;
+            case SDRRMGCZ1:
+            case SDRRMGCZ2:
+                message = "Roaming call is interrupted by EOS";
+                break;
+        }
+    }
+    log.info("save function");
+    serviceDetailRecord.setSdrNote(result.getEosNote());
+    serviceDetailRecordMapper.serviceDetailRecordSaveDtoToServiceDetailRecord(serviceDetailRecordSaveDTO, serviceDetailRecord, phoneRepo, phoneServiceRepo);
+    serviceDetailRecordRepo.save(serviceDetailRecord);
+    return message;
+}
 
     ///////////////////////////////////////////////////////////////////////
 
@@ -318,8 +309,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     public ServiceDetailRecordViewDTO findServiceDetailRecordById(Long sdrId) {
         framesSDRValidationService.controlTheServiceDetailRecordExists(sdrId);
         ServiceDetailRecord serviceDetailRecord = serviceDetailRecordRepo.findBySdrId(sdrId);
-        ServiceDetailRecordViewDTO serviceDetailRecordViewDTO = serviceDetailRecordMapper.serviceDetailRecordToServiceDetailRecordViewDTO(serviceDetailRecord);
-        return serviceDetailRecordViewDTO;
+        return serviceDetailRecordMapper.serviceDetailRecordToServiceDetailRecordViewDTO(serviceDetailRecord);
     }
 
     @Override
@@ -327,16 +317,14 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         phoneValidationService.controlThePhoneExists(phoneNumber);
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(sdrStartDateTime, sdrEndDateTime);
         List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqual(phoneNumber, sdrStartDateTime, sdrEndDateTime);
-        List<ServiceDetailRecordViewDTO> serviceDetailRecordViewDTOList = serviceDetailRecordMapper.serviceDetailRecordToServiceDetailRecordViewDTO(serviceDetailRecordList);
-        return serviceDetailRecordViewDTOList;
+        return serviceDetailRecordMapper.serviceDetailRecordsToServiceDetailRecordsViewDTO(serviceDetailRecordList);
     }
 
     @Override
     public List<ServiceDetailRecordViewDTO> findServiceDetailRecordsByPhoneNumberStartTime(String phoneNumber, LocalDateTime sdrStartDateTime) {
         phoneValidationService.controlThePhoneExists(phoneNumber);
         List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqual(phoneNumber, sdrStartDateTime);
-        List<ServiceDetailRecordViewDTO> serviceDetailRecordViewDTOList = serviceDetailRecordMapper.serviceDetailRecordToServiceDetailRecordViewDTO(serviceDetailRecordList);
-        return serviceDetailRecordViewDTOList;
+        return serviceDetailRecordMapper.serviceDetailRecordsToServiceDetailRecordsViewDTO(serviceDetailRecordList);
     }
 
     @Override
@@ -345,8 +333,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         packageAddonPhoneServValidationService.controlThePhoneServiceCodeExists(serviceCode);
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(sdrStartDateTime, sdrEndDateTime);
         List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, sdrStartDateTime, sdrEndDateTime, serviceCode);
-        List<ServiceDetailRecordViewDTO> serviceDetailRecordViewDTOList = serviceDetailRecordMapper.serviceDetailRecordToServiceDetailRecordViewDTO(serviceDetailRecordList);
-        return serviceDetailRecordViewDTOList;
+        return serviceDetailRecordMapper.serviceDetailRecordsToServiceDetailRecordsViewDTO(serviceDetailRecordList);
     }
 
     @Override
@@ -354,8 +341,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         phoneValidationService.controlThePhoneExists(phoneNumber);
         packageAddonPhoneServValidationService.controlThePhoneServiceCodeExists(serviceCode);
         List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndPhoneService_ServiceCode(phoneNumber, sdrStartDateTime, serviceCode);
-        List<ServiceDetailRecordViewDTO> serviceDetailRecordViewDTOList = serviceDetailRecordMapper.serviceDetailRecordToServiceDetailRecordViewDTO(serviceDetailRecordList);
-        return serviceDetailRecordViewDTOList;
+        return serviceDetailRecordMapper.serviceDetailRecordsToServiceDetailRecordsViewDTO(serviceDetailRecordList);
     }
 
     @Override
@@ -365,78 +351,6 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         serviceDetailRecordRepo.delete(serviceDetailRecord);
     }
 
-    void setPackageFrameByPackageCode(PackageFrame packageFrame) {
-        packageFrame.setPackfrStatus(StatusType.PRESENT.getStatus());
-        String packageCode = packageFrame.getPhone().getPackagePlan().getPackageCode();
-        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
-        switch (packagePlanType) {
-            case PRP01:
-                setMonthlyPackageFrameQuota (packageFrame, 200, 200, "0.00", "0.00", "0.00", "0.00");
-                break;
-            case PRP02:
-                setMonthlyPackageFrameQuota (packageFrame, 200, 200, "10000.00", "0.00", "0.00", "0.00");
-                break;
-            case PST11:
-                setMonthlyPackageFrameQuota (packageFrame, 300, 300, "10000.00", "0.00", "200.00", "200.00");
-                break;
-            case PST12:
-                setMonthlyPackageFrameQuota (packageFrame, 400, 400, "10000.00", "5000.00", "200.00", "200.00");
-                break;
-            case PST13:
-                setMonthlyPackageFrameQuota (packageFrame, -1, -1, "15000.00", "5000.00", "200.00", "200.00");
-                break;
-            case PST14:
-                setMonthlyPackageFrameQuota (packageFrame, -1, -1, "-1.00", "10000.00", "200.00", "200.00");
-                break;
-            default:
-        }
-    }
-
-    void setMonthlyPackageFrameQuota (PackageFrame packageFrame, int monthlyQuotaCls, int monthlyQuotaSms, String monthlyQuotaInt, String monthlyQuotaAsm, String monthlyQuotaIcl, String monthlyQuotaRmg){
-        packageFrame.setPackfrCls(monthlyQuotaCls);
-        packageFrame.setPackfrSms(monthlyQuotaSms);
-        packageFrame.setPackfrInt(new BigDecimal(monthlyQuotaInt));
-        packageFrame.setPackfrAsm(new BigDecimal(monthlyQuotaAsm));
-        packageFrame.setPackfrIcl(new BigDecimal(monthlyQuotaIcl));
-        packageFrame.setPackfrRmg(new BigDecimal(monthlyQuotaRmg));
-
-    }
-
-    void setAddonFrameByAddonCode(AddonFrame addonFrame) {
-        addonFrame.setAddfrStatus(StatusType.PRESENT.getStatus());
-        String addonCodeStr = addonFrame.getAddOn().getAddonCode();
-        AddonCode addonCode = AddonCode.valueOf(addonCodeStr);
-        switch (addonCode) {
-            case ADDCLS:
-                setAddonFrameQuota(addonFrame, 100, 0, "0.00", "0.00", "0.00", "0.00");
-                break;
-            case ADDSMS:
-                setAddonFrameQuota(addonFrame, 0, 100, "0.00", "0.00", "0.00", "0.00");
-                break;
-            case ADDINT:
-                setAddonFrameQuota(addonFrame, 0, 0, "5000.00", "0.00", "0.00", "0.00");
-                break;
-            case ADDASM:
-                setAddonFrameQuota(addonFrame, 0, 0, "0.00", "5000.00", "0.00", "0.00");
-                break;
-            case ADDICL:
-                setAddonFrameQuota(addonFrame, 0, 0, "0.00", "0.00", "200.00", "0.00");
-                break;
-            case ADDRMG:
-                setAddonFrameQuota(addonFrame, 0, 0, "0.00", "0.00", "0.00", "200.00");
-                break;
-            default:
-        }
-    }
-
-    void setAddonFrameQuota (AddonFrame addonFrame, int quotaCls, int quotaSms, String quotaInt, String quotaAsm, String quotaIcl, String quotaRmg){
-        addonFrame.setAddfrCls(quotaCls);
-        addonFrame.setAddfrSms(quotaSms);
-        addonFrame.setAddfrInt(new BigDecimal(quotaInt));
-        addonFrame.setAddfrAsm(new BigDecimal(quotaAsm));
-        addonFrame.setAddfrIcl(new BigDecimal(quotaIcl));
-        addonFrame.setAddfrRmg(new BigDecimal(quotaRmg));
-    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -470,56 +384,6 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         return addonCode;
     }
 
-//    FramesInputTotal inputAmountOfFrames(PackageFrame packageFrame, List<AddonFrame> addonFrameList, String serviceCode) {
-//        FramesInputTotal inputAm = new FramesInputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
-//        int inputCls = 0;
-//        int inputSms = 0;
-//        BigDecimal inputInt = new BigDecimal("0.00");
-//        BigDecimal inputAsm = new BigDecimal("0.00");
-//        BigDecimal inputIcl = new BigDecimal("0.00");
-//        BigDecimal inputRmg = new BigDecimal("0.00");
-//        inputCls = inputCls + packageFrame.getPackfrCls();
-//        inputSms = inputSms + packageFrame.getPackfrSms();
-//        inputInt = inputInt.add(packageFrame.getPackfrInt());
-//        inputAsm = inputAsm.add(packageFrame.getPackfrAsm());
-//        inputIcl = inputIcl.add(packageFrame.getPackfrIcl());
-//        log.info("icl no af = " +inputIcl);
-//        inputRmg = inputRmg.add(packageFrame.getPackfrRmg());
-//        log.info("rmg no af = " +inputRmg);
-//        if (!addonFrameList.isEmpty()) {
-//            for (AddonFrame af : addonFrameList) {
-//                if (serviceCode.equals("SDRCLS")) {
-//                    inputCls = inputCls + af.getAddfrCls();
-//                } else if (serviceCode.equals("SDRSMS")) {
-//                    inputSms = inputSms + af.getAddfrSms();
-//                } else if (serviceCode.equals("SDRINT")) {
-//                    inputInt = inputInt.add(af.getAddfrInt());
-//                } else if (serviceCode.equals("SDRASM")) {
-//                    inputAsm = inputAsm.add(af.getAddfrAsm());
-//                } else if (serviceCode.equals("SDRICLCZ1") || serviceCode.equals("SDRICLCZ2")) {
-//                    inputIcl = inputIcl.add(af.getAddfrIcl());
-//                    log.info("icl with af = " +inputIcl);
-//                } else if (serviceCode.equals("SDRRMGCZ1") || serviceCode.equals("SDRRMGCZ2")) {
-//                    inputRmg = inputRmg.add(af.getAddfrRmg());
-//                    log.info("rmg with af = " +inputRmg);
-//                }
-//            }
-//        }
-//        inputAm.setInputCls(inputCls);
-//        log.info("inputAm CLS = " +inputCls);
-//        inputAm.setInputSms(inputSms);
-//        log.info("inputAm SMS = " +inputSms);
-//        inputAm.setInputInt(inputInt);
-//        log.info("inputAm INT = " +inputInt);
-//        inputAm.setInputAsm(inputAsm);
-//        log.info("inputAm ASM = " +inputAsm);
-//        inputAm.setInputIcl(inputIcl);
-//        log.info("inputAm ICL = " +inputIcl);
-//        inputAm.setInputRmg(inputRmg);
-//        log.info("inputAm RMG = " +inputRmg);
-//        return inputAm;
-//    }
-
     FramesInputTotal inputAmountOfFrames(PackageFrame packageFrame, List<AddonFrame> addonFrameList, SDRCode serviceCode) {
         FramesInputTotal inputResult = new FramesInputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
         int inputCls = packageFrame.getPackfrCls();
@@ -527,9 +391,9 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         BigDecimal inputInt = packageFrame.getPackfrInt();
         BigDecimal inputAsm = packageFrame.getPackfrAsm();
         BigDecimal inputIcl = packageFrame.getPackfrIcl();
-        log.info("icl no af = " +inputIcl);
+        log.info("icl no af = " + inputIcl);
         BigDecimal inputRmg = packageFrame.getPackfrRmg();
-        log.info("rmg no af = " +inputRmg);
+        log.info("rmg no af = " + inputRmg);
         if (!addonFrameList.isEmpty()) {
             for (AddonFrame af : addonFrameList) {
                 switch (serviceCode) {
@@ -559,21 +423,21 @@ public class FramesSDRServiceImpl implements FramesSDRService {
             }
         }
         inputResult.setInputCls(inputCls);
-        log.info("inputAm CLS = " +inputCls);
+        log.info("inputAm CLS = " + inputCls);
         inputResult.setInputSms(inputSms);
-        log.info("inputAm SMS = " +inputSms);
+        log.info("inputAm SMS = " + inputSms);
         inputResult.setInputInt(inputInt);
-        log.info("inputAm INT = " +inputInt);
+        log.info("inputAm INT = " + inputInt);
         inputResult.setInputAsm(inputAsm);
-        log.info("inputAm ASM = " +inputAsm);
+        log.info("inputAm ASM = " + inputAsm);
         inputResult.setInputIcl(inputIcl);
-        log.info("inputAm ICL = " +inputIcl);
+        log.info("inputAm ICL = " + inputIcl);
         inputResult.setInputRmg(inputRmg);
-        log.info("inputAm RMG = " +inputRmg);
+        log.info("inputAm RMG = " + inputRmg);
         return inputResult;
     }
 
-     SdrAmountCalc outputAmountOfSDRs (String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime monthlyEndDateTime, SDRCode serviceCode) {
+    SdrAmountCalc outputAmountOfSDRs(String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime monthlyEndDateTime, SDRCode serviceCode) {
         SdrAmountCalc outputResult = new SdrAmountCalc(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), "", "", false);
         int duration = 0;
         int durationCZ1 = 0;
@@ -586,89 +450,89 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         BigDecimal priceRMGCZ1 = new BigDecimal(UNIT_PRICE_RMGCZ1);
         BigDecimal priceRMGCZ2 = new BigDecimal(UNIT_PRICE_RMGCZ2);
         switch (serviceCode) {
-             case SDRCLS: {
-                 List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode.name());
-                 if (!serviceDetailRecordList.isEmpty()) {
-                     for (ServiceDetailRecord sdr : serviceDetailRecordList) {
-                         duration = duration + sdr.getDuration();
-                     }
-                     outputResult.setSdrDurationAmount(duration);
-                 }
-                 break;
-             }
-             case SDRSMS: {
-                 List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode.name());
-                 if (!serviceDetailRecordList.isEmpty()) {
-                     for (ServiceDetailRecord sdr : serviceDetailRecordList) {
-                         msgAmount = msgAmount + sdr.getMsgAmount();
-                     }
-                     outputResult.setSdrMsgAmount(msgAmount);
-                 }
-                 break;
-             }
-             case SDRINT:
-             case SDRASM: {
-                 List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode.name());
-                 if (!serviceDetailRecordList.isEmpty()) {
-                     for (ServiceDetailRecord sdr : serviceDetailRecordList) {
-                         mbAmount = mbAmount.add(sdr.getMbAmount());
-                     }
-                     outputResult.setSdrMBamount(mbAmount);
-                 }
-                 break;
-             }
-             case SDRICLCZ1:
-             case SDRICLCZ2: {
-                 List<ServiceDetailRecord> serviceDetailRecordList1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRICLCZ1.name());
-                 if (!serviceDetailRecordList1.isEmpty()) {
-                     for (ServiceDetailRecord sdr : serviceDetailRecordList1) {
-                         durationCZ1 = durationCZ1 + sdr.getDuration();
-                     }
-                 }
-                 log.info("ICL duration1= " + durationCZ1);
-                 priceICLCZ1 = priceICLCZ1.multiply(new BigDecimal(durationCZ1));
-                 log.info("ICL priceAmountICLCZ1= " + priceICLCZ1);
-                 List<ServiceDetailRecord> serviceDetailRecordList2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRICLCZ2.name());
-                 if (!serviceDetailRecordList2.isEmpty()) {
-                     for (ServiceDetailRecord sdr : serviceDetailRecordList2) {
-                         durationCZ2 = durationCZ2 + sdr.getDuration();
-                     }
-                 }
-                 log.info("ICL duration2= " + durationCZ2);
-                 priceICLCZ2 = priceICLCZ2.multiply(new BigDecimal(durationCZ2));
-                 log.info("ICL priceAmountICLCZ2= " + priceICLCZ2);
-                 priceAmount = priceAmount.add(priceICLCZ1).add(priceICLCZ2);
-                 log.info("ICL priceAmount= " + priceAmount);
-                 outputResult.setSdrPriceAmount(priceAmount);
-                 break;
-             }
-             case SDRRMGCZ1:
-             case SDRRMGCZ2: {
-                 List<ServiceDetailRecord> serviceDetailRecordList1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRRMGCZ1.name());
-                 if (!serviceDetailRecordList1.isEmpty()) {
-                     for (ServiceDetailRecord sdr : serviceDetailRecordList1) {
-                         durationCZ1 = durationCZ1 + sdr.getDuration();
-                     }
-                 }
-                 log.info("RMG duration1= " + durationCZ1);
-                 priceRMGCZ1 = priceRMGCZ1.multiply(new BigDecimal(durationCZ1));
-                 log.info("RMG priceAmountRMGCZ1= " + priceRMGCZ1);
-                 List<ServiceDetailRecord> serviceDetailRecordList2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRRMGCZ2.name());
-                 if (!serviceDetailRecordList2.isEmpty()) {
-                     for (ServiceDetailRecord sdr : serviceDetailRecordList2) {
-                         durationCZ2 = durationCZ2 + sdr.getDuration();
-                     }
-                 }
-                 log.info("RMG duration2= " + durationCZ2);
-                 priceRMGCZ2 = priceRMGCZ2.multiply(new BigDecimal(durationCZ2));
-                 log.info("RMG priceAmountRMGCZ2= " + priceRMGCZ2);
-                 priceAmount = priceAmount.add(priceRMGCZ1).add(priceRMGCZ2);
-                 log.info("RMG priceAmount= " + priceAmount);
-                 outputResult.setSdrPriceAmount(priceAmount);
-                 break;
-             }
-         }
-        log.info("outputResult, duration = " +outputResult.getSdrDurationAmount() + ", msgAmount = " +outputResult.getSdrMsgAmount() + ", MBamount = " +outputResult.getSdrMBamount() + ", price = " +outputResult.getSdrPriceAmount() + ", note = " +outputResult.getEosNote() + ", serviceCode = " +outputResult.getServiceCode() + ", eos = " +outputResult.isSdrEOS());
+            case SDRCLS: {
+                List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode.name());
+                if (!serviceDetailRecordList.isEmpty()) {
+                    for (ServiceDetailRecord sdr : serviceDetailRecordList) {
+                        duration = duration + sdr.getDuration();
+                    }
+                    outputResult.setSdrDurationAmount(duration);
+                }
+                break;
+            }
+            case SDRSMS: {
+                List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode.name());
+                if (!serviceDetailRecordList.isEmpty()) {
+                    for (ServiceDetailRecord sdr : serviceDetailRecordList) {
+                        msgAmount = msgAmount + sdr.getMsgAmount();
+                    }
+                    outputResult.setSdrMsgAmount(msgAmount);
+                }
+                break;
+            }
+            case SDRINT:
+            case SDRASM: {
+                List<ServiceDetailRecord> serviceDetailRecordList = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, serviceCode.name());
+                if (!serviceDetailRecordList.isEmpty()) {
+                    for (ServiceDetailRecord sdr : serviceDetailRecordList) {
+                        mbAmount = mbAmount.add(sdr.getMbAmount());
+                    }
+                    outputResult.setSdrMBamount(mbAmount);
+                }
+                break;
+            }
+            case SDRICLCZ1:
+            case SDRICLCZ2: {
+                List<ServiceDetailRecord> serviceDetailRecordList1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRICLCZ1.name());
+                if (!serviceDetailRecordList1.isEmpty()) {
+                    for (ServiceDetailRecord sdr : serviceDetailRecordList1) {
+                        durationCZ1 = durationCZ1 + sdr.getDuration();
+                    }
+                }
+                log.info("ICL duration1= " + durationCZ1);
+                priceICLCZ1 = priceICLCZ1.multiply(new BigDecimal(durationCZ1));
+                log.info("ICL priceAmountICLCZ1= " + priceICLCZ1);
+                List<ServiceDetailRecord> serviceDetailRecordList2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRICLCZ2.name());
+                if (!serviceDetailRecordList2.isEmpty()) {
+                    for (ServiceDetailRecord sdr : serviceDetailRecordList2) {
+                        durationCZ2 = durationCZ2 + sdr.getDuration();
+                    }
+                }
+                log.info("ICL duration2= " + durationCZ2);
+                priceICLCZ2 = priceICLCZ2.multiply(new BigDecimal(durationCZ2));
+                log.info("ICL priceAmountICLCZ2= " + priceICLCZ2);
+                priceAmount = priceAmount.add(priceICLCZ1).add(priceICLCZ2);
+                log.info("ICL priceAmount= " + priceAmount);
+                outputResult.setSdrPriceAmount(priceAmount);
+                break;
+            }
+            case SDRRMGCZ1:
+            case SDRRMGCZ2: {
+                List<ServiceDetailRecord> serviceDetailRecordList1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRRMGCZ1.name());
+                if (!serviceDetailRecordList1.isEmpty()) {
+                    for (ServiceDetailRecord sdr : serviceDetailRecordList1) {
+                        durationCZ1 = durationCZ1 + sdr.getDuration();
+                    }
+                }
+                log.info("RMG duration1= " + durationCZ1);
+                priceRMGCZ1 = priceRMGCZ1.multiply(new BigDecimal(durationCZ1));
+                log.info("RMG priceAmountRMGCZ1= " + priceRMGCZ1);
+                List<ServiceDetailRecord> serviceDetailRecordList2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, monthlyEndDateTime, SDRCode.SDRRMGCZ2.name());
+                if (!serviceDetailRecordList2.isEmpty()) {
+                    for (ServiceDetailRecord sdr : serviceDetailRecordList2) {
+                        durationCZ2 = durationCZ2 + sdr.getDuration();
+                    }
+                }
+                log.info("RMG duration2= " + durationCZ2);
+                priceRMGCZ2 = priceRMGCZ2.multiply(new BigDecimal(durationCZ2));
+                log.info("RMG priceAmountRMGCZ2= " + priceRMGCZ2);
+                priceAmount = priceAmount.add(priceRMGCZ1).add(priceRMGCZ2);
+                log.info("RMG priceAmount= " + priceAmount);
+                outputResult.setSdrPriceAmount(priceAmount);
+                break;
+            }
+        }
+        log.info("outputResult, duration = " + outputResult.getSdrDurationAmount() + ", msgAmount = " + outputResult.getSdrMsgAmount() + ", MBamount = " + outputResult.getSdrMBamount() + ", price = " + outputResult.getSdrPriceAmount() + ", note = " + outputResult.getEosNote() + ", serviceCode = " + outputResult.getServiceCode() + ", eos = " + outputResult.isSdrEOS());
         return outputResult;
     }
 
@@ -678,7 +542,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         BigDecimal priceRMGCZ1 = new BigDecimal(UNIT_PRICE_RMGCZ1);
         BigDecimal priceRMGCZ2 = new BigDecimal(UNIT_PRICE_RMGCZ2);
         SdrAmountCalc result = new SdrAmountCalc(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), "", "", false);
-        String serviceCodeStr = sdrSaveDTO.getPhoneService();
+        String serviceCodeStr = sdrSaveDTO.getServiceCode();
         SDRCode serviceCode = SDRCode.valueOf(serviceCodeStr);
         switch (serviceCode) {
             case SDRCLS:
@@ -813,7 +677,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
                 break;
             }
         }
-        log.info("result, duration = " +result.getSdrDurationAmount() + ", msgAmount = " +result.getSdrMsgAmount() + ", MBamount = " +result.getSdrMBamount() + ", price = " +result.getSdrPriceAmount() + ", note = " +result.getEosNote() + ", servoceCode = " +result.getServiceCode() + ", eos = " +result.isSdrEOS());
+        log.info("result, duration = " + result.getSdrDurationAmount() + ", msgAmount = " + result.getSdrMsgAmount() + ", MBamount = " + result.getSdrMBamount() + ", price = " + result.getSdrPriceAmount() + ", note = " + result.getEosNote() + ", servoceCode = " + result.getServiceCode() + ", eos = " + result.isSdrEOS());
         return result;
     }
 

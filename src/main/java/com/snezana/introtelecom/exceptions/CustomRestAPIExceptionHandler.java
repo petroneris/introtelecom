@@ -69,7 +69,7 @@ public class CustomRestAPIExceptionHandler extends ResponseEntityExceptionHandle
 
     private RestAPIResponse<Map<String, String>> getErrorData (GeneralException ex){
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("error_message", ex.getErrorMessage().toString().toUpperCase());
+        errorMap.put("error_message", ex.getErrorMessage().toString());
         errorMap.put("description", ex.getDescription());
         RestAPIResponse<Map<String, String>> restAPIResponse = RestAPIResponse.error(errorMap);
         return restAPIResponse;
