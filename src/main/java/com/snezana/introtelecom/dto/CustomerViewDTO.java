@@ -16,5 +16,5 @@ public class CustomerViewDTO {
     private String lastName;
     private String email;
     private String address;
-    private Set<String> phones;
+    private Set<String> phoneNumbers;
 }

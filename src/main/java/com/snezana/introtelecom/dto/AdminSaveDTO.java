@@ -26,7 +26,7 @@ public class AdminSaveDTO {
     private String email;
 
     @NotBlank
-    private String phone;
+    private String phoneNumber;
 
 }
 

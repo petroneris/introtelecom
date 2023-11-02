@@ -5,14 +5,13 @@ import com.snezana.introtelecom.entity.PackagePlan;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PackagePlanMapper {
-
-    PackagePlan packagePlanDtoToPackagePlan(PackagePlanDTO packagePlanDto, @MappingTarget PackagePlan packagePlan);
-
     PackagePlanDTO packagePlanToPackagePlanDTO(PackagePlan packagePlan);
 
     List<PackagePlanDTO> packagePlanToPackagePlanDTO (List<PackagePlan> packagePlanList);

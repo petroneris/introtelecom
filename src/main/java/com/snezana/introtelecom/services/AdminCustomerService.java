@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface AdminCustomerService {
 
-    public void saveNewAdmin (final AdminSaveDTO adminSaveDto);
+    public void saveNewAdmin (AdminSaveDTO adminSaveDto);
 
-    public void updateAdmin (final AdminSaveDTO adminSaveDto, Long id);
+    public void updateAdmin (AdminSaveDTO adminSaveDto, Long id);
 
     public AdminViewDTO getAdminById (Long adminId);
 
@@ -20,9 +20,9 @@ public interface AdminCustomerService {
 
     public List<AdminViewDTO> getAllAdmins();
 
-    public void saveNewCustomer (final CustomerSaveDTO customerSaveDto);
+    public void saveNewCustomer (CustomerSaveDTO customerSaveDto);
 
-    public void updateCustomer (final CustomerSaveDTO customerSaveDto, Long id);
+    public void updateCustomer (CustomerSaveDTO customerSaveDto, Long id);
 
     public CustomerViewDTO getCustomerById (Long customerId);
 

@@ -7,12 +7,14 @@ import com.snezana.introtelecom.entity.AddOn;
 import com.snezana.introtelecom.entity.PackagePlan;
 import com.snezana.introtelecom.entity.PhoneService;
 import com.snezana.introtelecom.mapper.AddOnMapper;
+import com.snezana.introtelecom.mapper.PackageFrameMapper;
 import com.snezana.introtelecom.mapper.PackagePlanMapper;
 import com.snezana.introtelecom.mapper.PhoneServiceMapper;
 import com.snezana.introtelecom.repositories.AddOnRepo;
 import com.snezana.introtelecom.repositories.PackagePlanRepo;
 import com.snezana.introtelecom.repositories.PhoneServiceRepo;
 import com.snezana.introtelecom.validations.PackageAddonPhoneServValidationService;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import java.util.List;
 @Service
 @Transactional
 public class PackageAddonPhoneServServiceImpl implements  PackageAddonPhoneServService{
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(PackageAddonPhoneServServiceImpl.class);
 
     @Autowired
     PackageAddonPhoneServValidationService packageAddonPhoneServValidationService;
@@ -49,15 +52,16 @@ public class PackageAddonPhoneServServiceImpl implements  PackageAddonPhoneServS
     public PackagePlanDTO getPackagePlanByPackageCode(String packageCode) {
        packageAddonPhoneServValidationService.controlThePackageCodeExists(packageCode);
        PackagePlan packagePlan = packagePlanRepo.findByPackageCode(packageCode);
-       PackagePlanDTO packagePlanDTO = packagePlanMapper.packagePlanToPackagePlanDTO(packagePlan);
-       return packagePlanDTO;
+       log.info(packagePlan.getPackageCode());
+       log.info(packagePlan.getPackageName());
+       log.info(packagePlan.getPackagePrice().toString());
+        return packagePlanMapper.packagePlanToPackagePlanDTO(packagePlan);
     }
 
     @Override
     public List<PackagePlanDTO> getAllPackagePlans() {
         List<PackagePlan> packagePlanList = packagePlanRepo.findAll();
-        List<PackagePlanDTO> packagePlanDTOList = packagePlanMapper.packagePlanToPackagePlanDTO(packagePlanList);
-        return packagePlanDTOList;
+        return packagePlanMapper.packagePlanToPackagePlanDTO(packagePlanList);
     }
 
     @Override
@@ -72,15 +76,13 @@ public class PackageAddonPhoneServServiceImpl implements  PackageAddonPhoneServS
     public AddOnDTO getAddOnByAddOnCode(String addonCode) {
         packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonCode);
         AddOn addOn = addOnRepo.findByAddonCode(addonCode);
-        AddOnDTO addOnDTO = addOnMapper.addOnToAddOnDTO(addOn);
-        return addOnDTO;
+        return addOnMapper.addOnToAddOnDTO(addOn);
     }
 
     @Override
     public List<AddOnDTO> getAllAddOns() {
         List<AddOn> addOnList = addOnRepo.findAll();
-        List<AddOnDTO> addOnDTOList = addOnMapper.addOnToAddOnDTO(addOnList);
-        return addOnDTOList;
+        return addOnMapper.addOnToAddOnDTO(addOnList);
     }
 
     @Override
@@ -95,15 +97,13 @@ public class PackageAddonPhoneServServiceImpl implements  PackageAddonPhoneServS
     public PhoneServiceDTO getPhoneServiceByServiceCode(String serviceCode) {
         packageAddonPhoneServValidationService.controlThePhoneServiceCodeExists(serviceCode);
         PhoneService phoneService = phoneServiceRepo.findByServiceCode(serviceCode);
-        PhoneServiceDTO phoneServiceDTO = phoneServiceMapper.phoneServiceToPhoneServiceDTO(phoneService);
-        return phoneServiceDTO;
+        return phoneServiceMapper.phoneServiceToPhoneServiceDTO(phoneService);
     }
 
     @Override
     public List<PhoneServiceDTO> getAllPhoneServices() {
         List<PhoneService> phoneServiceList = phoneServiceRepo.findAll();
-        List<PhoneServiceDTO> phoneServiceDTOList = phoneServiceMapper.phoneServiceToPhoneServiceDTO(phoneServiceList);
-        return phoneServiceDTOList;
+        return phoneServiceMapper.phoneServiceToPhoneServiceDTO(phoneServiceList);
     }
 
     @Override

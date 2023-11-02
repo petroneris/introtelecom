@@ -20,7 +20,7 @@ public class PhoneService {
     @Column(name = "service_description", nullable = false)
     private String serviceDescription;
 
-    @Column(name = "service_price", precision = 10 ,scale =2 , nullable = false)
+    @Column(name = "service_price", precision = 10 ,scale = 2 , nullable = false)
     private BigDecimal servicePrice;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy="phoneService")

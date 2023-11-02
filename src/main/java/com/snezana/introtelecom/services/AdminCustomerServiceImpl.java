@@ -1,6 +1,5 @@
 package com.snezana.introtelecom.services;
 
-import com.snezana.introtelecom.controllers.UserPhoneController;
 import com.snezana.introtelecom.dto.AdminSaveDTO;
 import com.snezana.introtelecom.dto.AdminViewDTO;
 import com.snezana.introtelecom.dto.CustomerSaveDTO;
@@ -9,7 +8,6 @@ import com.snezana.introtelecom.entity.Admin;
 import com.snezana.introtelecom.entity.Customer;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.entity.User;
-import com.snezana.introtelecom.exceptions.IllegalItemFieldException;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.mapper.AdminMapper;
@@ -29,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Optional;
@@ -78,11 +75,11 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
 
     @Override
     public void saveNewAdmin(AdminSaveDTO adminSaveDto) {
-        phoneValidationService.controlThePhoneExists(adminSaveDto.getPhone());
-        phoneValidationService.controlIsTheAdminPackageCode(adminSaveDto.getPhone());
-        adminValidationService.controlTheOtherAdminHasThisPhone(adminSaveDto.getPhone());
+        phoneValidationService.controlThePhoneExists(adminSaveDto.getPhoneNumber());
+        phoneValidationService.controlIsTheAdminPackageCode(adminSaveDto.getPhoneNumber());
+        adminValidationService.controlTheOtherAdminHasThisPhone(adminSaveDto.getPhoneNumber());
         adminValidationService.controlThePersonalNumberIsUnique(adminSaveDto.getPersonalNumber());
-        final Admin admin = new Admin();
+        Admin admin = new Admin();
         adminMapper.adminSaveDtoToAdmin(adminSaveDto, admin, phoneRepo);
         adminRepo.save(admin);
     }
@@ -92,7 +89,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
         adminValidationService.controlTheAdminWithThatIdExists(id);
         adminValidationService.controlUpdateTheOtherAdminHasThisPersonalNumber(adminSaveDto.getPersonalNumber(), id);
         adminValidationService.controlUpdateTheOtherAdminHasThisEmail(adminSaveDto.getEmail(), id);
-        adminValidationService.controlUpdateTheOtherAdminHasThisPhone(adminSaveDto.getPhone(), id);
+        adminValidationService.controlUpdateTheOtherAdminHasThisPhone(adminSaveDto.getPhoneNumber(), id);
         Admin admin = adminRepo.findByAdminId(id);
         adminMapper.adminSaveDtoToAdmin(adminSaveDto, admin, phoneRepo);
         adminRepo.save(admin);
@@ -102,8 +99,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
     public AdminViewDTO getAdminById(Long adminId) {
         adminValidationService.controlTheAdminWithThatIdExists(adminId);
         Admin admin = adminRepo.findByAdminId(adminId);
-        AdminViewDTO adminViewDto = adminMapper.adminToAdminViewDTO(admin);
-        return adminViewDto;
+        return adminMapper.adminToAdminViewDTO(admin);
     }
 
     @Override
@@ -112,38 +108,34 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
         phoneValidationService.controlIsTheAdminPackageCode(phoneNumber);
         Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
         Admin admin = adminRepo.findByPhone(phone);
-        AdminViewDTO adminViewDto = adminMapper.adminToAdminViewDTO(admin);
-        return adminViewDto;
+        return adminMapper.adminToAdminViewDTO(admin);
     }
 
     @Override
     public AdminViewDTO getAdminByPersonalNumber(String personalNumber) {
         adminValidationService.controlThePersonalNumberExists(personalNumber);
         Admin admin = adminRepo.findByPersonalNumber(personalNumber);
-        AdminViewDTO adminViewDto = adminMapper.adminToAdminViewDTO(admin);
-        return adminViewDto;
+        return adminMapper.adminToAdminViewDTO(admin);
     }
 
     @Override
     public AdminViewDTO getAdminByEmail(String email) {
         adminValidationService.controlTheEmailExists(email);
         Admin admin = adminRepo.findAdminByEmail(email);
-        AdminViewDTO adminViewDto = adminMapper.adminToAdminViewDTO(admin);
-        return adminViewDto;
+        return adminMapper.adminToAdminViewDTO(admin);
     }
 
     @Override
     public List<AdminViewDTO> getAllAdmins() {
         List<Admin> adminList = adminRepo.findAll();
-        List<AdminViewDTO> adminViewDtoList = adminMapper.adminToAdminViewDTO (adminList);
-        return adminViewDtoList;
+        return adminMapper.adminsToAdminsViewDTO(adminList);
     }
 
     @Override
     public void saveNewCustomer(CustomerSaveDTO customerSaveDto) {
         customerValidationService.controlThePersonalNumberIsUnique(customerSaveDto.getPersonalNumber());
         customerValidationService.controlTheEmailIsUnique(customerSaveDto.getEmail());
-        final Customer customer = new Customer();
+        Customer customer = new Customer();
         customerMapper.customerSaveDtoToCustomer(customerSaveDto, customer);
         customerRepo.save(customer);
     }
@@ -162,8 +154,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
     public CustomerViewDTO getCustomerById(Long customerId) {
         customerValidationService.controlTheCustomerWithThatIdExists(customerId);
         Customer customer = customerRepo.findByCustomerId(customerId);
-        CustomerViewDTO customerViewDto = customerMapper.customerToCustomerViewDTO(customer);
-        return customerViewDto;
+        return customerMapper.customerToCustomerViewDTO(customer);
     }
 
     @Override
@@ -189,8 +180,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
         if (customerOpt.isPresent()) {
             Customer customer = customerOpt.get();
             log.info("customer is: {}", customer);
-            CustomerViewDTO customerViewDto = customerMapper.customerToCustomerViewDTO(customer);
-            return customerViewDto;
+            return customerMapper.customerToCustomerViewDTO(customer);
         } else {
             log.info("throw");
             throw new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that phone number doesn't exist in database!");
@@ -201,23 +191,20 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
     public CustomerViewDTO getCustomerByPersonalNumber(String personalNumber) {
         customerValidationService.controlThePersonalNumberExists(personalNumber);
         Customer customer = customerRepo.findByPersonalNumber(personalNumber);
-        CustomerViewDTO customerViewDto = customerMapper.customerToCustomerViewDTO(customer);
-        return customerViewDto;
+        return customerMapper.customerToCustomerViewDTO(customer);
     }
 
     @Override
     public CustomerViewDTO getCustomerByEmail(String email) {
         customerValidationService.controlTheEmailExists(email);
         Customer customer = customerRepo.findCustomerByEmail(email);
-        CustomerViewDTO customerViewDto = customerMapper.customerToCustomerViewDTO(customer);
-        return customerViewDto;
+        return customerMapper.customerToCustomerViewDTO(customer);
     }
 
     @Override
     public List<CustomerViewDTO> getAllCustomers() {
         List<Customer> customerList = customerRepo.findAll();
-        List<CustomerViewDTO> customerViewDtoList = customerMapper.customerToCustomerViewDTO (customerList);
-        return customerViewDtoList;
+        return customerMapper.customersToCustomersViewDTO(customerList);
     }
 
     @Override
@@ -246,8 +233,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
         if (customerOpt.isPresent()) {
             Customer customer = customerOpt.get();
             log.info("customer is: {}", customer);
-            CustomerViewDTO customerViewDto = customerMapper.customerToCustomerViewDTO(customer);
-            return customerViewDto;
+            return customerMapper.customerToCustomerViewDTO(customer);
         } else {
             log.info("throw");
             throw new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that username doesn't exist in database!");

@@ -23,7 +23,7 @@ public class PackagePlan {
     @Column(name = "package_description", nullable = false)
     private String packageDescription;
 
-    @Column(name = "package_price", precision = 10 ,scale =2 , nullable = false)
+    @Column(name = "package_price", precision = 10 ,scale = 2 , nullable = false)
     private BigDecimal packagePrice;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy="packagePlan")
