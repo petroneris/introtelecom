@@ -12,16 +12,18 @@ import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.repositories.PhoneRepo;
 import com.snezana.introtelecom.repositories.RoleRepo;
 import org.mapstruct.*;
+import org.slf4j.Logger;
 
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
+    Logger log = org.slf4j.LoggerFactory.getLogger(UserMapper.class);
 
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "phone", ignore = true)
-    User userSaveDtoToUser(UserSaveDTO userSaveDto, @MappingTarget User user, @Context RoleRepo roleRepo, @Context PhoneRepo phoneRepo);
+    void userSaveDtoToUser(UserSaveDTO userSaveDto, @MappingTarget User user, @Context RoleRepo roleRepo, @Context PhoneRepo phoneRepo);
 
     @BeforeMapping
     default void beforeUserSaveDtoToUser(UserSaveDTO userSaveDto, @MappingTarget User user,
@@ -42,12 +44,11 @@ public interface UserMapper {
     UserViewDTO userToUserViewDTO(User user);
 
     @Mapping(target = "role", ignore = true)
-    List<UserViewDTO> userToUserViewDTO (List<User> userList);
+    List<UserViewDTO> usersToUsersViewDTO(List<User> userList);
 
     @BeforeMapping
     default void beforeUserToUserViewDTO(User user, @MappingTarget UserViewDTO userViewDTO){
         Role role = user.getRole();
         userViewDTO.setRole(role.getRoleType());
     }
-
 }

@@ -18,6 +18,6 @@ public class PhoneSaveDTO {
     @NotBlank
     private String checkPhoneNumber;
     @NotBlank
-    private String packagePlan;
+    private String packageCode;
 
 }

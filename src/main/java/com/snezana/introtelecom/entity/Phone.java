@@ -34,7 +34,7 @@ public class Phone {
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "phone", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    private User user; //User
+    private User user; //User - Phone  1:1
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "phones")
     private Set<Customer> customers = new HashSet<>();
