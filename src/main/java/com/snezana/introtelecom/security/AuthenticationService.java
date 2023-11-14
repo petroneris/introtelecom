@@ -3,6 +3,7 @@ package com.snezana.introtelecom.security;
 import com.snezana.introtelecom.dto.UserLoginDTO;
 import com.snezana.introtelecom.enums.BearerConstant;
 import com.snezana.introtelecom.security.JWTtokenGenerator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -14,13 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
 
-    @Autowired
-    private JWTtokenGenerator jwTtokenGenerator;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final JWTtokenGenerator jwTtokenGenerator;
+    private final AuthenticationManager authenticationManager;
 
     public Map<String, String> login(UserLoginDTO userLoginDto) {
         String username = userLoginDto.getUsername();

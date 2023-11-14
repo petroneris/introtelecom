@@ -22,6 +22,7 @@ import com.snezana.introtelecom.validations.AdminValidationService;
 import com.snezana.introtelecom.validations.CustomerValidationService;
 import com.snezana.introtelecom.validations.PhoneValidationService;
 import com.snezana.introtelecom.validations.UserValidationService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,44 +34,22 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AdminCustomerServiceImpl implements AdminCustomerService{
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(AdminCustomerServiceImpl.class);
 
-    @Autowired
-    PhoneRepo phoneRepo;
-
-    @Autowired
-    AdminRepo adminRepo;
-
-    @Autowired
-    CustomerRepo customerRepo;
-
-    @Autowired
-    UserRepo userRepo;
-
-    @Autowired
-    PhoneValidationService phoneValidationService;
-
-    @Autowired
-    UserValidationService userValidationService;
-
-    @Autowired
-    AdminValidationService adminValidationService;
-
-    @Autowired
-    CustomerValidationService customerValidationService;
-
-    @Autowired
-    PhoneMapper phoneMapper;
-
-    @Autowired
-    AdminMapper adminMapper;
-
-    @Autowired
-    CustomerMapper customerMapper;
-
-    @Autowired
-    UserMapper userMapper;
+    private final PhoneRepo phoneRepo;
+    private final AdminRepo adminRepo;
+    private final CustomerRepo customerRepo;
+    private final UserRepo userRepo;
+    private final PhoneValidationService phoneValidationService;
+    private final UserValidationService userValidationService;
+    private final AdminValidationService adminValidationService;
+    private final CustomerValidationService customerValidationService;
+    private final PhoneMapper phoneMapper;
+    private final AdminMapper adminMapper;
+    private final CustomerMapper customerMapper;
+    private final UserMapper userMapper;
 
 
     @Override

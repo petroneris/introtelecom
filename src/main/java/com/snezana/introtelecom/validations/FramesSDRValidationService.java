@@ -21,15 +21,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FramesSDRValidationService {
 
-    @Autowired
-    PackageFrameRepo packageFrameRepo;
-
-    @Autowired
-    AddonFrameRepo addonFrameRepo;
-
-    @Autowired
-    ServiceDetailRecordRepo serviceDetailRecordRepo;
-
+    private final PackageFrameRepo packageFrameRepo;
+    private final AddonFrameRepo addonFrameRepo;
+    private final ServiceDetailRecordRepo serviceDetailRecordRepo;
     public static final String LOCAL_DATE_TIME_FORMAT = "'yyyy-MM-ddTHH:mm:ss.SSSZ'";
 
     public void controlTheLocalDateTimeInputIsValid(LocalDateTime localDateTime) {

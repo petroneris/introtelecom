@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +19,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/access")
+@RequiredArgsConstructor
 public class AccessController {
 
-    @Autowired
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     @Operation(tags = "Access Controller", summary = "User Authentication", description = "Authenticate the user and return a JWT token if the user is valid.")
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)

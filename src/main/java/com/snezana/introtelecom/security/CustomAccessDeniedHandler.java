@@ -12,8 +12,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -22,9 +24,10 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("security_error_message", accessDeniedException.getMessage());
-        errorMap.put("access_denied_reason", "not_authorized");
+//        Map<String, String> errorMap = new HashMap<>();
+        Map<String, String> errorMap = new TreeMap<>(Comparator.reverseOrder());
+        errorMap.put("security_error_message", accessDeniedException.getMessage().toUpperCase());
+        errorMap.put("access_denied_reason", "User is not authorized");
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), SecurityResponse.error(errorMap));
     }

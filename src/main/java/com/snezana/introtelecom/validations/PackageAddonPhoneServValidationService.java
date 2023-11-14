@@ -13,14 +13,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PackageAddonPhoneServValidationService {
 
-    @Autowired
-    PackagePlanRepo packagePlanRepo;
-
-    @Autowired
-    AddOnRepo addOnRepo;
-
-    @Autowired
-    PhoneServiceRepo phoneServiceRepo;
+    private final PackagePlanRepo packagePlanRepo;
+    private final AddOnRepo addOnRepo;
+    private final PhoneServiceRepo phoneServiceRepo;
 
     public void controlThePackageCodeExists (String packageCode){
         packagePlanRepo.findByPackageCodeOpt(packageCode)

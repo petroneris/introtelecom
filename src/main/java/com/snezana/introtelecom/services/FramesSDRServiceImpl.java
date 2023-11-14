@@ -17,6 +17,7 @@ import com.snezana.introtelecom.validations.PhoneValidationService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class FramesSDRServiceImpl implements FramesSDRService {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(FramesSDRServiceImpl.class);
 
@@ -39,42 +41,18 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     public static final int UNIT_PRICE_RMGCZ1 = 4;
     public static final int UNIT_PRICE_RMGCZ2 = 8;
 
-
-    @Autowired
-    PhoneValidationService phoneValidationService;
-
-    @Autowired
-    FramesSDRValidationService framesSDRValidationService;
-
-    @Autowired
-    PackageAddonPhoneServValidationService packageAddonPhoneServValidationService;
-
-    @Autowired
-    PackageFrameMapper packageFrameMapper;
-
-    @Autowired
-    AddonFrameMapper addonFrameMapper;
-
-    @Autowired
-    ServiceDetailRecordMapper serviceDetailRecordMapper;
-
-    @Autowired
-    PhoneRepo phoneRepo;
-
-    @Autowired
-    AddOnRepo addOnRepo;
-
-    @Autowired
-    PackageFrameRepo packageFrameRepo;
-
-    @Autowired
-    AddonFrameRepo addonFrameRepo;
-
-    @Autowired
-    PhoneServiceRepo phoneServiceRepo;
-
-    @Autowired
-    ServiceDetailRecordRepo serviceDetailRecordRepo;
+    private final PhoneValidationService phoneValidationService;
+    private final FramesSDRValidationService framesSDRValidationService;
+    private final PackageAddonPhoneServValidationService packageAddonPhoneServValidationService;
+    private final PackageFrameMapper packageFrameMapper;
+    private final AddonFrameMapper addonFrameMapper;
+    private final ServiceDetailRecordMapper serviceDetailRecordMapper;
+    private final PhoneRepo phoneRepo;
+    private final AddOnRepo addOnRepo;
+    private final PackageFrameRepo packageFrameRepo;
+    private final AddonFrameRepo addonFrameRepo;
+    private final PhoneServiceRepo phoneServiceRepo;
+    private final ServiceDetailRecordRepo serviceDetailRecordRepo;
 
     @Override
     public void saveNewPackageFrame(PackageFrameSaveDTO packageFrameSaveDTO) {

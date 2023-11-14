@@ -1,5 +1,6 @@
 package com.snezana.introtelecom.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -14,11 +15,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toStaticResources;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JWTtokenGenerator jwTtokenGenerator;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public CustomAuthorizationFilter customAuthorizationFilter(){
-        return new CustomAuthorizationFilter();
+        return new CustomAuthorizationFilter(jwTtokenGenerator, customUserDetailsService);
     }
 
     @Bean

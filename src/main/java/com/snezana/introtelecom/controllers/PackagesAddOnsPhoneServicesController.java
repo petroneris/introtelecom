@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,11 +31,11 @@ import java.util.Map;
         bearerFormat = "JWT",
         scheme = "bearer"
 )
+@RequiredArgsConstructor
 public class PackagesAddOnsPhoneServicesController {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(PackagesAddOnsPhoneServicesController.class);
 
-    @Autowired
-    private PackageAddonPhoneServService packageAddonPhoneServService;
+    private final PackageAddonPhoneServService packageAddonPhoneServService;
 
     /*
     some of the main methods for Package Plans, Add-Ons and (Phone) Services

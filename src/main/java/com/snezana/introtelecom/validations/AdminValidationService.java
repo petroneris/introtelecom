@@ -17,11 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AdminValidationService {
 
-    @Autowired
-    PhoneRepo phoneRepo;
-
-    @Autowired
-    AdminRepo adminRepo;
+    private final PhoneRepo phoneRepo;
+    private final AdminRepo adminRepo;
 
     public void controlThePersonalNumberIsUnique(String personalNumber) {
         Optional<Admin> adminOptional = adminRepo.findByPersonalNumberOpt(personalNumber);

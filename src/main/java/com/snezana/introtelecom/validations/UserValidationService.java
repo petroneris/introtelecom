@@ -21,14 +21,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserValidationService {
 
-    @Autowired
-    UserRepo userRepo;
-
-    @Autowired
-    PackagePlanRepo packagePlanRepo;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final UserRepo userRepo;
+    private final PackagePlanRepo packagePlanRepo;
+    private final PasswordEncoder passwordEncoder;
 
     public void controlTheUserWithThisPhoneNumberExists(String phoneNumber) {
         Optional<User> userOptional = userRepo.findByPhoneNumberOpt(phoneNumber);

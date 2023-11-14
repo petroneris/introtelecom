@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -30,12 +31,12 @@ import java.util.Map;
         bearerFormat = "JWT",
         scheme = "bearer"
 )
+@RequiredArgsConstructor
 public class FramesSDRController {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(FramesSDRController.class);
 
-    @Autowired
-    private FramesSDRService framesSDRService;
+    private final FramesSDRService framesSDRService;
 
     @Operation(tags = "FramesSDR Controller", summary = "save a new package frame", description = "save a package frame")
     @SecurityRequirement(name = "Bearer Authentication")

@@ -14,6 +14,7 @@ import com.snezana.introtelecom.repositories.AddOnRepo;
 import com.snezana.introtelecom.repositories.PackagePlanRepo;
 import com.snezana.introtelecom.repositories.PhoneServiceRepo;
 import com.snezana.introtelecom.validations.PackageAddonPhoneServValidationService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,29 +25,17 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PackageAddonPhoneServServiceImpl implements  PackageAddonPhoneServService{
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(PackageAddonPhoneServServiceImpl.class);
 
-    @Autowired
-    PackageAddonPhoneServValidationService packageAddonPhoneServValidationService;
-
-    @Autowired
-    PackagePlanRepo packagePlanRepo;
-
-    @Autowired
-    AddOnRepo addOnRepo;
-
-    @Autowired
-    PhoneServiceRepo phoneServiceRepo;
-
-    @Autowired
-    PackagePlanMapper packagePlanMapper;
-
-    @Autowired
-    AddOnMapper addOnMapper;
-
-    @Autowired
-    PhoneServiceMapper phoneServiceMapper;
+    private final PackageAddonPhoneServValidationService packageAddonPhoneServValidationService;
+    private final PackagePlanRepo packagePlanRepo;
+    private final AddOnRepo addOnRepo;
+    private final PhoneServiceRepo phoneServiceRepo;
+    private final PackagePlanMapper packagePlanMapper;
+    private final AddOnMapper addOnMapper;
+    private final PhoneServiceMapper phoneServiceMapper;
 
     @Override
     public PackagePlanDTO getPackagePlanByPackageCode(String packageCode) {

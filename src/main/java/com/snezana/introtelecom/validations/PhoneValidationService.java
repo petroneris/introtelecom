@@ -17,11 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PhoneValidationService {
 
-    @Autowired
-    PhoneRepo phoneRepo;
-
-    @Autowired
-    PackagePlanRepo packagePlanRepo;
+    private final PhoneRepo phoneRepo;
+    private final PackagePlanRepo packagePlanRepo;
 
     public void controlThePhoneNumberIsUnique(String phoneNumber) {
         Optional<Phone> phoneOptional = phoneRepo.findByPhoneNumberOpt(phoneNumber);

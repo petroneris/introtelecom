@@ -16,11 +16,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CustomerValidationService {
-    @Autowired
-    PhoneRepo phoneRepo;
 
-    @Autowired
-    CustomerRepo customerRepo;
+    private final PhoneRepo phoneRepo;
+    private final CustomerRepo customerRepo;
 
     public void controlThePersonalNumberIsUnique(String personalNumber) {
         Optional<Customer> customerOptional = customerRepo.findByPersonalNumberOpt(personalNumber);
