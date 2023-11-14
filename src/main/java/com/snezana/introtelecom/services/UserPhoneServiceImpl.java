@@ -98,8 +98,8 @@ public class UserPhoneServiceImpl implements UserPhoneService {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 @Override
 public void saveNewUser(UserSaveDTO userSaveDto) {
-    phoneValidationService.controlThePhoneExists(userSaveDto.getPhone());
-    userValidationService.controlTheUserWithThisPhoneNumberExists(userSaveDto.getPhone());
+    phoneValidationService.controlThePhoneExists(userSaveDto.getPhoneNumber());
+    userValidationService.controlTheUserWithThisPhoneNumberExists(userSaveDto.getPhoneNumber());
     userValidationService.controlTheUsernameIsUnique(userSaveDto.getUsername());
     User user = new User();
     userMapper.userSaveDtoToUser(userSaveDto, user, roleRepo, phoneRepo);

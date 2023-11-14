@@ -21,34 +21,28 @@ import java.util.List;
 public interface UserMapper {
     Logger log = org.slf4j.LoggerFactory.getLogger(UserMapper.class);
 
-    @Mapping(target = "role", ignore = true)
-    @Mapping(target = "phone", ignore = true)
+
+    @Mapping(target = "phoneNumber", ignore = true)
     void userSaveDtoToUser(UserSaveDTO userSaveDto, @MappingTarget User user, @Context RoleRepo roleRepo, @Context PhoneRepo phoneRepo);
 
     @BeforeMapping
-    default void beforeUserSaveDtoToUser(UserSaveDTO userSaveDto, @MappingTarget User user,
-                                         @Context RoleRepo roleRepo, @Context PhoneRepo phoneRepo) {
-        if (userSaveDto.getRole() != null && (user.getRole() == null || !user.getRole().getRoleType().equals(userSaveDto.getRole()))) {
-            final Role role = roleRepo.findByRoleTypeOpt(userSaveDto.getRole())
-                    .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Role type = " + userSaveDto.getRole() + " is not found. Must be 'ADMIN' or 'CUSTOMER'"));
+    default void beforeUserSaveDtoToUser(UserSaveDTO userSaveDto, @MappingTarget User user, @Context RoleRepo roleRepo, @Context PhoneRepo phoneRepo) {
+            Role role = roleRepo.findByRoleTypeOpt(userSaveDto.getRoleType())
+                    .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Role type = " + userSaveDto.getRoleType() + " is not found. Must be 'ADMIN' or 'CUSTOMER'"));
             user.setRole(role);
-            final Phone phone = phoneRepo.findByPhoneNumberOpt(userSaveDto.getPhone())
-                    .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Phone = " + userSaveDto.getPhone() + " is not found."));
+            Phone phone = phoneRepo.findByPhoneNumber(userSaveDto.getPhoneNumber());
 //            phone.setUser(user);
             user.setPhone(phone);
             user.setUserStatus(StatusType.PRESENT.getStatus());
-        }
     }
 
-    @Mapping(target = "role", ignore = true)
     UserViewDTO userToUserViewDTO(User user);
 
-    @Mapping(target = "role", ignore = true)
     List<UserViewDTO> usersToUsersViewDTO(List<User> userList);
 
     @BeforeMapping
     default void beforeUserToUserViewDTO(User user, @MappingTarget UserViewDTO userViewDTO){
         Role role = user.getRole();
-        userViewDTO.setRole(role.getRoleType());
+        userViewDTO.setRoleType(role.getRoleType());
     }
 }

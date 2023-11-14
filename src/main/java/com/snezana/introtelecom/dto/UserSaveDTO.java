@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 public class UserSaveDTO {
 
     @NotBlank
-    private String phone;
+    private String phoneNumber;
 
     @NotBlank
     private String username;
@@ -26,7 +26,7 @@ public class UserSaveDTO {
     private String checkPassword;
 
     @NotBlank
-    private String role;
+    private String roleType;
 
 
 }
