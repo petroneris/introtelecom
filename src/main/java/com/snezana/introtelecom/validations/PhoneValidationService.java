@@ -1,5 +1,6 @@
 package com.snezana.introtelecom.validations;
 
+import com.snezana.introtelecom.entity.PackagePlan;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.enums.PackagePlanType;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
@@ -8,7 +9,6 @@ import com.snezana.introtelecom.exceptions.IllegalItemFieldException;
 import com.snezana.introtelecom.repositories.PackagePlanRepo;
 import com.snezana.introtelecom.repositories.PhoneRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,7 +18,6 @@ import java.util.Optional;
 public class PhoneValidationService {
 
     private final PhoneRepo phoneRepo;
-    private final PackagePlanRepo packagePlanRepo;
 
     public void controlThePhoneNumberIsUnique(String phoneNumber) {
         Optional<Phone> phoneOptional = phoneRepo.findByPhoneNumberOpt(phoneNumber);
@@ -27,13 +26,13 @@ public class PhoneValidationService {
         }
     }
 
-    public void controlThePackageCodeExists (String packageCode){
-        packagePlanRepo.findByPackageCodeOpt(packageCode)
-                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Package code = " + packageCode + " is not found."));
-    }
-
     public void controlThePhoneExists (String phoneNumber){
         phoneRepo.findByPhoneNumberOpt(phoneNumber)
+                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The phone number = " +phoneNumber + " doesn't exist in database!" ));
+    }
+
+    public Phone returnThePhoneIfExists(String phoneNumber){
+        return phoneRepo.findByPhoneNumberOpt(phoneNumber)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The phone number = " +phoneNumber + " doesn't exist in database!" ));
     }
 

@@ -27,10 +27,9 @@ public class AdminValidationService {
         }
     }
 
-    public void controlThePersonalNumberExists(String personalNumber) {
-       adminRepo.findByPersonalNumberOpt(personalNumber)
-               .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that personalNumber doesn't exist in database!"));
-
+    public Admin returnAdminWithThatPersonalNumberIfExists(String personalNumber) {
+        return adminRepo.findByPersonalNumberOpt(personalNumber)
+                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that personalNumber doesn't exist in database!"));
     }
 
     public void controlTheOtherAdminHasThisPhone(String phoneNumber) {
@@ -40,13 +39,19 @@ public class AdminValidationService {
         }
     }
 
-    public void controlTheAdminWithThatIdExists (Long adminId){
-        adminRepo.findByAdminIdOpt(adminId)
+
+    public Admin returnTheAdminWithThatIdIfExists (Long adminId){
+        return adminRepo.findByAdminIdOpt(adminId)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that Id doesn't exist in database!"));
     }
 
-    public void controlTheEmailExists (String email){
-        adminRepo.findByEmailOpt(email)
+    public Admin returnTheAdminWithThatPhoneIfExists (String phoneNumber){
+        return adminRepo.findByPhoneNumberOpt(phoneNumber)
+                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that phone doesn't exist in database!"));
+    }
+
+    public Admin returnTheAdminWithThatEmailIfExists (String email){
+        return adminRepo.findByEmailOpt(email)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that email doesn't exist in database!"));
     }
 
@@ -80,7 +85,6 @@ public class AdminValidationService {
             }
         }
     }
-
 
 }
 

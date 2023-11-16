@@ -19,7 +19,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,8 +67,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 
     @Override
     public PackageFrameViewDTO findPackageFrameById(Long packfrId) {
-        framesSDRValidationService.controlThePackageFrameExists(packfrId);
-        PackageFrame packageFrame = packageFrameRepo.findByPackfrId(packfrId);
+        PackageFrame packageFrame = framesSDRValidationService.returnThePackageFrameIfExists(packfrId);
         return packageFrameMapper.packageFrameToPackageFrameViewDTO(packageFrame);
     }
 
@@ -90,7 +88,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 
     @Override
     public List<PackageFrameViewDTO> findPackageFramesByPackageCodeStartTimeEndTime(String packageCode, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime) {
-        phoneValidationService.controlThePackageCodeExists(packageCode);
+        packageAddonPhoneServValidationService.controlThePackageCodeExists(packageCode);
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(packfrStartDateTime, packfrEndDateTime);
         List<PackageFrame> packageFrameList = packageFrameRepo.findByPhone_PackagePlan_PackageCodeAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual(packageCode, packfrStartDateTime, packfrEndDateTime);
         return packageFrameMapper.packageFramesToPackageFramesViewDTO(packageFrameList);
@@ -98,15 +96,14 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 
     @Override
     public List<PackageFrameViewDTO> findPackageFramesByPackageCodeStartTime(String packageCode, LocalDateTime packfrStartDateTime) {
-        phoneValidationService.controlThePackageCodeExists(packageCode);
+        packageAddonPhoneServValidationService.controlThePackageCodeExists(packageCode);
         List<PackageFrame> packageFrameList = packageFrameRepo.findByPhone_PackagePlan_PackageCodeAndPackfrStartDateTimeGreaterThanEqual(packageCode, packfrStartDateTime);
         return packageFrameMapper.packageFramesToPackageFramesViewDTO(packageFrameList);
     }
 
     @Override
     public void changePackageFrameStatus(Long packfrId) {
-        framesSDRValidationService.controlThePackageFrameExists(packfrId);
-        PackageFrame packageFrame = packageFrameRepo.findByPackfrId(packfrId);
+        PackageFrame packageFrame = framesSDRValidationService.returnThePackageFrameIfExists(packfrId);
         if (packageFrame.getPackfrStatus().equals(StatusType.PRESENT.getStatus())){
             packageFrame.setPackfrStatus(StatusType.NOT_IN_USE.getStatus());
         } else {
@@ -117,8 +114,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 
     @Override
     public void deletePackageFrame(Long packfrId) {
-        framesSDRValidationService.controlThePackageFrameExists(packfrId);
-        PackageFrame packageFrame = packageFrameRepo.findByPackfrId(packfrId);
+        PackageFrame packageFrame = framesSDRValidationService.returnThePackageFrameIfExists(packfrId);
         packageFrameRepo.delete(packageFrame);
     }
 
@@ -138,8 +134,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 
     @Override
     public AddonFrameViewDTO findAddonFrameById(Long addfrId) {
-        framesSDRValidationService.controlTheAddonFrameExists(addfrId);
-        AddonFrame addonFrame = addonFrameRepo.findByAddfrId(addfrId);
+        AddonFrame addonFrame = framesSDRValidationService.returnTheAddonFrameIfExists(addfrId);
         return addonFrameMapper.addonFrameToAddonFrameViewDTO(addonFrame);
     }
 
@@ -175,8 +170,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 
     @Override
     public void changeAddonFrameStatus(Long addfrId) {
-        framesSDRValidationService.controlTheAddonFrameExists(addfrId);
-        AddonFrame addonFrame = addonFrameRepo.findByAddfrId(addfrId);
+        AddonFrame addonFrame = framesSDRValidationService.returnTheAddonFrameIfExists(addfrId);
         if (addonFrame.getAddfrStatus().equals(StatusType.PRESENT.getStatus())){
             addonFrame.setAddfrStatus(StatusType.NOT_IN_USE.getStatus());
         } else {
@@ -187,8 +181,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 
     @Override
     public void deleteAddonFrame(Long addfrId) {
-        framesSDRValidationService.controlTheAddonFrameExists(addfrId);
-        AddonFrame addonFrame = addonFrameRepo.findByAddfrId(addfrId);
+        AddonFrame addonFrame = framesSDRValidationService.returnTheAddonFrameIfExists(addfrId);
         addonFrameRepo.delete(addonFrame);
     }
 
@@ -196,7 +189,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 @Override
 public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO) {
     String message = "Not EOS";
-    phoneValidationService.controlThePhoneExists(serviceDetailRecordSaveDTO.getPhoneNumber());
+    Phone phone = phoneValidationService.returnThePhoneIfExists(serviceDetailRecordSaveDTO.getPhoneNumber());
     packageAddonPhoneServValidationService.controlThePhoneServiceCodeExists(serviceDetailRecordSaveDTO.getServiceCode());
     phoneValidationService.checkThatPhoneHasCustomersPackageCode(serviceDetailRecordSaveDTO.getPhoneNumber());
     framesSDRValidationService.controlTheLocalDateTimeInputIsValid(serviceDetailRecordSaveDTO.getSdrStartDateTime());
@@ -207,7 +200,6 @@ public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetai
     log.info("above phone");
     ServiceDetailRecord serviceDetailRecord = new ServiceDetailRecord();
     /////////////////////////////////////////////////////////
-    Phone phone = phoneRepo.findByPhoneNumber(serviceDetailRecordSaveDTO.getPhoneNumber());
     String packageCode = phone.getPackagePlan().getPackageCode();
     PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
     String serviceCodeStr = serviceDetailRecordSaveDTO.getServiceCode();
@@ -285,8 +277,7 @@ public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetai
 
     @Override
     public ServiceDetailRecordViewDTO findServiceDetailRecordById(Long sdrId) {
-        framesSDRValidationService.controlTheServiceDetailRecordExists(sdrId);
-        ServiceDetailRecord serviceDetailRecord = serviceDetailRecordRepo.findBySdrId(sdrId);
+        ServiceDetailRecord serviceDetailRecord = framesSDRValidationService.returnTheServiceDetailRecordIfExists(sdrId);
         return serviceDetailRecordMapper.serviceDetailRecordToServiceDetailRecordViewDTO(serviceDetailRecord);
     }
 
@@ -324,8 +315,7 @@ public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetai
 
     @Override
     public void deleteServiceDetailRecord(Long sdrId) {
-        framesSDRValidationService.controlTheServiceDetailRecordExists(sdrId);
-        ServiceDetailRecord serviceDetailRecord = serviceDetailRecordRepo.findBySdrId(sdrId);
+        ServiceDetailRecord serviceDetailRecord = framesSDRValidationService.returnTheServiceDetailRecordIfExists(sdrId);
         serviceDetailRecordRepo.delete(serviceDetailRecord);
     }
 

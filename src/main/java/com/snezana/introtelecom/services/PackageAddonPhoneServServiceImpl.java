@@ -39,11 +39,10 @@ public class PackageAddonPhoneServServiceImpl implements  PackageAddonPhoneServS
 
     @Override
     public PackagePlanDTO getPackagePlanByPackageCode(String packageCode) {
-       packageAddonPhoneServValidationService.controlThePackageCodeExists(packageCode);
-       PackagePlan packagePlan = packagePlanRepo.findByPackageCode(packageCode);
-       log.info(packagePlan.getPackageCode());
-       log.info(packagePlan.getPackageName());
-       log.info(packagePlan.getPackagePrice().toString());
+        PackagePlan packagePlan = packageAddonPhoneServValidationService.returnThePackagePlanIfPackageCodeExists(packageCode);
+        log.info(packagePlan.getPackageCode());
+        log.info(packagePlan.getPackageName());
+        log.info(packagePlan.getPackagePrice().toString());
         return packagePlanMapper.packagePlanToPackagePlanDTO(packagePlan);
     }
 
@@ -55,16 +54,14 @@ public class PackageAddonPhoneServServiceImpl implements  PackageAddonPhoneServS
 
     @Override
     public void changePackagePrice(String packageCode, BigDecimal packagePrice) {
-        packageAddonPhoneServValidationService.controlThePackageCodeExists(packageCode);
-        PackagePlan packagePlan = packagePlanRepo.findByPackageCode(packageCode);
+        PackagePlan packagePlan = packageAddonPhoneServValidationService.returnThePackagePlanIfPackageCodeExists(packageCode);
         packagePlan.setPackagePrice(packagePrice);
         packagePlanRepo.save(packagePlan);
     }
 
     @Override
     public AddOnDTO getAddOnByAddOnCode(String addonCode) {
-        packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonCode);
-        AddOn addOn = addOnRepo.findByAddonCode(addonCode);
+        AddOn addOn = packageAddonPhoneServValidationService.returnTheAddOnIfAddonCodeExists(addonCode);
         return addOnMapper.addOnToAddOnDTO(addOn);
     }
 
@@ -76,16 +73,14 @@ public class PackageAddonPhoneServServiceImpl implements  PackageAddonPhoneServS
 
     @Override
     public void changeAddOnPrice(String addonCode, BigDecimal addonPrice) {
-        packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonCode);
-        AddOn addOn = addOnRepo.findByAddonCode(addonCode);
+        AddOn addOn = packageAddonPhoneServValidationService.returnTheAddOnIfAddonCodeExists(addonCode);
         addOn.setAddonPrice(addonPrice);
         addOnRepo.save(addOn);
     }
 
     @Override
     public PhoneServiceDTO getPhoneServiceByServiceCode(String serviceCode) {
-        packageAddonPhoneServValidationService.controlThePhoneServiceCodeExists(serviceCode);
-        PhoneService phoneService = phoneServiceRepo.findByServiceCode(serviceCode);
+        PhoneService phoneService = packageAddonPhoneServValidationService.returnThePhoneServiceIfServiceCodeExists(serviceCode);
         return phoneServiceMapper.phoneServiceToPhoneServiceDTO(phoneService);
     }
 
@@ -97,8 +92,7 @@ public class PackageAddonPhoneServServiceImpl implements  PackageAddonPhoneServS
 
     @Override
     public void changePhoneServicePrice(String serviceCode, BigDecimal servicePrice) {
-        packageAddonPhoneServValidationService.controlThePhoneServiceCodeExists(serviceCode);
-        PhoneService phoneService = phoneServiceRepo.findByServiceCode(serviceCode);
+        PhoneService phoneService = packageAddonPhoneServValidationService.returnThePhoneServiceIfServiceCodeExists(serviceCode);
         phoneService.setServicePrice(servicePrice);
         phoneServiceRepo.save(phoneService);
     }

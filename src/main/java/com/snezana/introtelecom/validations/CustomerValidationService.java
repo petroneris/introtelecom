@@ -27,19 +27,19 @@ public class CustomerValidationService {
         }
     }
 
-    public void controlThePersonalNumberExists(String personalNumber) {
-        customerRepo.findByPersonalNumberOpt(personalNumber)
+    public Customer returnTheCustomerWithThatPersonalNumberIfExists(String personalNumber) {
+        return customerRepo.findByPersonalNumberOpt(personalNumber)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that personalNumber doesn't exist in database!"));
 
     }
 
-    public void controlTheCustomerWithThatIdExists (Long customerId){
-        customerRepo.findByCustomerIdOpt(customerId)
+    public Customer returnTheCustomerWithThatIdIfExists (Long customerId){
+        return customerRepo.findByCustomerIdOpt(customerId)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that Id doesn't exist in database!"));
     }
 
-    public void controlTheEmailExists (String email){
-        customerRepo.findByEmailOpt(email)
+    public Customer returnTheCustomerWithThatEmailIfExists (String email){
+        return customerRepo.findByEmailOpt(email)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that email doesn't exist in database!"));
     }
 

@@ -9,11 +9,8 @@ import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.repositories.PackagePlanRepo;
 import com.snezana.introtelecom.repositories.UserRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Optional;
 
@@ -22,14 +19,18 @@ import java.util.Optional;
 public class UserValidationService {
 
     private final UserRepo userRepo;
-    private final PackagePlanRepo packagePlanRepo;
     private final PasswordEncoder passwordEncoder;
 
-    public void controlTheUserWithThisPhoneNumberExists(String phoneNumber) {
+    public void controlTheUserWithThisPhoneNumberAlreadyExists(String phoneNumber) {
         Optional<User> userOptional = userRepo.findByPhoneNumberOpt(phoneNumber);
         if(userOptional.isPresent()){
-            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The user with the phoneNumber = " +phoneNumber + " exists in database!");
+            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The user with this phoneNumber = " +phoneNumber + " exists in database!");
         }
+    }
+
+    public User returnTheUserWithThisPhoneNumberIfExists(String phoneNumber) {
+        return userRepo.findByPhoneNumberOpt(phoneNumber)
+                .orElseThrow(() ->  new IllegalItemFieldException(RestAPIErrorMessage.ITEM_NOT_FOUND, "This phoneNumber doesn't exist in database or there is no user with this phoneNumber!"));
     }
 
     public void controlTheUsernameIsUnique(String username) {
@@ -39,12 +40,12 @@ public class UserValidationService {
         }
     }
 
-    public void controlTheUsernameExists (String username){
-        userRepo.findByUsernameOpt(username)
-                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The user = " +username + " doesn't exist in database!" ));
+    public User returnTheUserWithThisUsernameIfExists(String username) {
+        return userRepo.findByUsernameOpt(username)
+                .orElseThrow(() ->  new IllegalItemFieldException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The user = " +username + " doesn't exist in database!"));
     }
 
-    public void checkIfValidOldPassword(String oldPassword, String newPassword) {
+    public void checkIfOldPasswordIsValid(String oldPassword, String newPassword) {
         boolean match = passwordEncoder.matches(oldPassword, newPassword);
         if (!match) {
             throw new IllegalItemFieldException(RestAPIErrorMessage.ITEMS_NOT_MATCH, "Input password doesn't match old password!");
@@ -54,13 +55,6 @@ public class UserValidationService {
     public void checkIfUserIsAdmin(String packageCode) {
         if(packageCode.equals(PackagePlanType.ADM.getPackageCode())) {
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "Can't delete this user!");
-        }
-    }
-
-    public void checkIfValidUserSaveDTO(BindingResult result) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            System.out.println("result.hasErrors() - in checkIfValidUserSaveDTO");
-            throw new MethodArgumentNotValidException(null, result);
         }
     }
 

@@ -11,6 +11,7 @@ import com.snezana.introtelecom.repositories.PackagePlanRepo;
 import com.snezana.introtelecom.repositories.RoleRepo;
 import com.snezana.introtelecom.repositories.UserRepo;
 import com.snezana.introtelecom.repositories.PhoneRepo;
+import com.snezana.introtelecom.validations.PackageAddonPhoneServValidationService;
 import com.snezana.introtelecom.validations.PhoneValidationService;
 import com.snezana.introtelecom.validations.UserValidationService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class UserPhoneServiceImpl implements UserPhoneService {
     private final PhoneRepo phoneRepo;
     private final PhoneValidationService phoneValidationService;
     private final UserValidationService userValidationService;
+    private final PackageAddonPhoneServValidationService packageAddonPhoneServValidationService;
     private final PhoneMapper phoneMapper;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -48,18 +50,15 @@ public class UserPhoneServiceImpl implements UserPhoneService {
 
     @Override
     public void changePackageCode (String phoneNumber, String packageCode){
-        phoneValidationService.controlThePhoneExists(phoneNumber);
-        phoneValidationService.controlThePackageCodeExists(packageCode);
-        Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
-        PackagePlan packagePlan = packagePlanRepo.findByPackageCode(packageCode);
+        Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
+        PackagePlan packagePlan = packageAddonPhoneServValidationService.returnThePackagePlanIfPackageCodeExists(packageCode);
         phone.setPackagePlan(packagePlan);
         phoneRepo.save(phone);
     }
 
     @Override
     public void changePhoneStatus(String phoneNumber) {
-        phoneValidationService.controlThePhoneExists(phoneNumber);
-        Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
+        Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
         if (phone.getPhoneStatus().equals(StatusType.PRESENT.getStatus())){
             phone.setPhoneStatus(StatusType.NOT_IN_USE.getStatus());
         } else {
@@ -72,8 +71,7 @@ public class UserPhoneServiceImpl implements UserPhoneService {
 
     @Override
     public PhoneViewDTO getPhone (String phoneNumber) {
-        phoneValidationService.controlThePhoneExists(phoneNumber);
-        Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
+        Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
         return phoneMapper.phoneToPhoneViewDTO(phone);
     }
 
@@ -91,7 +89,7 @@ public class UserPhoneServiceImpl implements UserPhoneService {
 
     @Override
     public List<PhoneViewDTO> getPhonesByPackageCode(String packageCode) {
-        phoneValidationService.controlThePackageCodeExists(packageCode);
+        packageAddonPhoneServValidationService.controlThePackageCodeExists(packageCode);
         List<Phone> phoneList = phoneRepo.findByPackageCode(packageCode);
         return phoneMapper.phonesToPhonesViewDTO(phoneList);
     }
@@ -99,7 +97,7 @@ public class UserPhoneServiceImpl implements UserPhoneService {
 @Override
 public void saveNewUser(UserSaveDTO userSaveDto) {
     phoneValidationService.controlThePhoneExists(userSaveDto.getPhoneNumber());
-    userValidationService.controlTheUserWithThisPhoneNumberExists(userSaveDto.getPhoneNumber());
+    userValidationService.controlTheUserWithThisPhoneNumberAlreadyExists(userSaveDto.getPhoneNumber());
     userValidationService.controlTheUsernameIsUnique(userSaveDto.getUsername());
     User user = new User();
     userMapper.userSaveDtoToUser(userSaveDto, user, roleRepo, phoneRepo);
@@ -122,22 +120,19 @@ public void saveNewUser(UserSaveDTO userSaveDto) {
 
     @Override
     public UserViewDTO getUserByUsername(String username) {
-        userValidationService.controlTheUsernameExists(username);
-        User user = userRepo.findByUsername(username);
+        User user = userValidationService.returnTheUserWithThisUsernameIfExists(username);
         return userMapper.userToUserViewDTO(user);
     }
 
     @Override
     public UserViewDTO getUserByPhoneNumber(String phoneNumber) {
-        phoneValidationService.controlThePhoneExists(phoneNumber);
-        User user = userRepo.findByPhoneNumber(phoneNumber);
+        User user = userValidationService.returnTheUserWithThisPhoneNumberIfExists(phoneNumber);
         return userMapper.userToUserViewDTO(user);
     }
 
     @Override
     public void changeUserStatus(String phoneNumber) {
-        phoneValidationService.controlThePhoneExists(phoneNumber);
-        User user = userRepo.findByPhoneNumber(phoneNumber);
+        User user = userValidationService.returnTheUserWithThisPhoneNumberIfExists(phoneNumber);
         if (user.getUserStatus().equals(StatusType.PRESENT.getStatus())){
             user.setUserStatus(StatusType.NOT_IN_USE.getStatus());
         } else {
@@ -148,17 +143,15 @@ public void saveNewUser(UserSaveDTO userSaveDto) {
 
     @Override
     public void changeUserPassword(UserChangePasswordDTO userChangePasswordDto) {
-        userValidationService.controlTheUsernameExists(userChangePasswordDto.getUsername());
-        User user = userRepo.findByUsername(userChangePasswordDto.getUsername());
+        User user = userValidationService.returnTheUserWithThisUsernameIfExists(userChangePasswordDto.getUsername());
         String oldPassword = userChangePasswordDto.getOldPassword();
-        userValidationService.checkIfValidOldPassword(oldPassword, user.getPassword());
+        userValidationService.checkIfOldPasswordIsValid(oldPassword, user.getPassword());
         user.setPassword(passwordEncoder.encode(userChangePasswordDto.getNewPassword()));
     }
 
     @Override
     public void deleteUser(String username) {
-        userValidationService.controlTheUsernameExists(username);
-        User user = userRepo.findByUsername(username);
+        User user = userValidationService.returnTheUserWithThisUsernameIfExists(username);
         String packageCode = user.getPhone().getPackagePlan().getPackageCode();
         userValidationService.checkIfUserIsAdmin(packageCode);
         userRepo.delete(user);

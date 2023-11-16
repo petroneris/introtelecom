@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Optional;
@@ -33,18 +34,18 @@ public class FramesSDRValidationService {
         }
     }
 
-    public void controlThePackageFrameExists (Long packfrId){
-     packageFrameRepo.findByPackfrIdOpt(packfrId)
-             .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Package frame is not found."));
+    public PackageFrame returnThePackageFrameIfExists (Long packfrId){
+        return packageFrameRepo.findByPackfrIdOpt(packfrId)
+                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Package frame is not found."));
     }
 
-    public void controlTheAddonFrameExists (Long addfrId){
-        addonFrameRepo.findByAddfrIdOpt(addfrId)
+    public AddonFrame returnTheAddonFrameIfExists (Long addfrId){
+        return addonFrameRepo.findByAddfrIdOpt(addfrId)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Addon frame is not found."));
     }
 
-    public void controlTheServiceDetailRecordExists (Long sdrfrId){
-        serviceDetailRecordRepo.findBySdrIdOpt(sdrfrId)
+    public ServiceDetailRecord returnTheServiceDetailRecordIfExists (Long sdrfrId){
+        return serviceDetailRecordRepo.findBySdrIdOpt(sdrfrId)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Service Detail Record is not found."));
     }
 
@@ -72,6 +73,12 @@ public class FramesSDRValidationService {
         Optional<ServiceDetailRecord> serviceDetailRecordOptional = serviceDetailRecordRepo.findServiceDetailRecordByPhone_PhoneNumberAndSdrStartDateTimeEqualsAndSdrEndDateTimeEqualsAndPhoneService_ServiceCode (phoneNumber, startDateTime, endDateTime, serviceCode);
         if (serviceDetailRecordOptional.isPresent()) {
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "ServiceDetailRecord with these parameters already exists for that phone!");
+        }
+    }
+
+    public void controlTheBigDecimalFormatIsValid (Object number){
+        if(!(number instanceof BigDecimal)){
+            throw new IllegalItemFieldException(RestAPIErrorMessage.INVALID_INPUT_FORMAT, "Input format for mbAmount is not valid!");
         }
     }
 
