@@ -10,10 +10,8 @@ import com.snezana.introtelecom.repositories.AddonFrameRepo;
 import com.snezana.introtelecom.repositories.PackageFrameRepo;
 import com.snezana.introtelecom.repositories.ServiceDetailRecordRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Optional;
@@ -55,31 +53,25 @@ public class FramesSDRValidationService {
         }
     }
 
-    public void controlTheMonthlyPackageFrameExistsAlready (String phoneNumber, LocalDateTime startDateTime, LocalDateTime endDateTime){
+    public void controlTheMonthlyPackageFrameAlreadyExists(String phoneNumber, LocalDateTime startDateTime, LocalDateTime endDateTime){
         Optional<PackageFrame> packageFrameOptional = packageFrameRepo.findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual(phoneNumber, startDateTime, endDateTime);
-        if (packageFrameOptional.isPresent()) {
-            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "The monthly PackageFrame already exists!");
-        }
+        packageFrameOptional.ifPresent( packageFrame ->  {
+            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "The monthly package frame already exists!");
+        });
     }
 
     public void controlTheAddonFrameHasAlreadyGiven(String phoneNumber, String addonCode, LocalDateTime startDateTime, LocalDateTime endDateTime){
         Optional<AddonFrame> addonFrameOptional = addonFrameRepo.findByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phoneNumber, addonCode, startDateTime, endDateTime);
-        if (addonFrameOptional.isPresent()) {
-            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "AddonFrame with these parameters already exists for that phone!");
-        }
+        addonFrameOptional.ifPresent( addonFrame ->  {
+            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "AddonFrame with these parameters has already given for this phone!");
+        });
     }
 
     public void controlTheServiceDetailRecordAlreadyExists (String phoneNumber, String serviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime){
         Optional<ServiceDetailRecord> serviceDetailRecordOptional = serviceDetailRecordRepo.findServiceDetailRecordByPhone_PhoneNumberAndSdrStartDateTimeEqualsAndSdrEndDateTimeEqualsAndPhoneService_ServiceCode (phoneNumber, startDateTime, endDateTime, serviceCode);
-        if (serviceDetailRecordOptional.isPresent()) {
-            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "ServiceDetailRecord with these parameters already exists for that phone!");
-        }
-    }
-
-    public void controlTheBigDecimalFormatIsValid (Object number){
-        if(!(number instanceof BigDecimal)){
-            throw new IllegalItemFieldException(RestAPIErrorMessage.INVALID_INPUT_FORMAT, "Input format for mbAmount is not valid!");
-        }
+        serviceDetailRecordOptional.ifPresent(serviceDetailRecord ->  {
+            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "ServiceDetailRecord with these parameters already exists for this phone!");
+        });
     }
 
 }

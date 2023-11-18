@@ -8,16 +8,11 @@ import com.snezana.introtelecom.entity.Admin;
 import com.snezana.introtelecom.entity.Customer;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.entity.User;
-import com.snezana.introtelecom.exceptions.ItemNotFoundException;
-import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.mapper.AdminMapper;
 import com.snezana.introtelecom.mapper.CustomerMapper;
-import com.snezana.introtelecom.mapper.PhoneMapper;
-import com.snezana.introtelecom.mapper.UserMapper;
 import com.snezana.introtelecom.repositories.AdminRepo;
 import com.snezana.introtelecom.repositories.CustomerRepo;
 import com.snezana.introtelecom.repositories.PhoneRepo;
-import com.snezana.introtelecom.repositories.UserRepo;
 import com.snezana.introtelecom.validations.AdminValidationService;
 import com.snezana.introtelecom.validations.CustomerValidationService;
 import com.snezana.introtelecom.validations.PhoneValidationService;
@@ -28,8 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -50,8 +43,8 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
 
     @Override
     public void saveNewAdmin(AdminSaveDTO adminSaveDto) {
-        phoneValidationService.controlThePhoneExists(adminSaveDto.getPhoneNumber());
-        phoneValidationService.controlIsTheAdminPackageCode(adminSaveDto.getPhoneNumber());
+        Phone phone = phoneValidationService.returnThePhoneIfExists(adminSaveDto.getPhoneNumber());
+        phoneValidationService.controlThisPhoneHasTheAdminPackageCode(phone);
         adminValidationService.controlTheOtherAdminHasThisPhone(adminSaveDto.getPhoneNumber());
         adminValidationService.controlThePersonalNumberIsUnique(adminSaveDto.getPersonalNumber());
         Admin admin = new Admin();
@@ -62,9 +55,9 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
     @Override
     public void updateAdmin(AdminSaveDTO adminSaveDto, Long id) {
         Admin admin = adminValidationService.returnTheAdminWithThatIdIfExists(id);
-        adminValidationService.controlUpdateTheOtherAdminHasThisPersonalNumber(adminSaveDto.getPersonalNumber(), id);
-        adminValidationService.controlUpdateTheOtherAdminHasThisEmail(adminSaveDto.getEmail(), id);
-        adminValidationService.controlUpdateTheOtherAdminHasThisPhone(adminSaveDto.getPhoneNumber(), id);
+        adminValidationService.controlTheOtherAdminHasThisPersonalNumber(adminSaveDto.getPersonalNumber(), id);
+        adminValidationService.controlTheOtherAdminHasThisEmail(adminSaveDto.getEmail(), id);
+        adminValidationService.controlTheOtherAdminHasThisPhone(adminSaveDto.getPhoneNumber(), id);
         adminMapper.adminSaveDtoToAdmin(adminSaveDto, admin, phoneRepo);
         adminRepo.save(admin);
     }
@@ -111,8 +104,8 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
     @Override
     public void updateCustomer(CustomerSaveDTO customerSaveDto, Long id) {
         Customer customer = customerValidationService.returnTheCustomerWithThatIdIfExists(id);
-        customerValidationService.controlUpdateTheOtherCustomerHasThisPersonalNumber(customerSaveDto.getPersonalNumber(), id);
-        customerValidationService.controlUpdateTheOtherCustomerHasThisEmail(customerSaveDto.getEmail(), id);
+        customerValidationService.controlTheOtherCustomerHasThisPersonalNumber(customerSaveDto.getPersonalNumber(), id);
+        customerValidationService.controlTheOtherCustomerHasThisEmail(customerSaveDto.getEmail(), id);
         customerMapper.customerSaveDtoToCustomer(customerSaveDto, customer);
         customerRepo.save(customer);
     }
@@ -126,30 +119,9 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
     @Override
     public CustomerViewDTO getCustomerByPhone(String phoneNumber) {
         Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
-        phoneValidationService.checkThatPhoneHasCustomersPackageCode(phoneNumber);
-        log.info("phone is: {}", phone.getPhoneNumber());
-        Optional<Customer> customerOpt = Optional.empty();
-        log.info("after optional");
-        List<Customer> customerList = customerRepo.findAll();
-        log.info("customerList is: {}", customerList.size());
-        for (Customer custm: customerList){
-            Set<Phone> phones = custm.getPhones();
-            log.info("phones is: {}", phones.size());
-            if(phones.contains(phone)) {
-                customerOpt = Optional.of(custm);
-                log.info("in contains");
-                break;
-            }
-        }
-        log.info("after for");
-        if (customerOpt.isPresent()) {
-            Customer customer = customerOpt.get();
-            log.info("customer is: {}", customer);
-            return customerMapper.customerToCustomerViewDTO(customer);
-        } else {
-            log.info("throw");
-            throw new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that phone number doesn't exist in database!");
-        }
+        phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
+        Customer customer = customerValidationService.returnTheCustomerWithThisPhoneIfExists(phone, "phone number");
+        return customerMapper.customerToCustomerViewDTO(customer);
     }
 
     @Override
@@ -173,40 +145,17 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
     @Override
     public CustomerViewDTO getCustomerByUsername(String username) {
         User user = userValidationService.returnTheUserWithThisUsernameIfExists(username);
-        userValidationService.checkIfUserIsCustomer(username);
-        log.info("getCustomerByUsername");
-        log.info("user is: {}", user.getUsername());
+        userValidationService.checkIfUserIsCustomer(user);
         Phone phone = user.getPhone();
-        log.info("phone is: {}", phone.getPhoneNumber());
-        Optional<Customer> customerOpt = Optional.empty();
-        log.info("after optional");
-        List<Customer> customerList = customerRepo.findAll();
-        log.info("customerList is: {}", customerList.size());
-        for (Customer custm: customerList){
-            Set<Phone> phones = custm.getPhones();
-            log.info("phones is: {}", phones.size());
-            if(phones.contains(phone)) {
-                customerOpt = Optional.of(custm);
-                log.info("in contains");
-                break;
-            }
-        }
-        log.info("after for");
-        if (customerOpt.isPresent()) {
-            Customer customer = customerOpt.get();
-            log.info("customer is: {}", customer);
-            return customerMapper.customerToCustomerViewDTO(customer);
-        } else {
-            log.info("throw");
-            throw new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that username doesn't exist in database!");
-        }
+        Customer customer = customerValidationService.returnTheCustomerWithThisPhoneIfExists(phone, "username");
+        return customerMapper.customerToCustomerViewDTO(customer);
     }
 
     @Override
     public void addPhoneToCustomer(Long customerId, String phoneNumber) {
        Customer customer = customerValidationService.returnTheCustomerWithThatIdIfExists(customerId);
        Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
-       phoneValidationService.checkThatPhoneHasCustomersPackageCode(phoneNumber);
+       phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
        customerValidationService.controlThatPhoneAlreadyBelongsToSomeCustomer(phoneNumber);
        customer.getPhones().add(phone);
     }
@@ -215,7 +164,8 @@ public class AdminCustomerServiceImpl implements AdminCustomerService{
     public void removePhoneFromCustomer(Long customerId, String phoneNumber) {
         Customer customer = customerValidationService.returnTheCustomerWithThatIdIfExists(customerId);
         Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
-        customerValidationService.checkThatPhoneBelongsToCustomerWithThisId(customerId, phoneNumber);
+        customerValidationService.checkThatPhoneBelongsToCustomerWithThisId(customer, phone);
         customer.getPhones().remove(phone);
     }
+
 }

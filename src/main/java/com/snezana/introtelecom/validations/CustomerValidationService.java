@@ -6,25 +6,24 @@ import com.snezana.introtelecom.exceptions.IllegalItemFieldException;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.repositories.CustomerRepo;
-import com.snezana.introtelecom.repositories.PhoneRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerValidationService {
 
-    private final PhoneRepo phoneRepo;
     private final CustomerRepo customerRepo;
 
     public void controlThePersonalNumberIsUnique(String personalNumber) {
         Optional<Customer> customerOptional = customerRepo.findByPersonalNumberOpt(personalNumber);
-        if (customerOptional.isPresent()) {
-            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "This personal number exists in database!");
-        }
+        customerOptional.ifPresent(customer ->  {
+            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "This personal number already exists in database!");
+        });
     }
 
     public Customer returnTheCustomerWithThatPersonalNumberIfExists(String personalNumber) {
@@ -45,34 +44,30 @@ public class CustomerValidationService {
 
     public void controlTheEmailIsUnique (String email){
         Optional<Customer> customerOptional = customerRepo.findByEmailOpt(email);
-        if (customerOptional.isPresent()) {
-                throw new ItemNotFoundException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The customer with that email exists in database!");
-        }
+        customerOptional.ifPresent(customer ->  {
+                throw new ItemNotFoundException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The customer with that email already exists in database!");
+        });
     }
 
-    public void controlUpdateTheOtherCustomerHasThisPersonalNumber(String personalNumber, Long customerId){
+    public void controlTheOtherCustomerHasThisPersonalNumber(String personalNumber, Long customerId){
         Optional<Customer> customerOptional = customerRepo.findByPersonalNumberOpt(personalNumber);
-        if (customerOptional.isPresent()) {
-            Customer customer = customerRepo.findByPersonalNumber(personalNumber);
+        customerOptional.ifPresent(customer ->  {
             if(!customer.getCustomerId().equals(customerId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other customer with that personal number exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other customer with that personal number already exists in database!");
             }
-        }
+        });
     }
 
-    public void controlUpdateTheOtherCustomerHasThisEmail(String email, Long customerId){
+    public void controlTheOtherCustomerHasThisEmail(String email, Long customerId){
         Optional<Customer> customerOptional = customerRepo.findByEmailOpt(email);
-        if (customerOptional.isPresent()) {
-            Customer customer = customerRepo.findCustomerByEmail(email);
+        customerOptional.ifPresent(customer ->  {
             if(!customer.getCustomerId().equals(customerId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other customer with that email exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other customer with that email already exists in database!");
             }
-        }
+        });
     }
 
-    public void checkThatPhoneBelongsToCustomerWithThisId (Long customerId, String phoneNumber){
-        Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
-        Customer customer = customerRepo.findByCustomerId(customerId);
+    public void checkThatPhoneBelongsToCustomerWithThisId (Customer customer, Phone phone){
         if(!customer.getPhones().contains(phone)){
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "This phone number doesn't belong to this customer!");
         }
@@ -80,9 +75,23 @@ public class CustomerValidationService {
 
     public void controlThatPhoneAlreadyBelongsToSomeCustomer (String phoneNumber){
         Optional<Customer> customerOptional = customerRepo.findByPhoneNumberOpt(phoneNumber);
-        if (customerOptional.isPresent()) {
+        customerOptional.ifPresent(customer ->  {
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "This phone number already belongs to some customer!");
+        });
+    }
+
+    public Customer returnTheCustomerWithThisPhoneIfExists (Phone phone, String text){
+        Optional<Customer> customerOpt = Optional.empty();
+        List<Customer> customerList = customerRepo.findAll();
+        for (Customer custm: customerList){
+            Set<Phone> phones = custm.getPhones();
+            if(phones.contains(phone)) {
+                customerOpt = Optional.of(custm);
+                break;
+            }
         }
+        return customerOpt
+                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that " +text + " doesn't exist in database!"));
     }
 
 }

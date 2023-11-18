@@ -126,12 +126,14 @@ public void saveNewUser(UserSaveDTO userSaveDto) {
 
     @Override
     public UserViewDTO getUserByPhoneNumber(String phoneNumber) {
+        phoneValidationService.controlThePhoneExists(phoneNumber);
         User user = userValidationService.returnTheUserWithThisPhoneNumberIfExists(phoneNumber);
         return userMapper.userToUserViewDTO(user);
     }
 
     @Override
     public void changeUserStatus(String phoneNumber) {
+        phoneValidationService.controlThePhoneExists(phoneNumber);
         User user = userValidationService.returnTheUserWithThisPhoneNumberIfExists(phoneNumber);
         if (user.getUserStatus().equals(StatusType.PRESENT.getStatus())){
             user.setUserStatus(StatusType.NOT_IN_USE.getStatus());
@@ -152,8 +154,7 @@ public void saveNewUser(UserSaveDTO userSaveDto) {
     @Override
     public void deleteUser(String username) {
         User user = userValidationService.returnTheUserWithThisUsernameIfExists(username);
-        String packageCode = user.getPhone().getPackagePlan().getPackageCode();
-        userValidationService.checkIfUserIsAdmin(packageCode);
+        userValidationService.checkIfUserIsAdmin(user);
         userRepo.delete(user);
     }
 

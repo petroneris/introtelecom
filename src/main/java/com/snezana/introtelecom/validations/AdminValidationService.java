@@ -1,14 +1,11 @@
 package com.snezana.introtelecom.validations;
 
 import com.snezana.introtelecom.entity.Admin;
-import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.exceptions.IllegalItemFieldException;
 import com.snezana.introtelecom.exceptions.ItemNotFoundException;
 import com.snezana.introtelecom.exceptions.RestAPIErrorMessage;
 import com.snezana.introtelecom.repositories.AdminRepo;
-import com.snezana.introtelecom.repositories.PhoneRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,14 +14,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AdminValidationService {
 
-    private final PhoneRepo phoneRepo;
     private final AdminRepo adminRepo;
 
     public void controlThePersonalNumberIsUnique(String personalNumber) {
         Optional<Admin> adminOptional = adminRepo.findByPersonalNumberOpt(personalNumber);
-        if (adminOptional.isPresent()) {
-            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "This personal number exists in database!");
-        }
+        adminOptional.ifPresent(admin -> {
+            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, admin.getPersonalNumber() + " personal number already exists in database!");
+        });
     }
 
     public Admin returnAdminWithThatPersonalNumberIfExists(String personalNumber) {
@@ -34,11 +30,10 @@ public class AdminValidationService {
 
     public void controlTheOtherAdminHasThisPhone(String phoneNumber) {
         Optional<Admin> adminOptional = adminRepo.findByPhoneNumberOpt(phoneNumber);
-        if (adminOptional.isPresent()) {
-            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The admin with that phone number exists in database!");
-        }
+        adminOptional.ifPresent(admin -> {
+            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The admin with " + admin.getPhone().getPhoneNumber() + " phone number already exists in database!");
+        });
     }
-
 
     public Admin returnTheAdminWithThatIdIfExists (Long adminId){
         return adminRepo.findByAdminIdOpt(adminId)
@@ -55,35 +50,31 @@ public class AdminValidationService {
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that email doesn't exist in database!"));
     }
 
-    public void controlUpdateTheOtherAdminHasThisPersonalNumber(String personalNumber, Long adminId){
+    public void controlTheOtherAdminHasThisPersonalNumber(String personalNumber, Long adminId){
         Optional<Admin> adminOptional = adminRepo.findByPersonalNumberOpt(personalNumber);
-        if (adminOptional.isPresent()) {
-            Admin admin = adminRepo.findByPersonalNumber(personalNumber);
+        adminOptional.ifPresent(admin -> {
             if(!admin.getAdminId().equals(adminId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that personal number exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that personal number already exists in database!");
             }
-        }
+        });
     }
 
-    public void controlUpdateTheOtherAdminHasThisEmail(String email, Long adminId){
+    public void controlTheOtherAdminHasThisEmail(String email, Long adminId){
         Optional<Admin> adminOptional = adminRepo.findByEmailOpt(email);
-        if (adminOptional.isPresent()) {
-            Admin admin = adminRepo.findAdminByEmail(email);
+        adminOptional.ifPresent(admin -> {
             if(!admin.getAdminId().equals(adminId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that email exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that email already exists in database!");
             }
-        }
+        });
     }
 
-    public void controlUpdateTheOtherAdminHasThisPhone(String phoneNumber, Long adminId){
+    public void controlTheOtherAdminHasThisPhone(String phoneNumber, Long adminId){
         Optional<Admin> adminOptional = adminRepo.findByPhoneNumberOpt(phoneNumber);
-        if (adminOptional.isPresent()) {
-            Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
-            Admin admin = adminRepo.findByPhone(phone);
+        adminOptional.ifPresent(admin -> {
             if(!admin.getAdminId().equals(adminId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that phone exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that phone already exists in database!");
             }
-        }
+        });
     }
 
 }

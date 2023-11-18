@@ -55,12 +55,12 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 
     @Override
     public void saveNewPackageFrame(PackageFrameSaveDTO packageFrameSaveDTO) {
-        phoneValidationService.controlThePhoneExists(packageFrameSaveDTO.getPhoneNumber());
-        phoneValidationService.checkThatPhoneHasCustomersPackageCode(packageFrameSaveDTO.getPhoneNumber());
+        Phone phone = phoneValidationService.returnThePhoneIfExists(packageFrameSaveDTO.getPhoneNumber());
+        phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(packageFrameSaveDTO.getPackfrStartDateTime());
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(packageFrameSaveDTO.getPackfrEndDateTime());
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(packageFrameSaveDTO.getPackfrStartDateTime(), packageFrameSaveDTO.getPackfrEndDateTime());
-        framesSDRValidationService.controlTheMonthlyPackageFrameExistsAlready(packageFrameSaveDTO.getPhoneNumber(), packageFrameSaveDTO.getPackfrStartDateTime(), packageFrameSaveDTO.getPackfrEndDateTime());
+        framesSDRValidationService.controlTheMonthlyPackageFrameAlreadyExists(packageFrameSaveDTO.getPhoneNumber(), packageFrameSaveDTO.getPackfrStartDateTime(), packageFrameSaveDTO.getPackfrEndDateTime());
         PackageFrame packageFrame = packageFrameMapper.packageFrameSaveDtoToPackageFrame(packageFrameSaveDTO, phoneRepo);
         packageFrameRepo.save(packageFrame);
     }
@@ -121,9 +121,9 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void saveNewAddonFame(AddonFrameSaveDTO addonFrameSaveDTO) {
-        phoneValidationService.controlThePhoneExists(addonFrameSaveDTO.getPhoneNumber());
+        Phone phone = phoneValidationService.returnThePhoneIfExists(addonFrameSaveDTO.getPhoneNumber());
+        phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
         packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonFrameSaveDTO.getAddonCode());
-        phoneValidationService.checkThatPhoneHasCustomersPackageCode(addonFrameSaveDTO.getPhoneNumber());
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(addonFrameSaveDTO.getAddfrStartDateTime());
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(addonFrameSaveDTO.getAddfrEndDateTime());
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(addonFrameSaveDTO.getAddfrStartDateTime(), addonFrameSaveDTO.getAddfrEndDateTime());
@@ -190,8 +190,8 @@ public class FramesSDRServiceImpl implements FramesSDRService {
 public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO) {
     String message = "Not EOS";
     Phone phone = phoneValidationService.returnThePhoneIfExists(serviceDetailRecordSaveDTO.getPhoneNumber());
+    phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
     packageAddonPhoneServValidationService.controlThePhoneServiceCodeExists(serviceDetailRecordSaveDTO.getServiceCode());
-    phoneValidationService.checkThatPhoneHasCustomersPackageCode(serviceDetailRecordSaveDTO.getPhoneNumber());
     framesSDRValidationService.controlTheLocalDateTimeInputIsValid(serviceDetailRecordSaveDTO.getSdrStartDateTime());
     framesSDRValidationService.controlTheLocalDateTimeInputIsValid(serviceDetailRecordSaveDTO.getSdrEndDateTime());
     framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());

@@ -23,21 +23,21 @@ public class UserValidationService {
 
     public void controlTheUserWithThisPhoneNumberAlreadyExists(String phoneNumber) {
         Optional<User> userOptional = userRepo.findByPhoneNumberOpt(phoneNumber);
-        if(userOptional.isPresent()){
-            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The user with this phoneNumber = " +phoneNumber + " exists in database!");
-        }
+        userOptional.ifPresent(user -> {
+            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The user with this phoneNumber = " + user.getPhoneNumber() + " already exists in database!");
+        });
     }
-
+//???
     public User returnTheUserWithThisPhoneNumberIfExists(String phoneNumber) {
         return userRepo.findByPhoneNumberOpt(phoneNumber)
-                .orElseThrow(() ->  new IllegalItemFieldException(RestAPIErrorMessage.ITEM_NOT_FOUND, "This phoneNumber doesn't exist in database or there is no user with this phoneNumber!"));
+                .orElseThrow(() ->  new IllegalItemFieldException(RestAPIErrorMessage.ITEM_NOT_FOUND, "There is no user with this phoneNumber!"));
     }
 
     public void controlTheUsernameIsUnique(String username) {
         Optional<User> userOptional = userRepo.findByUsernameOpt(username);
-        if(userOptional.isPresent()){
-            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The user with the username = " +username + " exists in database!");
-        }
+        userOptional.ifPresent(user -> {
+            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The user with the username = " +username + " already exists in database!");
+        });
     }
 
     public User returnTheUserWithThisUsernameIfExists(String username) {
@@ -52,16 +52,14 @@ public class UserValidationService {
         }
     }
 
-    public void checkIfUserIsAdmin(String packageCode) {
-        if(packageCode.equals(PackagePlanType.ADM.getPackageCode())) {
+    public void checkIfUserIsAdmin(User user) {
+        if(user.getPhone().getPackagePlan().getPackageCode().equals(PackagePlanType.ADM.getPackageCode())) {
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "Can't delete this user!");
         }
     }
 
-    public void checkIfUserIsCustomer (String username){
-        User user = userRepo.findByUsername(username);
-        Phone phone = user.getPhone();
-        if(phone.getPackagePlan().getPackageCode().equals((PackagePlanType.ADM.getPackageCode()))){
+    public void checkIfUserIsCustomer (User user){
+        if(user.getPhone().getPackagePlan().getPackageCode().equals((PackagePlanType.ADM.getPackageCode()))){
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "There is no customer with that username!");
         }
     }
