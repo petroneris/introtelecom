@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -28,11 +29,11 @@ import java.util.Map;
         bearerFormat = "JWT",
         scheme = "bearer"
 )
+@RequiredArgsConstructor
 public class UserPhoneController {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(UserPhoneController.class);
 
-    @Autowired
-    private UserPhoneService usersPhonesService;
+    private final UserPhoneService usersPhonesService;
 
     @Operation(tags = "UserPhone Controller", summary = "save a phone", description = "save a phone")
     @SecurityRequirement(name = "Bearer Authentication")

@@ -1,6 +1,5 @@
 package com.snezana.introtelecom.repositories;
 
-import com.snezana.introtelecom.entity.AddOn;
 import com.snezana.introtelecom.entity.PhoneService;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

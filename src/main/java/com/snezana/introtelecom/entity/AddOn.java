@@ -19,7 +19,10 @@ public class AddOn {
     @Column(name = "addon_description", nullable = false)
     private String addonDescription;
 
-    @Column(name = "addon_price", precision = 10 ,scale =2 , nullable = false)
+    @Column(name = "addon_price", precision = 10 ,scale = 2 , nullable = false)
     private BigDecimal addonPrice;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="addOn")
+    private Set<AddonFrame> addonFrames;
 
 }

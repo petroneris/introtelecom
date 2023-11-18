@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserPhoneService {
 
-    public void saveNewPhone (final PhoneSaveDTO phoneSaveDto);
+    public void saveNewPhone (PhoneSaveDTO phoneSaveDto);
 
     public void changePackageCode (String phoneNumber, String packageCode);
 
@@ -21,7 +21,7 @@ public interface UserPhoneService {
 
     public List<PhoneViewDTO> getPhonesByPackageCode(String packageCode);
 
-    public void saveNewUser(final UserSaveDTO userSaveDto);
+    public void saveNewUser(UserSaveDTO userSaveDto);
 
     public List<UserViewDTO> getAllAdminsUsers();
 

@@ -1,15 +1,11 @@
 package com.snezana.introtelecom.dto;
 
-import com.snezana.introtelecom.entity.Phone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -30,7 +26,7 @@ public class AdminSaveDTO {
     private String email;
 
     @NotBlank
-    private String phone;
+    private String phoneNumber;
 
 }
 

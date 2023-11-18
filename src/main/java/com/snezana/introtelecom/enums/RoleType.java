@@ -1,7 +1,7 @@
 package com.snezana.introtelecom.enums;
 
 public enum RoleType {
-    ADMIN("ADMIN"), CUSTOMER("CUSTOMER");
+    ADM("ADMIN"), CSTM("CUSTOMER");
 
     private  String role;
 

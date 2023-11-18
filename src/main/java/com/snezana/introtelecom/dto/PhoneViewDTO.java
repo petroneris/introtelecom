@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class PhoneViewDTO {
 
     private String phoneNumber;
-    private String packagePlan;
+    private String packageCode;
     private LocalDateTime phoneStartDateTime;
     private String phoneStatus;
     private String note;

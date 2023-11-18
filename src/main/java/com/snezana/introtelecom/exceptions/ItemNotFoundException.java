@@ -7,7 +7,7 @@ import org.springframework.web.context.request.WebRequest;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ItemNotFoundException extends GeneralException{
 
-    public ItemNotFoundException(GeneralErrorMessage errorMessage, String description) {
+    public ItemNotFoundException(RestAPIErrorMessage errorMessage, String description) {
         super(errorMessage, description);
     }
 }

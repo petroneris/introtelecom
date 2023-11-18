@@ -22,8 +22,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
     @Override
     @Transactional

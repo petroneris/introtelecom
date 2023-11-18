@@ -1,16 +1,11 @@
 package com.snezana.introtelecom.entity;
 
-import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -39,9 +34,18 @@ public class Phone {
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "phone", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    private User user; //User
+    private User user; //User - Phone  1:1
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "phones")
     private Set<Customer> customers = new HashSet<>();
+
+    @OneToMany(mappedBy = "phone")
+    private Set<PackageFrame> packageFrames;
+
+    @OneToMany(mappedBy = "phone")
+    private Set<AddonFrame> addonFrames;
+
+    @OneToMany(mappedBy = "phone")
+    private Set<ServiceDetailRecord> serviceDetailRecords;
 
 }

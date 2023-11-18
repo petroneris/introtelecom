@@ -12,5 +12,5 @@ public class PackagePlanDTO {
     private String packageCode;
     private String packageName;
     private String packageDescription;
-    private BigDecimal packagePrice;
+    private String packagePrice;
 }

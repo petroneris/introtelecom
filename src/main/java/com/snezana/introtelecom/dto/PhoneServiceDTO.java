@@ -11,5 +11,5 @@ public class PhoneServiceDTO {
 
     private String serviceCode;
     private String serviceDescription;
-    private BigDecimal servicePrice;
+    private String servicePrice;
 }

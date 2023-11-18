@@ -20,3 +20,8 @@ public class SwagerConfig {
                 .info(new Info().title(apiTitle).version("1"));
     }
 }
+
+
+//        .description("![flaticon](https://cdn-icons-png.flaticon.com/512/5721/5721522.png)"));
+
+// https://cdn.iconscout.com/icon/free/png-512/free-mobile-maintenance-2-1120072.png

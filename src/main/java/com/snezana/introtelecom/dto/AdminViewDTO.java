@@ -1,9 +1,8 @@
 package com.snezana.introtelecom.dto;
 
-import com.snezana.introtelecom.entity.Phone;
-import lombok.*;
-
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +14,6 @@ public class AdminViewDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private String phone;
+    private String phoneNumber;
 }
 

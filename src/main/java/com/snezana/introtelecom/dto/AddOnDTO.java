@@ -11,5 +11,5 @@ public class AddOnDTO {
 
     private String addonCode;
     private String addonDescription;
-    private BigDecimal addonPrice;
+    private String addonPrice;
 }

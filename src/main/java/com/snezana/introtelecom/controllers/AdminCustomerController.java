@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,11 +28,11 @@ import java.util.Map;
         bearerFormat = "JWT",
         scheme = "bearer"
 )
+@RequiredArgsConstructor
 public class AdminCustomerController {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(AdminCustomerController.class);
 
-    @Autowired
-    private AdminCustomerService adminCustomerService;
+    private final AdminCustomerService adminCustomerService;
 
     @Operation(tags = "AdminCustomer Controller", summary = "save a new admin", description = "save a new admin")
     @SecurityRequirement(name = "Bearer Authentication")

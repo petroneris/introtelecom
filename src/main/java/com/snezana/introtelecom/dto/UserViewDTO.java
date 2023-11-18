@@ -9,6 +9,6 @@ public class UserViewDTO {
 
     private String phoneNumber;
     private String username;
-    private String role;
+    private String roleType;
     private String userStatus;
 }
