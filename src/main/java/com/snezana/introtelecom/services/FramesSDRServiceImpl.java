@@ -213,7 +213,7 @@ public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetai
     serviceDetailRecord.setDuration(duration);
     SdrAmountCalc result = new SdrAmountCalc(duration, serviceDetailRecordSaveDTO.getMsgAmount(), serviceDetailRecordSaveDTO.getMbAmount(), new BigDecimal("0.00"), "", serviceCodeStr, false);
     if (((packagePlanType == PackagePlanType.PST13 || packagePlanType == PackagePlanType.PST14) && (serviceCode == SDRCode.SDRCLS || serviceCode == SDRCode.SDRSMS)) || (packagePlanType == PackagePlanType.PST14 && serviceCode == SDRCode.SDRINT)) {
-        log.info("not unlimited!");
+        log.info("unlimited!");
     } else {
         Month currentMonth = serviceDetailRecordSaveDTO.getSdrStartDateTime().getMonth();
         int currentYear = serviceDetailRecordSaveDTO.getSdrStartDateTime().getYear();

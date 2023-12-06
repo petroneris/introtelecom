@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PackageFrameRepo extends JpaRepository<PackageFrame, Long> {
-
     PackageFrame findByPackfrId (Long packfrId);
 
     List<PackageFrame> findByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
@@ -25,6 +24,7 @@ public interface PackageFrameRepo extends JpaRepository<PackageFrame, Long> {
 
     PackageFrame findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
 
+    List<PackageFrame> findByPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals (LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
 
     @Query(
             "SELECT " +
@@ -34,5 +34,6 @@ public interface PackageFrameRepo extends JpaRepository<PackageFrame, Long> {
     )
     Optional<PackageFrame> findByPackfrIdOpt(@Param("packfrId") Long packfrId);
 
+    Long countAllByPackfrId(Long packfrId);
 
 }
