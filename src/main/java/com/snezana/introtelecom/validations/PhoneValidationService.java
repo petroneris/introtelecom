@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.snezana.introtelecom.enums.PackagePlanType.PRP01;
+import static com.snezana.introtelecom.enums.PackagePlanType.PRP02;
+
 @Service
 @RequiredArgsConstructor
 public class PhoneValidationService {
@@ -43,6 +46,13 @@ public class PhoneValidationService {
     public void controlThisPhoneHasCustomersPackageCode(Phone phone){
         if(phone.getPackagePlan().getPackageCode().equals((PackagePlanType.ADM.getPackageCode()))){
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "This phone number has no customer's package code!");
+        }
+    }
+
+    public void controlThisPhoneHasPostpaidPackageCode(String phoneNumber){
+        Phone phone = phoneRepo.findByPhoneNumber(phoneNumber);
+        if(phone.getPackagePlan().getPackageCode().equals(PackagePlanType.ADM.getPackageCode()) || phone.getPackagePlan().getPackageCode().equals(PackagePlanType.PRP01.getPackageCode()) || phone.getPackagePlan().getPackageCode().equals(PackagePlanType.PRP02.getPackageCode())){
+            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "The monthly bill is not provided for the package plan related to this phone number!");
         }
     }
 }

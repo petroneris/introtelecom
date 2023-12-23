@@ -38,16 +38,6 @@ public class FramesSDRController {
 
     private final FramesSDRService framesSDRService;
 
-    @Operation(tags = "FramesSDR Controller", summary = "save a new package frame", description = "save a package frame")
-    @SecurityRequirement(name = "Bearer Authentication")
-    @PostMapping(value = "/packageFrame/saveNewPackageFrame", consumes = MediaType.APPLICATION_JSON_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<Map<String, String>>> savePackageFrame(@RequestBody @Valid PackageFrameSaveDTO packageFrameSaveDTO) {
-        log.info("in saveNewPackageFrame");
-        framesSDRService.saveNewPackageFrame(packageFrameSaveDTO);
-        String message = "The new PackageFrame is saved.";
-        return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));
-    }
-
     @Operation(tags = "FramesSDR Controller", summary = "Get PackageFrame by Id", description = "Get PackageFrame by Id")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "packageFrame/getPackageFrameById/{packfrId}" , produces =  MediaType.APPLICATION_JSON_VALUE)
@@ -235,7 +225,5 @@ public class FramesSDRController {
         String message = "The ServiceDetailRecord '" +sdrId + "' is deleted!";
         return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));
     }
-
-
 
 }

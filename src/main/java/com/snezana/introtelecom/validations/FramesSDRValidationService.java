@@ -36,6 +36,10 @@ public class FramesSDRValidationService {
         return packageFrameRepo.findByPackfrIdOpt(packfrId)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Package frame is not found."));
     }
+    public PackageFrame returnTheMonthlyPackageFrameIfExists (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime) {
+        return packageFrameRepo.findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals(phoneNumber, packfrStartDateTime, packfrEndDateTime)
+                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The Monthly Package frame is not found."));
+    }
 
     public AddonFrame returnTheAddonFrameIfExists (Long addfrId){
         return addonFrameRepo.findByAddfrIdOpt(addfrId)

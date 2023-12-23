@@ -15,7 +15,7 @@ public interface MonthlyBillFactsRepo extends JpaRepository<MonthlyBillFacts, Lo
 
     MonthlyBillFacts findByPhone_PhoneNumberAndYearMonth (String phoneNumber, LocalDate yearMonth);
 
-    List <MonthlyBillFacts> findByPhone_PhoneNumberAndYearMonthStartsWithAndYearMonthEndsWith (String phoneNumber, LocalDate startYearMonth, LocalDate endYearMonth);
+//    List <MonthlyBillFacts> findByPhone_PhoneNumberAndYearMonthStartsWithAndYearMonthEndsWith (String phoneNumber, LocalDate startYearMonth, LocalDate endYearMonth);
 
     List <MonthlyBillFacts> findByPhone_PhoneNumberAndYearMonthStartsWith (String phoneNumber, LocalDate startYearMonth);
 
@@ -35,4 +35,15 @@ public interface MonthlyBillFactsRepo extends JpaRepository<MonthlyBillFacts, Lo
                     "AND monthlybillFacts.yearMonth = :yearMonth "
     )
     Optional<MonthlyBillFacts> findByPhoneNumberAndMonthAndYearOpt(@Param("phoneNumber") String phoneNumber, @Param("yearMonth") LocalDate yearMonth);
+
+    @Query(
+            "SELECT " +
+                    "monthlybillFacts "+
+                    "FROM MonthlyBillFacts monthlybillFacts "+
+                    "WHERE monthlybillFacts.phone.phoneNumber = :phoneNumber " +
+                    "AND monthlybillFacts.yearMonth >= :startYearMonth " +
+                    "AND monthlybillFacts.yearMonth <= :endYearMonth "
+    )
+    List <MonthlyBillFacts> findByPhone_PhoneNumberAndYearMonthStartsWithAndYearMonthEndsWith (@Param("phoneNumber") String phoneNumber, @Param("startYearMonth") LocalDate startYearMonth, @Param("endYearMonth") LocalDate endYearMonth);
+
 }

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.Year;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +43,19 @@ public class MonthlyBillFactsValidationService {
     public void controlTheStartDateIsLessThanEndDate (LocalDate startDate, LocalDate endDate){
         if(startDate.isAfter(endDate) || startDate.isEqual(endDate)){
             throw new IllegalItemFieldException(RestAPIErrorMessage.INVALID_STARTDATE_OR_ENDDATE, "StartDate must be less than EndDate!");
+        }
+    }
+
+    public void controlTheTimeForScheduling (){
+        LocalDateTime nowDateTime = LocalDateTime.now();
+        Month currentMonth = nowDateTime.getMonth();
+        int currentYear = nowDateTime.getYear();
+        LocalDateTime startDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0, 0, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 12, 0, 0, 0);
+//        LocalDateTime startDateTime = LocalDateTime.of(currentYear, currentMonth, 21, 18, 0, 0, 0);
+//        LocalDateTime endDateTime = LocalDateTime.of(currentYear, currentMonth, 21, 20, 0, 0, 0);
+        if (nowDateTime.isAfter(startDateTime) && nowDateTime.isBefore(endDateTime)){
+            throw new IllegalItemFieldException(RestAPIErrorMessage.INVALID_DATETIME_INTERVAL, "Data are not available until 12 o'clock today!");
         }
     }
 }

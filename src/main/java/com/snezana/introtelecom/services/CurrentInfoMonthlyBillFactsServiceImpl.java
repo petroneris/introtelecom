@@ -7,6 +7,7 @@ import com.snezana.introtelecom.enums.PackagePlanType;
 import com.snezana.introtelecom.enums.SDRCode;
 import com.snezana.introtelecom.mapper.MonthlyBillFactsMapper;
 import com.snezana.introtelecom.repositories.*;
+import com.snezana.introtelecom.validations.FramesSDRValidationService;
 import com.snezana.introtelecom.validations.MonthlyBillFactsValidationService;
 import com.snezana.introtelecom.validations.PhoneValidationService;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +37,13 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(CurrentInfoMonthlyBillFactsServiceImpl.class);
 
     private final PhoneValidationService phoneValidationService;
-    private final PackageFrameRepo packageFrameRepo;
     private final AddonFrameRepo addonFrameRepo;
     private final MonthlyBillFactsRepo monthlyBillFactsRepo;
     private final MonthlyBillFactsValidationService monthlyBillFactsValidationService;
     private final MonthlyBillFactsMapper monthlyBillFactsMapper;
     private final ServiceDetailRecordRepo serviceDetailRecordRepo;
-    private final PhoneRepo phoneRepo;
-    private final PackagePlanRepo packagePlanRepo;
-    private final AddOnRepo addOnRepo;
+    private final FramesSDRValidationService framesSDRValidationService;
+
 
     @Override
     public CurrentInfo01ViewDTO getCurrentInfoByPhone(String phoneNumber) {
@@ -59,6 +59,7 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
         String asmNote= "";
         String iclNote= "";
         String rmgNote= "";
+        monthlyBillFactsValidationService.controlTheTimeForScheduling();
         Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
         phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
         String packageCode = phone.getPackagePlan().getPackageCode();
@@ -68,7 +69,7 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
         LocalDateTime monthlyStartDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0, 0, 0);
         LocalDateTime monthlyEndDateTime = monthlyStartDateTime.plusMonths(1);
         LocalDateTime nowDateTime = LocalDateTime.now();
-        PackageFrame monthlyPackageFrame = packageFrameRepo.findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
+        PackageFrame monthlyPackageFrame = framesSDRValidationService.returnTheMonthlyPackageFrameIfExists(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
         List<AddonFrame> addonFrameList = addonFrameRepo.findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
         log.info("addonFrameList is size = " + addonFrameList.size());
         MonthlyFramesInputTotal monthlyFramesInputTotal = inputAmountOfFramesCurrentInfo(monthlyPackageFrame, addonFrameList);
@@ -144,29 +145,38 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
 
     @Override
     public MonthlyBillFactsViewDTO getMonthlyBillFactsById(Long monthlybillId) {
-        checkMonthlyBillFactsIfNotExistsThenCreate();
+        monthlyBillFactsValidationService.controlTheTimeForScheduling();
         MonthlyBillFacts monthlyBillFacts = monthlyBillFactsValidationService.returnTheMonthlyBillFactsByIdIfExists(monthlybillId);
         return monthlyBillFactsMapper.monthlyBillFactsToMonthlyBillFactsViewDTO(monthlyBillFacts);
     }
 
     @Override
     public MonthlyBillFactsViewDTO getMontlyBillFactsByPhoneAndYearAndMonth(String phoneNumber, int year, int month) {
+        monthlyBillFactsValidationService.controlTheTimeForScheduling();
+        phoneValidationService.controlThePhoneExists(phoneNumber);
+        phoneValidationService.controlThisPhoneHasPostpaidPackageCode(phoneNumber);
         monthlyBillFactsValidationService.checkYearAndMonth(year, month);
         LocalDate yearMonth = LocalDate.of(year, month, 1);
-        checkMonthlyBillFactsIfNotExistsThenCreate();
         MonthlyBillFacts monthlyBillFacts = monthlyBillFactsValidationService.returnTheMonthlyBillFactsByYearMonthIfExists(phoneNumber, yearMonth);
         return monthlyBillFactsMapper.monthlyBillFactsToMonthlyBillFactsViewDTO(monthlyBillFacts);
     }
 
     @Override
     public List<MonthlyBillFactsViewDTO> getMonthlyBillFactsByPhoneFromStartDateToEndDate(String phoneNumber, int startYear, int startMonth, int endYear, int endMonth) {
+        monthlyBillFactsValidationService.controlTheTimeForScheduling();
+        phoneValidationService.controlThePhoneExists(phoneNumber);
+        phoneValidationService.controlThisPhoneHasPostpaidPackageCode(phoneNumber);
+        log.info("after controlThisPhoneHasPostpaidPackageCode(phoneNumber)");
         monthlyBillFactsValidationService.checkYearAndMonth(startYear, startMonth);
         monthlyBillFactsValidationService.checkYearAndMonth(endYear, endMonth);
         LocalDate startDate = LocalDate.of(startYear, startMonth, 1);
         LocalDate endDate = LocalDate.of(endYear, endMonth, 1);
+        log.info("startDate= " +startDate);
+        log.info("endDate= " +endDate);
         monthlyBillFactsValidationService.controlTheStartDateIsLessThanEndDate(startDate, endDate);
-        checkMonthlyBillFactsIfNotExistsThenCreate();
+        log.info("after controlTheStartDateIsLessThanEndDate(startDate, endDate)");
         List <MonthlyBillFacts> monthlyBillFactsList = monthlyBillFactsRepo.findByPhone_PhoneNumberAndYearMonthStartsWithAndYearMonthEndsWith (phoneNumber, startDate, endDate);
+        log.info("after List <MonthlyBillFacts> monthlyBillFactsList");
         return monthlyBillFactsMapper.monthlyBillFactsListToMonthlyBillFactsViewDTOList(monthlyBillFactsList);
     }
 
@@ -322,76 +332,6 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
         return outputResult;
     }
 
-    void checkMonthlyBillFactsIfNotExistsThenCreate() {
-        LocalDateTime startDateTime = LocalDateTime.of(2023, Month.MAY, 1, 0, 0, 0, 0);
-        LocalDateTime endDateTime = LocalDateTime.of(2023, Month.JUNE, 1, 0, 0, 0, 0);
-        List<PackageFrame> packageFrameList = packageFrameRepo.findByPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals(startDateTime, endDateTime);
-        List<AddonFrame> addonFrameList = addonFrameRepo.findByAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeEquals(startDateTime, endDateTime);
-        List<MonthlyData> pfYMList = new ArrayList<>();
-        List<MonthlyData> afYMlist = new ArrayList<>();
-        for (PackageFrame pf : packageFrameList) {
-            if (!(pf.getPhone().getPackagePlan().getPackageCode().equals(PRP01.getPackageCode()) || pf.getPhone().getPackagePlan().getPackageCode().equals(PRP02.getPackageCode()))) {
-                pfYMList.add(new MonthlyData(pf.getPackfrId(), pf.getPhone().getPhoneNumber(), pf.getPhone().getPackagePlan().getPackageCode()));
-//                log.info("pfYMList with: phoneNumber= {}, packageCode= {},", pf.getPhone().getPhoneNumber(), pf.getPhone().getPackagePlan().getPackageCode());
-            }
-        }
-        for (AddonFrame af : addonFrameList) {
-            if (!(af.getPhone().getPackagePlan().getPackageCode().equals(PRP01.getPackageCode()) || af.getPhone().getPackagePlan().getPackageCode().equals(PRP02.getPackageCode()))) {
-                afYMlist.add(new MonthlyData(af.getAddfrId(), af.getPhone().getPhoneNumber(), af.getAddOn().getAddonCode()));
-//                log.info("afYMList with: phoneNumber= {}, addonCode= {},", af.getPhone().getPhoneNumber(), af.getAddOn().getAddonCode());
-            }
-        }
-        for (MonthlyData md : pfYMList) {
-            String phoneNumb = md.getPhoneNumber();
-            List<MonthlyData> afYMgroup = afYMlist.stream().filter(x -> x.getPhoneNumber().equals(phoneNumb)).collect(Collectors.toList());
-            saveNewMonthlyBillFacts(md, afYMgroup, startDateTime, endDateTime);
-        }
-
-    }
-
-    void saveNewMonthlyBillFacts(MonthlyData md, List<MonthlyData> afYMgroup, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        MonthlyBillFacts mbf = new MonthlyBillFacts();
-        Phone phone = phoneRepo.findByPhoneNumber(md.getPhoneNumber());
-        PackagePlan packagePlan = packagePlanRepo.findByPackageCode(md.getCode());
-        mbf.setPackagePrice(packagePlan.getPackagePrice());
-        BigDecimal addClsPrice = new BigDecimal("0.00");
-        BigDecimal addSmsPrice = new BigDecimal("0.00");
-        BigDecimal addIntPrice = new BigDecimal("0.00");
-        BigDecimal addAsmPrice = new BigDecimal("0.00");
-        BigDecimal addIclPrice = new BigDecimal("0.00");
-        BigDecimal addRmgPrice = new BigDecimal("0.00");
-        BigDecimal totalPrice;
-        mbf.setPhone(phone);
-        mbf.setYearMonth(LocalDate.of(startDateTime.getYear(), startDateTime.getMonth(), 1));
-        mbf.setMonthlybillDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonth(), 1, 0, 0, 0, 0));
-        for (MonthlyData af : afYMgroup) {
-            AddOn addOn = addOnRepo.findByAddonCode(af.getCode());
-            if (addOn.getAddonCode().equals(ADDCLS.name())) {
-                addClsPrice = addClsPrice.add(addOn.getAddonPrice());
-            } else if (addOn.getAddonCode().equals(ADDSMS.name())) {
-                addSmsPrice = addSmsPrice.add(addOn.getAddonPrice());
-            } else if (addOn.getAddonCode().equals(ADDINT.name())) {
-                addIntPrice = addIntPrice.add(addOn.getAddonPrice());
-            } else if (addOn.getAddonCode().equals(ADDASM.name())) {
-                addAsmPrice = addAsmPrice.add(addOn.getAddonPrice());
-            } else if (addOn.getAddonCode().equals(ADDICL.name())) {
-                addIclPrice = addIclPrice.add(addOn.getAddonPrice());
-            } else if (addOn.getAddonCode().equals(ADDRMG.name())) {
-                addRmgPrice = addRmgPrice.add(addOn.getAddonPrice());
-            }
-        }
-        totalPrice = packagePlan.getPackagePrice().add(addClsPrice).add(addSmsPrice).add(addIntPrice).add(addAsmPrice).add(addIclPrice).add(addRmgPrice);
-        mbf.setAddclsPrice(addClsPrice);
-        mbf.setAddsmsPrice(addSmsPrice);
-        mbf.setAddintPrice(addIntPrice);
-        mbf.setAddasmPrice(addAsmPrice);
-        mbf.setAddiclPrice(addIclPrice);
-        mbf.setAddrmgPrice(addRmgPrice);
-        mbf.setMonthlybillTotalprice(totalPrice);
-//        monthlyBillFactsRepo.save(mbf);
-        log.info("MonthlyBillFacts with: phoneNumber= {},  yearMonth= {}, packagePrice= {}, addClsPrice= {}, addSmsPrice= {}, addIntPrice= {}, addAsmPrice= {}, addIclPrice= {}, addRmgPrice= {}, monthlybillTotalprice= {}, MonthlybillDateTime= {},", mbf.getPhone().getPhoneNumber(), mbf.getYearMonth(), mbf.getPackagePrice(), mbf.getAddclsPrice(), mbf.getAddsmsPrice(), mbf.getAddintPrice(), mbf.getAddasmPrice(), mbf.getAddiclPrice(), mbf.getAddrmgPrice(), mbf.getMonthlybillTotalprice(), mbf.getMonthlybillDateTime());
-//        log.info("save new monthly bill facts" + LocalTime.now());
-    }
 
 }
 
@@ -423,13 +363,4 @@ class MonthlyFramesInputTotal {
     private int nAddAsm;
     private int nAddIcl;
     private int nAddRmg;
-}
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class MonthlyData {
-    private Long id;
-    private String phoneNumber;
-    private String code;
 }

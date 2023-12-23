@@ -19,6 +19,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,14 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.snezana.introtelecom.enums.PackagePlanType.PRP01;
+import static com.snezana.introtelecom.enums.PackagePlanType.PRP02;
 
 @Service
 @Transactional
@@ -52,18 +60,6 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     private final AddonFrameRepo addonFrameRepo;
     private final PhoneServiceRepo phoneServiceRepo;
     private final ServiceDetailRecordRepo serviceDetailRecordRepo;
-
-    @Override
-    public void saveNewPackageFrame(PackageFrameSaveDTO packageFrameSaveDTO) {
-        Phone phone = phoneValidationService.returnThePhoneIfExists(packageFrameSaveDTO.getPhoneNumber());
-        phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
-        framesSDRValidationService.controlTheLocalDateTimeInputIsValid(packageFrameSaveDTO.getPackfrStartDateTime());
-        framesSDRValidationService.controlTheLocalDateTimeInputIsValid(packageFrameSaveDTO.getPackfrEndDateTime());
-        framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(packageFrameSaveDTO.getPackfrStartDateTime(), packageFrameSaveDTO.getPackfrEndDateTime());
-        framesSDRValidationService.controlTheMonthlyPackageFrameAlreadyExists(packageFrameSaveDTO.getPhoneNumber(), packageFrameSaveDTO.getPackfrStartDateTime(), packageFrameSaveDTO.getPackfrEndDateTime());
-        PackageFrame packageFrame = packageFrameMapper.packageFrameSaveDtoToPackageFrame(packageFrameSaveDTO, phoneRepo);
-        packageFrameRepo.save(packageFrame);
-    }
 
     @Override
     public PackageFrameViewDTO findPackageFrameById(Long packfrId) {
@@ -219,7 +215,7 @@ public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetai
         int currentYear = serviceDetailRecordSaveDTO.getSdrStartDateTime().getYear();
         LocalDateTime monthlyStartDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0, 0, 0);
         LocalDateTime monthlyEndDateTime = monthlyStartDateTime.plusMonths(1);
-        PackageFrame monthlyPackageFrame = packageFrameRepo.findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
+        PackageFrame monthlyPackageFrame = framesSDRValidationService.returnTheMonthlyPackageFrameIfExists(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
         List<AddonFrame> addonFrameList = addonFrameRepo.findAddonFramesByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phone.getPhoneNumber(), addonCode.name(), monthlyStartDateTime, monthlyEndDateTime);
         log.info("addonFrameList is size = " + addonFrameList.size());
         FramesInputTotal frameInput = inputAmountOfFrames(monthlyPackageFrame, addonFrameList, serviceCode);

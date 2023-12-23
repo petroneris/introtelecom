@@ -22,7 +22,7 @@ public interface PackageFrameRepo extends JpaRepository<PackageFrame, Long> {
 
     Optional<PackageFrame> findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
 
-    PackageFrame findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
+    Optional<PackageFrame> findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
 
     List<PackageFrame> findByPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals (LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
 

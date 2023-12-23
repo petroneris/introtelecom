@@ -7,9 +7,6 @@ import java.util.List;
 
 public interface FramesSDRService {
 
-
-    void saveNewPackageFrame (PackageFrameSaveDTO packageFrameSaveDTO);
-
     PackageFrameViewDTO findPackageFrameById (Long packfrId);
 
     List<PackageFrameViewDTO> findPackageFramesByPhoneNumberStartTimeEndTime (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
