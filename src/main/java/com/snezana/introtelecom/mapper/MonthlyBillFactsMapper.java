@@ -1,5 +1,6 @@
 package com.snezana.introtelecom.mapper;
 
+import com.snezana.introtelecom.dto.ClientMonthlyBillFactsPstViewDTO;
 import com.snezana.introtelecom.dto.MonthlyBillFactsViewDTO;
 import com.snezana.introtelecom.dto.PackageFrameViewDTO;
 import com.snezana.introtelecom.entity.MonthlyBillFacts;
@@ -99,6 +100,29 @@ public abstract class MonthlyBillFactsMapper {
         monthlyBillFactsViewDTO.setPhoneNumber(monthlyBillFacts.getPhone().getPhoneNumber());
         monthlyBillFactsViewDTO.setMonth(monthlyBillFacts.getYearMonth().getMonth().name());
         monthlyBillFactsViewDTO.setYear(monthlyBillFacts.getYearMonth().getYear());
+        monthlyBillFactsViewDTO.setPackageName(monthlyBillFacts.getPhone().getPackagePlan().getPackageName());
+        monthlyBillFactsViewDTO.setPackageCode(monthlyBillFacts.getPhone().getPackagePlan().getPackageCode());
+    }
+
+    @Mapping(source = "monthlyBillFacts", target = "packagePrice", qualifiedByName = "package")
+    @Mapping(source = "monthlyBillFacts", target = "addclsPrice", qualifiedByName = "calls")
+    @Mapping(source = "monthlyBillFacts", target = "addsmsPrice", qualifiedByName = "messages")
+    @Mapping(source = "monthlyBillFacts", target = "addintPrice", qualifiedByName = "internet")
+    @Mapping(source = "monthlyBillFacts", target = "addasmPrice", qualifiedByName = "appSocialMedia")
+    @Mapping(source = "monthlyBillFacts", target = "addiclPrice", qualifiedByName = "internationalCalls")
+    @Mapping(source = "monthlyBillFacts", target = "addrmgPrice", qualifiedByName = "roaming")
+    @Mapping(source = "monthlyBillFacts", target = "monthlybillTotalprice", qualifiedByName = "total")
+    public abstract ClientMonthlyBillFactsPstViewDTO monthlyBillFactsToClientMonthlyBillFactsPstViewDTO(MonthlyBillFacts monthlyBillFacts);
+
+    public abstract List<ClientMonthlyBillFactsPstViewDTO> monthlyBillFactsListToClientMonthlyBillFactsPstViewDTOList(List<MonthlyBillFacts> monthlyBillFactsList);
+
+    @BeforeMapping
+    protected void beforeMonthlyBillFactsToClientMonthlyBillFactsPstViewDTO(MonthlyBillFacts monthlyBillFacts, @MappingTarget ClientMonthlyBillFactsPstViewDTO clientMonthlyBillFactsPstViewDTO) {
+        clientMonthlyBillFactsPstViewDTO.setPhoneNumber(monthlyBillFacts.getPhone().getPhoneNumber());
+        clientMonthlyBillFactsPstViewDTO.setMonth(monthlyBillFacts.getYearMonth().getMonth().name());
+        clientMonthlyBillFactsPstViewDTO.setYear(monthlyBillFacts.getYearMonth().getYear());
+        clientMonthlyBillFactsPstViewDTO.setPackageName(monthlyBillFacts.getPhone().getPackagePlan().getPackageName());
+        clientMonthlyBillFactsPstViewDTO.setPackageCode(monthlyBillFacts.getPhone().getPackagePlan().getPackageCode());
     }
 
 }

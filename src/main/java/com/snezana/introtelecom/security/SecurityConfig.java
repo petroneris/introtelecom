@@ -3,6 +3,7 @@ package com.snezana.introtelecom.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,17 +37,22 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests((authz) -> authz
-//                        .antMatchers("/access/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .antMatchers("/access/**", "/swagger-ui-custom.html" ,"/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**",
                                 "/swagger-ui/index.html","/api-docs/**")
                         .permitAll()
-   //                     .antMatchers("/access/login/**").permitAll()
-                        .antMatchers("/api/users/**").hasRole("ADMIN") // WAS USER!!!
                         .antMatchers("/api/user/**").hasRole("ADMIN")
                         .antMatchers("/api/phone/**").hasRole("ADMIN")
                         .antMatchers("/api/admin/**").hasRole("ADMIN")
                         .antMatchers("/api/customer/**").hasRole("ADMIN")
-                        .antMatchers("/api/redis/publish/**").hasRole("ADMIN")
+                        .antMatchers("/api/sdr/**").hasRole("ADMIN")
+                        .antMatchers("/api/packageFrame/**").hasRole("ADMIN")
+                        .antMatchers("/api/addonFrame/**").hasRole("ADMIN")
+                        .antMatchers("/api/addon/**").hasRole("ADMIN")
+                        .antMatchers("/api/service/**").hasRole("ADMIN")
+                        .antMatchers("/api/package/**").hasRole("ADMIN")
+                        .antMatchers("/api/monthlyBillFacts/**").hasRole("ADMIN")
+                        .antMatchers("/api/currentInfo/**").hasRole("ADMIN")
+                        .antMatchers("/api/client/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated())
                 .exceptionHandling()
                 .accessDeniedHandler(new CustomAccessDeniedHandler())
