@@ -50,5 +50,4 @@ public class Phone {
 
     @OneToMany(mappedBy = "phone")
     private Set<MonthlyBillFacts> monthlyBillFacts;
-
 }

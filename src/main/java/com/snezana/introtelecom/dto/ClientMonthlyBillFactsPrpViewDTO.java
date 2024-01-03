@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
+/* Current info view for prepaid (01, 02) users that client can see */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

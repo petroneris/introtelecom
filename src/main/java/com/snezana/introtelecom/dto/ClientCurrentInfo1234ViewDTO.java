@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/* Current info view for postpaid (12, 13, 14) - PST12, PST13, PST14 users that client can see */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -2,13 +2,10 @@ package com.snezana.introtelecom.mapper;
 
 import com.snezana.introtelecom.dto.ClientMonthlyBillFactsPstViewDTO;
 import com.snezana.introtelecom.dto.MonthlyBillFactsViewDTO;
-import com.snezana.introtelecom.dto.PackageFrameViewDTO;
 import com.snezana.introtelecom.entity.MonthlyBillFacts;
-import com.snezana.introtelecom.entity.PackageFrame;
 import org.mapstruct.*;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
@@ -25,7 +22,6 @@ public abstract class MonthlyBillFactsMapper {
     public abstract MonthlyBillFactsViewDTO monthlyBillFactsToMonthlyBillFactsViewDTO(MonthlyBillFacts monthlyBillFacts);
 
     public abstract List<MonthlyBillFactsViewDTO> monthlyBillFactsListToMonthlyBillFactsViewDTOList(List<MonthlyBillFacts> monthlyBillFactsList);
-
 
     @Named("package")
     public static String packageConversion(MonthlyBillFacts monthlyBillFacts) {

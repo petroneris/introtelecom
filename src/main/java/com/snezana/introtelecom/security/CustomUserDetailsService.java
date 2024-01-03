@@ -2,10 +2,7 @@ package com.snezana.introtelecom.security;
 
 import com.snezana.introtelecom.entity.Role;
 import com.snezana.introtelecom.entity.User;
-import com.snezana.introtelecom.repositories.UserRepo;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.snezana.introtelecom.repository.UserRepo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/*Used to retrieve user-related data */
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
@@ -32,14 +30,13 @@ public class CustomUserDetailsService implements UserDetailsService {
             System.out.println("User not found");
             throw new UsernameNotFoundException("Username not found");
         }
-//        return new org.springframework.security.core.userdetails.User(user.getUsername(), passwordEncoder.encode(user.getPassword()), getAuthorities(user));
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthorities(user));
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities(User user) {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         Role role = user.getRole();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleType())); //??? ROLE_
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleType()));
         return authorities;
     }
 }

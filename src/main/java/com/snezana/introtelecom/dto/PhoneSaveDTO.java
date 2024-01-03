@@ -1,6 +1,6 @@
 package com.snezana.introtelecom.dto;
 
-import com.snezana.introtelecom.validations.FieldMatch;
+import com.snezana.introtelecom.validation.FieldMatch;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -28,5 +28,4 @@ public class PackagePlan {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy="packagePlan")
     private Set<Phone> phones;
-
 }

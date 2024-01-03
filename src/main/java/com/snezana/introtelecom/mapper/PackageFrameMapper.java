@@ -1,14 +1,8 @@
 package com.snezana.introtelecom.mapper;
 
-import com.snezana.introtelecom.dto.PackageFrameSaveDTO;
 import com.snezana.introtelecom.dto.PackageFrameViewDTO;
 import com.snezana.introtelecom.entity.PackageFrame;
-import com.snezana.introtelecom.entity.Phone;
-import com.snezana.introtelecom.enums.PackagePlanType;
-import com.snezana.introtelecom.enums.StatusType;
-import com.snezana.introtelecom.repositories.PhoneRepo;
 import org.mapstruct.*;
-import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,7 +11,6 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class PackageFrameMapper {
-    Logger log = org.slf4j.LoggerFactory.getLogger(PackageFrameMapper.class);
 
     @Mapping(source = "packageFrame", target = "packfrCls", qualifiedByName = "calls")
     @Mapping(source = "packageFrame", target = "packfrSms", qualifiedByName = "messages")

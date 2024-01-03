@@ -3,7 +3,7 @@ package com.snezana.introtelecom.mapper;
 import com.snezana.introtelecom.dto.*;
 import com.snezana.introtelecom.entity.Admin;
 import com.snezana.introtelecom.entity.Phone;
-import com.snezana.introtelecom.repositories.PhoneRepo;
+import com.snezana.introtelecom.repository.PhoneRepo;
 import org.mapstruct.*;
 
 import java.util.List;

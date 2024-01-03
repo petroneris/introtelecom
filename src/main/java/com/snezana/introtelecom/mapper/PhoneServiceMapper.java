@@ -4,7 +4,6 @@ import com.snezana.introtelecom.dto.PhoneServiceDTO;
 import com.snezana.introtelecom.entity.PhoneService;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;

@@ -13,6 +13,7 @@ import java.util.Set;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CustomerMapper {
+
     void customerSaveDtoToCustomer(CustomerSaveDTO customerSaveDto, @MappingTarget Customer customer);
 
     CustomerViewDTO customerToCustomerViewDTO(Customer customer);

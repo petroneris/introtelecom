@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/* Current info view for prepaid 02 - PRP02 users */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

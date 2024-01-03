@@ -1,0 +1,13 @@
+package com.snezana.introtelecom.exception;
+
+public enum RestAPIErrorMessage {
+    ITEM_NOT_FOUND,
+    WRONG_ITEM,
+    ITEM_IS_NOT_UNIQUE,
+    ITEMS_NOT_MATCH,
+    INVALID_DATE_TIME_FORMAT,
+    INVALID_STARTDATETIME_OR_ENDDATETIME,
+    INVALID_STARTDATE_OR_ENDDATE,
+    INVALID_DATETIME_INTERVAL;
+}
+

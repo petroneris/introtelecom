@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
-//@AllArgsConstructor
 @NoArgsConstructor
 public class SecurityResponse implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -22,7 +21,6 @@ public class SecurityResponse implements Serializable {
         this.isSuccess = isSuccess;
         responseDate = LocalDateTime.now().toString();
     }
-
 
     public static SecurityResponse error(Map<String,String> data){
         return new SecurityResponse (data, false);

@@ -5,8 +5,8 @@ import com.snezana.introtelecom.dto.ServiceDetailRecordViewDTO;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.entity.PhoneService;
 import com.snezana.introtelecom.entity.ServiceDetailRecord;
-import com.snezana.introtelecom.repositories.PhoneRepo;
-import com.snezana.introtelecom.repositories.PhoneServiceRepo;
+import com.snezana.introtelecom.repository.PhoneRepo;
+import com.snezana.introtelecom.repository.PhoneServiceRepo;
 import org.mapstruct.*;
 
 import java.util.List;

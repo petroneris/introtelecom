@@ -4,7 +4,6 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import java.util.Date;
 
-
 @Component
 public class JWTtokenGenerator {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(JWTtokenGenerator.class);
-
 
     @Value("${introtelecom.jwt.app.key}")
     private String APP_KEY;
@@ -29,7 +25,6 @@ public class JWTtokenGenerator {
     public String generateAccess_Token (Authentication authentication) {
         User user = (User)authentication.getPrincipal();
         Date expireDate = new Date(new Date().getTime() + EXPIRE_TIME_ACC);
-//        Date expireDate = new Date(new Date().getTime() + 10 * 60 * 1000);
         String token = Jwts.builder()
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
@@ -66,9 +61,7 @@ public class JWTtokenGenerator {
     public boolean validateToken(String token){
         boolean isValid;
         try {
-            log.info("before parseToken");
             Jws<Claims> claimsJws = parseToken(token);
-            log.info("claimsJws is: {}", claimsJws);
             isValid = !isTokenExpired(claimsJws);
         } catch (Exception e){
             isValid = false;

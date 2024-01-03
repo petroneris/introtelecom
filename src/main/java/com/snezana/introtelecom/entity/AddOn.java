@@ -12,6 +12,7 @@ import java.util.Set;
 @Setter
 @Table(name = "addon", catalog = "intro_telecom")
 public class AddOn {
+
     @Id
     @Column(name = "addon_code", unique = true, nullable = false)
     private String addonCode;
@@ -24,5 +25,4 @@ public class AddOn {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy="addOn")
     private Set<AddonFrame> addonFrames;
-
 }

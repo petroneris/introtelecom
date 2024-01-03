@@ -1,6 +1,5 @@
 package com.snezana.introtelecom.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +10,7 @@ import javax.persistence.*;
 @Setter
 @Table(name = "user_data", catalog = "intro_telecom")
 public class User {
+
     @Id
     @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
@@ -32,5 +32,4 @@ public class User {
     @MapsId
     @JoinColumn(name = "phone_number")
     private Phone phone; //Phone - User  1:1
-
 }

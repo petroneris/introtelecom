@@ -1,13 +1,13 @@
 package com.snezana.introtelecom.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.snezana.introtelecom.enums.PackagePlanType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/* Current info view for prepaid 01 - PRP01 users that client can see */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
