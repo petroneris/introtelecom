@@ -4,35 +4,30 @@ import com.snezana.introtelecom.dto.*;
 import com.snezana.introtelecom.entity.*;
 import com.snezana.introtelecom.enums.AddonCode;
 import com.snezana.introtelecom.enums.PackagePlanType;
-import com.snezana.introtelecom.enums.SDRCode;
 import com.snezana.introtelecom.mapper.AddOnMapper;
 import com.snezana.introtelecom.mapper.MonthlyBillFactsMapper;
 import com.snezana.introtelecom.mapper.PackagePlanMapper;
 import com.snezana.introtelecom.repository.*;
-import com.snezana.introtelecom.validation.*;
+import com.snezana.introtelecom.validation.CustomerValidationService;
+import com.snezana.introtelecom.validation.FramesSDRValidationService;
+import com.snezana.introtelecom.validation.MonthlyBillFactsValidationService;
+import com.snezana.introtelecom.validation.PhoneValidationService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.snezana.introtelecom.enums.PackagePlanType.*;
-import static com.snezana.introtelecom.enums.SDRCode.*;
-import static com.snezana.introtelecom.service.FramesSDRServiceImpl.*;
-import static com.snezana.introtelecom.service.FramesSDRServiceImpl.UNIT_PRICE_RMGCZ2;
+import static com.snezana.introtelecom.enums.PackagePlanType.PRP01;
+import static com.snezana.introtelecom.enums.PackagePlanType.PRP02;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ClientServiceImpl.class);
 
     private final PhoneValidationService phoneValidationService;
     private final AddonFrameRepo addonFrameRepo;
@@ -49,111 +44,27 @@ public class ClientServiceImpl implements ClientService {
     private final AddOnMapper addOnMapper;
 
     @Override
-    public ClientCurrentInfo01ViewDTO getCurrentInfo(Authentication authentication) {
-        monthlyBillFactsValidationService.controlTheTimeForScheduling();
-        String currCls;
-        String currSms;
-        String currInt;
-        String currAsm;
-        String currIcl;
-        String currRmg;
-        String clsNote = "";
-        String smsNote = "";
-        String intNote = "";
-        String asmNote = "";
-        String iclNote = "";
-        String rmgNote = "";
+    public CurrentInfo01ViewDTO getCurrentInfo(Authentication authentication) {
         Object principal = authentication.getPrincipal();
         String username = principal.toString();
         User user = userRepo.findByUsername(username);
         String phoneNumber = user.getPhoneNumber();
         Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
-        phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
-        String packageCode = phone.getPackagePlan().getPackageCode();
         String packageName = phone.getPackagePlan().getPackageName();
         Customer customer = customerValidationService.returnTheCustomerWithThisPhoneIfExists(phone, "phone number");
         String firstName = customer.getFirstName();
         String lastName = customer.getLastName();
-        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
-        Month currentMonth = LocalDateTime.now().getMonth();
-        int currentYear = LocalDateTime.now().getYear();
-        LocalDateTime monthlyStartDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0, 0, 0);
-        LocalDateTime monthlyEndDateTime = monthlyStartDateTime.plusMonths(1);
-        LocalDateTime nowDateTime = LocalDateTime.now();
         CurrentInfoMonthlyBillFactsServiceImpl cimbfServiceImpl = new CurrentInfoMonthlyBillFactsServiceImpl(phoneValidationService, addonFrameRepo, monthlyBillFactsRepo, monthlyBillFactsValidationService, monthlyBillFactsMapper, serviceDetailRecordRepo, framesSDRValidationService);
-        PackageFrame monthlyPackageFrame = framesSDRValidationService.returnTheMonthlyPackageFrameIfExists(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
-        List<AddonFrame> addonFrameList = addonFrameRepo.findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
-        log.info("addonFrameList is size = " + addonFrameList.size());
-        MonthlyFramesInputTotal monthlyFramesInputTotal = cimbfServiceImpl.inputAmountOfFramesCurrentInfo(monthlyPackageFrame, addonFrameList);
-        SdrOutputTotal sdrOutputTotal = cimbfServiceImpl.outputAmountOfSDRsCurrentInfo(phoneNumber, monthlyStartDateTime, nowDateTime);
-        if (packagePlanType == PackagePlanType.PST13 || packagePlanType == PackagePlanType.PST14) {
-            currCls = "UNLIMITED";
-            currSms = "UNLIMITED";
+        CurrentInfo01ViewDTO ci01ViewDTO = cimbfServiceImpl.getCurrentInfoByPhone(phoneNumber);
+        if (ci01ViewDTO instanceof CurrentInfo02ViewDTO){
+            return new ClientCurrentInfo02ViewDTO(phoneNumber, firstName, lastName, username, packageName, ci01ViewDTO.getPackageCode(), ci01ViewDTO.getCurrCls(), ci01ViewDTO.getCurrSms(), ((CurrentInfo02ViewDTO) ci01ViewDTO).getCurrInt(), ci01ViewDTO.getAddCls(), ci01ViewDTO.getAddSms(), ((CurrentInfo02ViewDTO) ci01ViewDTO).getAddInt(), ci01ViewDTO.getCurrDateTime());
+        } else if (ci01ViewDTO instanceof CurrentInfo11ViewDTO) {
+            return new ClientCurrentInfo11ViewDTO(phoneNumber, firstName, lastName, username, packageName, ci01ViewDTO.getPackageCode(), ci01ViewDTO.getCurrCls(), ci01ViewDTO.getCurrSms(), ((CurrentInfo11ViewDTO) ci01ViewDTO).getCurrInt(), ((CurrentInfo11ViewDTO) ci01ViewDTO).getCurrIcl(), ((CurrentInfo11ViewDTO) ci01ViewDTO).getCurrRmg(), ci01ViewDTO.getAddCls(), ci01ViewDTO.getAddSms(), ((CurrentInfo11ViewDTO) ci01ViewDTO).getAddInt(), ((CurrentInfo11ViewDTO) ci01ViewDTO).getAddIcl(), ((CurrentInfo11ViewDTO) ci01ViewDTO).getAddRmg(), ci01ViewDTO.getCurrDateTime());
+        } else if (ci01ViewDTO instanceof CurrentInfo1234ViewDTO) {
+            return new ClientCurrentInfo1234ViewDTO(phoneNumber, firstName, lastName, username, packageName, ci01ViewDTO.getPackageCode(), ci01ViewDTO.getCurrCls(), ci01ViewDTO.getCurrSms(), ((CurrentInfo1234ViewDTO) ci01ViewDTO).getCurrInt(), ((CurrentInfo1234ViewDTO) ci01ViewDTO).getCurrAsm(), ((CurrentInfo1234ViewDTO) ci01ViewDTO).getCurrIcl(), ((CurrentInfo1234ViewDTO) ci01ViewDTO).getCurrRmg(), ci01ViewDTO.getAddCls(), ci01ViewDTO.getAddSms(), ((CurrentInfo1234ViewDTO) ci01ViewDTO).getAddInt(), ((CurrentInfo1234ViewDTO) ci01ViewDTO).getAddAsm(),((CurrentInfo1234ViewDTO) ci01ViewDTO).getAddIcl(), ((CurrentInfo1234ViewDTO) ci01ViewDTO).getAddRmg(), ci01ViewDTO.getCurrDateTime());
         } else {
-            if (monthlyFramesInputTotal.getInputCls() - sdrOutputTotal.getOutputCls() > 0) {
-                currCls = monthlyFramesInputTotal.getInputCls() - sdrOutputTotal.getOutputCls() + " min left";
-            } else {
-                currCls = monthlyFramesInputTotal.getInputCls() - sdrOutputTotal.getOutputCls() + " min";
-            }
-            if (monthlyFramesInputTotal.getInputSms() - sdrOutputTotal.getOutputSms() > 0) {
-                currSms = monthlyFramesInputTotal.getInputSms() - sdrOutputTotal.getOutputSms() + " msg left";
-            } else {
-                currSms = monthlyFramesInputTotal.getInputSms() - sdrOutputTotal.getOutputSms() + " msg";
-            }
+            return new ClientCurrentInfo01ViewDTO(phoneNumber, firstName, lastName, username, packageName, ci01ViewDTO.getPackageCode(), ci01ViewDTO.getCurrCls(), ci01ViewDTO.getCurrSms(), ci01ViewDTO.getAddCls(), ci01ViewDTO.getAddSms(), ci01ViewDTO.getCurrDateTime());
         }
-        if (monthlyFramesInputTotal.getNAddCls() > 0) {
-            clsNote = "N= " + monthlyFramesInputTotal.getNAddCls();
-        }
-        if (monthlyFramesInputTotal.getNAddSms() > 0) {
-            smsNote = "N= " + monthlyFramesInputTotal.getNAddSms();
-        }
-        if (packagePlanType == PRP01) {
-            return new ClientCurrentInfo01ViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode, currCls, currSms, clsNote, smsNote, nowDateTime);
-        }
-        if (packagePlanType == PackagePlanType.PST14) {
-            currInt = "UNLIMITED";
-        } else {
-            if (!(monthlyFramesInputTotal.getInputInt().subtract(sdrOutputTotal.getOutputInt()).compareTo(BigDecimal.valueOf(0)) == 0)) {
-                currInt = monthlyFramesInputTotal.getInputInt().subtract(sdrOutputTotal.getOutputInt()) + " MB left";
-            } else {
-                currInt = monthlyFramesInputTotal.getInputInt().subtract(sdrOutputTotal.getOutputInt()) + " MB";
-            }
-        }
-        if (monthlyFramesInputTotal.getNAddInt() > 0) {
-            intNote = "N= " + monthlyFramesInputTotal.getNAddInt();
-        }
-        if (packagePlanType == PRP02) {
-            return new ClientCurrentInfo02ViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode, currCls, currSms, currInt, clsNote, smsNote, intNote, nowDateTime);
-        }
-        if (!(monthlyFramesInputTotal.getInputIcl().subtract(sdrOutputTotal.getOutputIcl()).compareTo(BigDecimal.valueOf(0)) == 0)) {
-            currIcl = monthlyFramesInputTotal.getInputIcl().subtract(sdrOutputTotal.getOutputIcl()) + " cu left";
-        } else {
-            currIcl = monthlyFramesInputTotal.getInputIcl().subtract(sdrOutputTotal.getOutputIcl()) + " cu";
-        }
-        if (monthlyFramesInputTotal.getNAddIcl() > 0) {
-            iclNote = "N= " + monthlyFramesInputTotal.getNAddIcl();
-        }
-        if (!(monthlyFramesInputTotal.getInputRmg().subtract(sdrOutputTotal.getOutputRmg()).compareTo(BigDecimal.valueOf(0)) == 0)) {
-            currRmg = monthlyFramesInputTotal.getInputRmg().subtract(sdrOutputTotal.getOutputRmg()) + " cu left";
-        } else {
-            currRmg = monthlyFramesInputTotal.getInputRmg().subtract(sdrOutputTotal.getOutputRmg()) + " cu";
-        }
-        if (monthlyFramesInputTotal.getNAddRmg() > 0) {
-            rmgNote = "N= " + monthlyFramesInputTotal.getNAddRmg();
-        }
-        if (packagePlanType == PST11) {
-            return new ClientCurrentInfo11ViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode, currCls, currSms, currInt, currIcl, currRmg, clsNote, smsNote, intNote, iclNote, rmgNote, nowDateTime);
-        }
-        if (!(monthlyFramesInputTotal.getInputAsm().subtract(sdrOutputTotal.getOutputAsm()).compareTo(BigDecimal.valueOf(0)) == 0)) {
-            currAsm = monthlyFramesInputTotal.getInputAsm().subtract(sdrOutputTotal.getOutputAsm()) + " MB left";
-        } else {
-            currAsm = monthlyFramesInputTotal.getInputAsm().subtract(sdrOutputTotal.getOutputAsm()) + " MB";
-        }
-        if (monthlyFramesInputTotal.getNAddAsm() > 0) {
-            asmNote = "N= " + monthlyFramesInputTotal.getNAddAsm();
-        }
-        return new ClientCurrentInfo1234ViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode, currCls, currSms, currInt, currAsm, currIcl, currRmg, clsNote, smsNote, intNote, asmNote, iclNote, rmgNote, nowDateTime);
-
     }
 
     @Override

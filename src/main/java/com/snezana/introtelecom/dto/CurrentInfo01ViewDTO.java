@@ -1,5 +1,6 @@
 package com.snezana.introtelecom.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.snezana.introtelecom.enums.PackagePlanType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,10 +12,11 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonPropertyOrder({ "phoneNumber", "packageCode", "currCls", "currSms", "addCls", "addSms", "currDateTime" })
 public class CurrentInfo01ViewDTO {
 
     private String phoneNumber;
-    private PackagePlanType packagePlan;
+    private String packageCode;
     private String currCls;
     private String currSms;
     private String addCls;

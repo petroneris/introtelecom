@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({ "phoneNumber", "packagePlan", "currCls", "currSms", "currInt", "currAsm", "currIcl", "currRmg", "addCls", "addSms", "addInt", "addAsm", "addIcl", "addRmg", "currDateTime" })
+@JsonPropertyOrder({ "phoneNumber", "packageCode", "currCls", "currSms", "currInt", "currAsm", "currIcl", "currRmg", "addCls", "addSms", "addInt", "addAsm", "addIcl", "addRmg", "currDateTime" })
 public class CurrentInfo1234ViewDTO extends CurrentInfo01ViewDTO{
 
     private String phoneNumber;
-    private PackagePlanType packagePlan;
+    private String packageCode;
     private String currCls;
     private String currSms;
     private String currInt;

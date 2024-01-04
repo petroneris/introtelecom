@@ -40,7 +40,6 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
     private final ServiceDetailRecordRepo serviceDetailRecordRepo;
     private final FramesSDRValidationService framesSDRValidationService;
 
-
     @Override
     public CurrentInfo01ViewDTO getCurrentInfoByPhone(String phoneNumber) {
         monthlyBillFactsValidationService.controlTheTimeForScheduling();
@@ -92,7 +91,7 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
             smsNote = "N= " + monthlyFramesInputTotal.getNAddSms();
         }
         if (packagePlanType == PRP01){
-            return new CurrentInfo01ViewDTO(phoneNumber, packagePlanType, currCls, currSms, clsNote, smsNote, nowDateTime);
+            return new CurrentInfo01ViewDTO(phoneNumber, packageCode, currCls, currSms, clsNote, smsNote, nowDateTime);
         }
         if (packagePlanType == PackagePlanType.PST14) {
             currInt = "UNLIMITED";
@@ -107,7 +106,7 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
             intNote = "N= " + monthlyFramesInputTotal.getNAddInt();
         }
         if (packagePlanType == PRP02){
-            return new CurrentInfo02ViewDTO(phoneNumber, packagePlanType, currCls, currSms, currInt, clsNote, smsNote, intNote, nowDateTime);
+            return new CurrentInfo02ViewDTO(phoneNumber, packageCode, currCls, currSms, currInt, clsNote, smsNote, intNote, nowDateTime);
         }
         if (!(monthlyFramesInputTotal.getInputIcl().subtract(sdrOutputTotal.getOutputIcl()).compareTo(BigDecimal.valueOf(0)) == 0)) {
             currIcl = monthlyFramesInputTotal.getInputIcl().subtract(sdrOutputTotal.getOutputIcl()) + " cu left";
@@ -126,7 +125,7 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
             rmgNote = "N= " + monthlyFramesInputTotal.getNAddRmg();
         }
         if (packagePlanType == PST11){
-            return new CurrentInfo11ViewDTO(phoneNumber, packagePlanType, currCls, currSms, currInt, currIcl, currRmg, clsNote, smsNote, intNote, iclNote, rmgNote, nowDateTime);
+            return new CurrentInfo11ViewDTO(phoneNumber, packageCode, currCls, currSms, currInt, currIcl, currRmg, clsNote, smsNote, intNote, iclNote, rmgNote, nowDateTime);
         }
         if (!(monthlyFramesInputTotal.getInputAsm().subtract(sdrOutputTotal.getOutputAsm()).compareTo(BigDecimal.valueOf(0)) == 0)) {
             currAsm = monthlyFramesInputTotal.getInputAsm().subtract(sdrOutputTotal.getOutputAsm()) + " MB left";
@@ -136,7 +135,7 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
         if (monthlyFramesInputTotal.getNAddAsm()>0) {
             asmNote = "N= " + monthlyFramesInputTotal.getNAddAsm();
         }
-        return new CurrentInfo1234ViewDTO(phoneNumber, packagePlanType, currCls, currSms, currInt, currAsm, currIcl, currRmg, clsNote, smsNote, intNote, asmNote, iclNote, rmgNote, nowDateTime);
+        return new CurrentInfo1234ViewDTO(phoneNumber, packageCode, currCls, currSms, currInt, currAsm, currIcl, currRmg, clsNote, smsNote, intNote, asmNote, iclNote, rmgNote, nowDateTime);
     }
 
     @Override

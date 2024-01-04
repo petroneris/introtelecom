@@ -35,8 +35,8 @@ public class ClientController {
     @Operation(tags = "Client Controller", description = "Get current info")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "client/getCurrentInfo" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<ClientCurrentInfo01ViewDTO>> getCurrentInfo(Authentication authentication){
-        ClientCurrentInfo01ViewDTO clientCurrentInfo01ViewDTO = clientService.getCurrentInfo(authentication);
+    public ResponseEntity<RestAPIResponse<CurrentInfo01ViewDTO>> getCurrentInfo(Authentication authentication){
+        CurrentInfo01ViewDTO clientCurrentInfo01ViewDTO = clientService.getCurrentInfo(authentication);
         return ResponseEntity.ok(RestAPIResponse.of(clientCurrentInfo01ViewDTO));
     }
 

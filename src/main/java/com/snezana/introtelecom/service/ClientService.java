@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ClientService {
 
-    ClientCurrentInfo01ViewDTO getCurrentInfo (Authentication authentication);
+    CurrentInfo01ViewDTO getCurrentInfo (Authentication authentication);
 
     ClientMonthlyBillFactsPrpViewDTO getMonthlyBillFactsByYearAndMonth (Authentication authentication, int year, int month);
 
