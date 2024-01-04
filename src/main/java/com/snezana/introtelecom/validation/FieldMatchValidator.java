@@ -3,15 +3,12 @@ package com.snezana.introtelecom.validation;
 import com.snezana.introtelecom.dto.PhoneSaveDTO;
 import com.snezana.introtelecom.dto.UserChangePasswordDTO;
 import com.snezana.introtelecom.dto.UserSaveDTO;
-import org.slf4j.Logger;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-/* used for password and phone number validations */
+/* used for password and phone number field validation */
 public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object> {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(FieldMatchValidator.class);
-
 
     private String baseField;
     private String matchField;
@@ -41,8 +38,6 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
         }
         if (!toReturn) {
             context.disableDefaultConstraintViolation();
-            // In the initialiaze method you get the errorMessage:
-            // constraintAnnotation.message();
             context.buildConstraintViolationWithTemplate(message).addPropertyNode(matchField)
                     .addConstraintViolation();
         }

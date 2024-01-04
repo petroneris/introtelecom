@@ -31,7 +31,6 @@ public class ClientController {
 //    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ClientController.class);
 
     private final ClientService clientService;
-    private final PackageAddonPhoneServService packageAddonPhoneServService;
 
     @Operation(tags = "Client Controller", description = "Get current info")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -69,7 +68,7 @@ public class ClientController {
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "client/allAddOns_Info" , produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestAPIResponse<List<AddOnDTO>>> getAllAddOns(){
-        List<AddOnDTO> addOnDTOList = packageAddonPhoneServService.getAllAddOns();
+        List<AddOnDTO> addOnDTOList = clientService.getAllAddOnDetails();
         return ResponseEntity.ok(RestAPIResponse.of(addOnDTOList));
     }
 

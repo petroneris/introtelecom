@@ -31,7 +31,7 @@ import static com.snezana.introtelecom.service.FramesSDRServiceImpl.UNIT_PRICE_R
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ClientServiceImpl implements ClientService{
+public class ClientServiceImpl implements ClientService {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(ClientServiceImpl.class);
 
     private final PhoneValidationService phoneValidationService;
@@ -57,12 +57,12 @@ public class ClientServiceImpl implements ClientService{
         String currAsm;
         String currIcl;
         String currRmg;
-        String clsNote= "";
-        String smsNote= "";
-        String intNote= "";
-        String asmNote= "";
-        String iclNote= "";
-        String rmgNote= "";
+        String clsNote = "";
+        String smsNote = "";
+        String intNote = "";
+        String asmNote = "";
+        String iclNote = "";
+        String rmgNote = "";
         Object principal = authentication.getPrincipal();
         String username = principal.toString();
         User user = userRepo.findByUsername(username);
@@ -80,11 +80,12 @@ public class ClientServiceImpl implements ClientService{
         LocalDateTime monthlyStartDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0, 0, 0);
         LocalDateTime monthlyEndDateTime = monthlyStartDateTime.plusMonths(1);
         LocalDateTime nowDateTime = LocalDateTime.now();
+        CurrentInfoMonthlyBillFactsServiceImpl cimbfServiceImpl = new CurrentInfoMonthlyBillFactsServiceImpl(phoneValidationService, addonFrameRepo, monthlyBillFactsRepo, monthlyBillFactsValidationService, monthlyBillFactsMapper, serviceDetailRecordRepo, framesSDRValidationService);
         PackageFrame monthlyPackageFrame = framesSDRValidationService.returnTheMonthlyPackageFrameIfExists(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
         List<AddonFrame> addonFrameList = addonFrameRepo.findByPhone_PhoneNumberAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phone.getPhoneNumber(), monthlyStartDateTime, monthlyEndDateTime);
         log.info("addonFrameList is size = " + addonFrameList.size());
-        MonthlyFramesInputTotal monthlyFramesInputTotal = inputAmountOfFramesCurrentInfo(monthlyPackageFrame, addonFrameList);
-        SdrOutputTotal sdrOutputTotal = outputAmountOfSDRsCurrentInfo(phoneNumber, monthlyStartDateTime, nowDateTime);
+        MonthlyFramesInputTotal monthlyFramesInputTotal = cimbfServiceImpl.inputAmountOfFramesCurrentInfo(monthlyPackageFrame, addonFrameList);
+        SdrOutputTotal sdrOutputTotal = cimbfServiceImpl.outputAmountOfSDRsCurrentInfo(phoneNumber, monthlyStartDateTime, nowDateTime);
         if (packagePlanType == PackagePlanType.PST13 || packagePlanType == PackagePlanType.PST14) {
             currCls = "UNLIMITED";
             currSms = "UNLIMITED";
@@ -94,19 +95,19 @@ public class ClientServiceImpl implements ClientService{
             } else {
                 currCls = monthlyFramesInputTotal.getInputCls() - sdrOutputTotal.getOutputCls() + " min";
             }
-            if (monthlyFramesInputTotal.getInputSms() - sdrOutputTotal.getOutputSms() > 0){
+            if (monthlyFramesInputTotal.getInputSms() - sdrOutputTotal.getOutputSms() > 0) {
                 currSms = monthlyFramesInputTotal.getInputSms() - sdrOutputTotal.getOutputSms() + " msg left";
             } else {
                 currSms = monthlyFramesInputTotal.getInputSms() - sdrOutputTotal.getOutputSms() + " msg";
             }
         }
-        if (monthlyFramesInputTotal.getNAddCls()>0) {
+        if (monthlyFramesInputTotal.getNAddCls() > 0) {
             clsNote = "N= " + monthlyFramesInputTotal.getNAddCls();
         }
-        if (monthlyFramesInputTotal.getNAddSms()>0) {
+        if (monthlyFramesInputTotal.getNAddSms() > 0) {
             smsNote = "N= " + monthlyFramesInputTotal.getNAddSms();
         }
-        if (packagePlanType == PRP01){
+        if (packagePlanType == PRP01) {
             return new ClientCurrentInfo01ViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode, currCls, currSms, clsNote, smsNote, nowDateTime);
         }
         if (packagePlanType == PackagePlanType.PST14) {
@@ -118,10 +119,10 @@ public class ClientServiceImpl implements ClientService{
                 currInt = monthlyFramesInputTotal.getInputInt().subtract(sdrOutputTotal.getOutputInt()) + " MB";
             }
         }
-        if (monthlyFramesInputTotal.getNAddInt()>0) {
+        if (monthlyFramesInputTotal.getNAddInt() > 0) {
             intNote = "N= " + monthlyFramesInputTotal.getNAddInt();
         }
-        if (packagePlanType == PRP02){
+        if (packagePlanType == PRP02) {
             return new ClientCurrentInfo02ViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode, currCls, currSms, currInt, clsNote, smsNote, intNote, nowDateTime);
         }
         if (!(monthlyFramesInputTotal.getInputIcl().subtract(sdrOutputTotal.getOutputIcl()).compareTo(BigDecimal.valueOf(0)) == 0)) {
@@ -129,7 +130,7 @@ public class ClientServiceImpl implements ClientService{
         } else {
             currIcl = monthlyFramesInputTotal.getInputIcl().subtract(sdrOutputTotal.getOutputIcl()) + " cu";
         }
-        if (monthlyFramesInputTotal.getNAddIcl()>0) {
+        if (monthlyFramesInputTotal.getNAddIcl() > 0) {
             iclNote = "N= " + monthlyFramesInputTotal.getNAddIcl();
         }
         if (!(monthlyFramesInputTotal.getInputRmg().subtract(sdrOutputTotal.getOutputRmg()).compareTo(BigDecimal.valueOf(0)) == 0)) {
@@ -137,10 +138,10 @@ public class ClientServiceImpl implements ClientService{
         } else {
             currRmg = monthlyFramesInputTotal.getInputRmg().subtract(sdrOutputTotal.getOutputRmg()) + " cu";
         }
-        if (monthlyFramesInputTotal.getNAddRmg()>0) {
+        if (monthlyFramesInputTotal.getNAddRmg() > 0) {
             rmgNote = "N= " + monthlyFramesInputTotal.getNAddRmg();
         }
-        if (packagePlanType == PST11){
+        if (packagePlanType == PST11) {
             return new ClientCurrentInfo11ViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode, currCls, currSms, currInt, currIcl, currRmg, clsNote, smsNote, intNote, iclNote, rmgNote, nowDateTime);
         }
         if (!(monthlyFramesInputTotal.getInputAsm().subtract(sdrOutputTotal.getOutputAsm()).compareTo(BigDecimal.valueOf(0)) == 0)) {
@@ -148,7 +149,7 @@ public class ClientServiceImpl implements ClientService{
         } else {
             currAsm = monthlyFramesInputTotal.getInputAsm().subtract(sdrOutputTotal.getOutputAsm()) + " MB";
         }
-        if (monthlyFramesInputTotal.getNAddAsm()>0) {
+        if (monthlyFramesInputTotal.getNAddAsm() > 0) {
             asmNote = "N= " + monthlyFramesInputTotal.getNAddAsm();
         }
         return new ClientCurrentInfo1234ViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode, currCls, currSms, currInt, currAsm, currIcl, currRmg, clsNote, smsNote, intNote, asmNote, iclNote, rmgNote, nowDateTime);
@@ -157,232 +158,86 @@ public class ClientServiceImpl implements ClientService{
 
     @Override
     public ClientMonthlyBillFactsPrpViewDTO getMonthlyBillFactsByYearAndMonth(Authentication authentication, int year, int month) {
-        monthlyBillFactsValidationService.controlTheTimeForScheduling();
-        Object principal = authentication.getPrincipal();
-        String username = principal.toString();
-        User user = userRepo.findByUsername(username);
-        String phoneNumber = user.getPhoneNumber();
-        Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
-        phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
-        String packageCode = phone.getPackagePlan().getPackageCode();
-        String packageName = phone.getPackagePlan().getPackageName();
-        Customer customer = customerValidationService.returnTheCustomerWithThisPhoneIfExists(phone, "phone number");
-        String firstName = customer.getFirstName();
-        String lastName = customer.getLastName();
-        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
+        ClientMonthlyBillFactsPrpViewDTO cmbfPrpViewDTO = getClientMonthlyBillFactsPrpViewDTOdata(authentication);
+        PackagePlanType packagePlanType = PackagePlanType.findByKey(cmbfPrpViewDTO.getPackageCode());
         monthlyBillFactsValidationService.checkYearAndMonth(year, month);
         LocalDate yearMonth = LocalDate.of(year, month, 1);
         if (packagePlanType == PRP01 || packagePlanType == PRP02) {
-            packageCode = packageCode + "  -> THERE IS NO MONTHLY BILL FOR PREPAID PHONE PACKAGES.";
-            ClientMonthlyBillFactsPrpViewDTO clientMonthlyBillFactsPrpViewDTO = new ClientMonthlyBillFactsPrpViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode);
-            return clientMonthlyBillFactsPrpViewDTO;
+            String packageCode = cmbfPrpViewDTO.getPackageCode() + "  -> THERE IS NO MONTHLY BILL FOR PREPAID PHONE PACKAGES.";
+            cmbfPrpViewDTO.setPackageCode(packageCode);
+            return cmbfPrpViewDTO;
         }
-        MonthlyBillFacts monthlyBillFacts = monthlyBillFactsValidationService.returnTheMonthlyBillFactsByYearMonthIfExists(phoneNumber, yearMonth);
+        MonthlyBillFacts monthlyBillFacts = monthlyBillFactsValidationService.returnTheMonthlyBillFactsByYearMonthIfExists(cmbfPrpViewDTO.getPhoneNumber(), yearMonth);
         ClientMonthlyBillFactsPstViewDTO clientMonthlyBillFactsPstViewDTO = monthlyBillFactsMapper.monthlyBillFactsToClientMonthlyBillFactsPstViewDTO(monthlyBillFacts);
-        clientMonthlyBillFactsPstViewDTO.setFirstName(firstName);
-        clientMonthlyBillFactsPstViewDTO.setLastName(lastName);
-        clientMonthlyBillFactsPstViewDTO.setUsername(username);
+        clientMonthlyBillFactsPstViewDTO.setFirstName(cmbfPrpViewDTO.getFirstName());
+        clientMonthlyBillFactsPstViewDTO.setLastName(cmbfPrpViewDTO.getLastName());
+        clientMonthlyBillFactsPstViewDTO.setUsername(cmbfPrpViewDTO.getUsername());
         return clientMonthlyBillFactsPstViewDTO;
     }
 
     @Override
-    public List<? extends ClientMonthlyBillFactsPrpViewDTO > getMonthlyBillFactsFromStartDateToEndDate(Authentication authentication, int startYear, int startMonth, int endYear, int endMonth) {
-        monthlyBillFactsValidationService.controlTheTimeForScheduling();
-        Object principal = authentication.getPrincipal();
-        String username = principal.toString();
-        User user = userRepo.findByUsername(username);
-        String phoneNumber = user.getPhoneNumber();
-        Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
-        phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
-        String packageCode = phone.getPackagePlan().getPackageCode();
-        String packageName = phone.getPackagePlan().getPackageName();
-        Customer customer = customerValidationService.returnTheCustomerWithThisPhoneIfExists(phone, "phone number");
-        String firstName = customer.getFirstName();
-        String lastName = customer.getLastName();
-        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
+    public List<? extends ClientMonthlyBillFactsPrpViewDTO> getMonthlyBillFactsFromStartDateToEndDate(Authentication authentication, int startYear, int startMonth, int endYear, int endMonth) {
+        ClientMonthlyBillFactsPrpViewDTO cmbfPrpViewDTO = getClientMonthlyBillFactsPrpViewDTOdata(authentication);
+        PackagePlanType packagePlanType = PackagePlanType.findByKey(cmbfPrpViewDTO.getPackageCode());
         monthlyBillFactsValidationService.checkYearAndMonth(startYear, startMonth);
         monthlyBillFactsValidationService.checkYearAndMonth(endYear, endMonth);
         LocalDate startDate = LocalDate.of(startYear, startMonth, 1);
         LocalDate endDate = LocalDate.of(endYear, endMonth, 1);
         monthlyBillFactsValidationService.controlTheStartDateIsLessThanEndDate(startDate, endDate);
         if (packagePlanType == PRP01 || packagePlanType == PRP02) {
-            packageCode = packageCode + "  -> THERE IS NO MONTHLY BILL FOR PREPAID PHONE PACKAGES.";
-            ClientMonthlyBillFactsPrpViewDTO clientMonthlyBillFactsPrpViewDTO = new ClientMonthlyBillFactsPrpViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode);
-            List<ClientMonthlyBillFactsPrpViewDTO>  clientMonthlyBillFactsPrpViewDTOList = new ArrayList<>();
-            clientMonthlyBillFactsPrpViewDTOList.add(clientMonthlyBillFactsPrpViewDTO);
+            String packageCode = cmbfPrpViewDTO.getPackageCode() + "  -> THERE IS NO MONTHLY BILL FOR PREPAID PHONE PACKAGES.";
+            cmbfPrpViewDTO.setPackageCode(packageCode);
+            List<ClientMonthlyBillFactsPrpViewDTO> clientMonthlyBillFactsPrpViewDTOList = new ArrayList<>();
+            clientMonthlyBillFactsPrpViewDTOList.add(cmbfPrpViewDTO);
             return clientMonthlyBillFactsPrpViewDTOList;
         }
-        List <MonthlyBillFacts> monthlyBillFactsList = monthlyBillFactsRepo.findByPhone_PhoneNumberAndYearMonthStartsWithAndYearMonthEndsWith (phoneNumber, startDate, endDate);
-        List<ClientMonthlyBillFactsPstViewDTO>  clientMonthlyBillFactsPstViewDTOList = monthlyBillFactsMapper.monthlyBillFactsListToClientMonthlyBillFactsPstViewDTOList(monthlyBillFactsList);
-        for (ClientMonthlyBillFactsPstViewDTO cmbf: clientMonthlyBillFactsPstViewDTOList){
-            cmbf.setFirstName(firstName);
-            cmbf.setLastName(lastName);
-            cmbf.setUsername(username);
+        List<MonthlyBillFacts> monthlyBillFactsList = monthlyBillFactsRepo.findByPhone_PhoneNumberAndYearMonthStartsWithAndYearMonthEndsWith(cmbfPrpViewDTO.getPhoneNumber(), startDate, endDate);
+        List<ClientMonthlyBillFactsPstViewDTO> clientMonthlyBillFactsPstViewDTOList = monthlyBillFactsMapper.monthlyBillFactsListToClientMonthlyBillFactsPstViewDTOList(monthlyBillFactsList);
+        for (ClientMonthlyBillFactsPstViewDTO cmbf : clientMonthlyBillFactsPstViewDTOList) {
+            cmbf.setFirstName(cmbfPrpViewDTO.getFirstName());
+            cmbf.setLastName(cmbfPrpViewDTO.getLastName());
+            cmbf.setUsername(cmbfPrpViewDTO.getUsername());
         }
         return clientMonthlyBillFactsPstViewDTOList;
     }
 
     @Override
-    public List<PackagePlanDTO> getAllCustomersPackagePlans(){
+    public List<PackagePlanDTO> getAllCustomersPackagePlans() {
         List<PackagePlan> packagePlanList = packagePlanRepo.findAllCustomersPackagePlans();
         return packagePlanMapper.packagePlanToPackagePlanDTO(packagePlanList);
     }
 
     @Override
-    public List<AddOnDTO> getAllAddOns() {
+    public List<AddOnDTO> getAllAddOnDetails() {
         List<AddOn> addOnList = addOnRepo.findAll();
-        return addOnMapper.addOnToAddOnDTO(addOnList);
+        List<AddOnDTO> addOnDTOList = addOnMapper.addOnToAddOnDTO(addOnList);
+        String iclStr = "; zone1 -> 15 cu/min;  zone2 -> 20 cu/min;";
+        String rmgStr = "; zone1 -> 4 cu/min;  zone2 -> 8 cu/min;";
+        for (AddOnDTO addonDTO : addOnDTOList) {
+            addonDTO.setAddonPrice(addonDTO.getAddonPrice() + " cu");
+            if (addonDTO.getAddonCode().equals(AddonCode.ADDICL.name())) {
+                addonDTO.setAddonDescription(addonDTO.getAddonDescription() + iclStr);
+            }
+            if (addonDTO.getAddonCode().equals(AddonCode.ADDRMG.name())) {
+                addonDTO.setAddonDescription(addonDTO.getAddonDescription() + rmgStr);
+            }
+        }
+        return addOnDTOList;
     }
 
-    MonthlyFramesInputTotal inputAmountOfFramesCurrentInfo(PackageFrame packageFrame, List<AddonFrame> addonFrameList) {
-        MonthlyFramesInputTotal inputResult = new MonthlyFramesInputTotal(0,0,new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), 0,0,0,0,0,0);
-        int inputCls = packageFrame.getPackfrCls();
-        int inputSms = packageFrame.getPackfrSms();
-        BigDecimal inputInt = packageFrame.getPackfrInt();
-        BigDecimal inputAsm = packageFrame.getPackfrAsm();
-        BigDecimal inputIcl = packageFrame.getPackfrIcl();
-        BigDecimal inputRmg = packageFrame.getPackfrRmg();
-        if (!addonFrameList.isEmpty()) {
-            for (AddonFrame af : addonFrameList) {
-                AddonCode addonCode = AddonCode.valueOf(af.getAddOn().getAddonCode());
-                switch (addonCode) {
-                    case ADDCLS:
-                        inputCls = inputCls + af.getAddfrCls();
-                        inputResult.setNAddCls(inputResult.getNAddCls()+1);
-                        continue;
-                    case ADDSMS:
-                        inputSms = inputSms + af.getAddfrSms();
-                        inputResult.setNAddSms(inputResult.getNAddSms()+1);
-                        continue;
-                    case ADDINT:
-                        inputInt = inputInt.add(af.getAddfrInt());
-                        inputResult.setNAddInt(inputResult.getNAddInt()+1);
-                        continue;
-                    case ADDASM:
-                        inputAsm = inputAsm.add(af.getAddfrAsm());
-                        inputResult.setNAddAsm(inputResult.getNAddAsm()+1);
-                        continue;
-                    case ADDICL:
-                        inputIcl = inputIcl.add(af.getAddfrIcl());
-                        inputResult.setNAddIcl(inputResult.getNAddIcl()+1);
-                        continue;
-                    case ADDRMG:
-                        inputRmg = inputRmg.add(af.getAddfrRmg());
-                        inputResult.setNAddRmg(inputResult.getNAddRmg()+1);
-                }
-            }
-        }
-        inputResult.setInputCls(inputCls);
-        log.info("inputAm CLS = " + inputCls);
-        inputResult.setInputSms(inputSms);
-        log.info("inputAm SMS = " + inputSms);
-        inputResult.setInputInt(inputInt);
-        log.info("inputAm INT = " + inputInt);
-        inputResult.setInputAsm(inputAsm);
-        log.info("inputAm ASM = " + inputAsm);
-        inputResult.setInputIcl(inputIcl);
-        log.info("inputAm ICL = " + inputIcl);
-        inputResult.setInputRmg(inputRmg);
-        log.info("inputAm RMG = " + inputRmg);
-        return inputResult;
+    private ClientMonthlyBillFactsPrpViewDTO getClientMonthlyBillFactsPrpViewDTOdata(Authentication authentication) {
+        monthlyBillFactsValidationService.controlTheTimeForScheduling();
+        Object principal = authentication.getPrincipal();
+        String username = principal.toString();
+        User user = userRepo.findByUsername(username);
+        String phoneNumber = user.getPhoneNumber();
+        Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
+        phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
+        String packageCode = phone.getPackagePlan().getPackageCode();
+        String packageName = phone.getPackagePlan().getPackageName();
+        Customer customer = customerValidationService.returnTheCustomerWithThisPhoneIfExists(phone, "phone number");
+        String firstName = customer.getFirstName();
+        String lastName = customer.getLastName();
+        return new ClientMonthlyBillFactsPrpViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode);
     }
-
-    SdrOutputTotal outputAmountOfSDRsCurrentInfo(String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime nowDateTime) {
-        SdrOutputTotal outputResult = new SdrOutputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
-        int duration = 0;
-        int msgAmount = 0;
-        int durationIcl1 = 0;
-        int durationIcl2 = 0;
-        int durationRmg1 = 0;
-        int durationRmg2 = 0;
-        BigDecimal mbAmountInt = new BigDecimal("0.00");
-        BigDecimal mbAmountAsm = new BigDecimal("0.00");
-
-        BigDecimal priceAmountICL = new BigDecimal("0.00");
-        BigDecimal priceAmountRMG = new BigDecimal("0.00");
-        BigDecimal priceICLCZ1 = new BigDecimal(UNIT_PRICE_ICLCZ1);
-        BigDecimal priceICLCZ2 = new BigDecimal(UNIT_PRICE_ICLCZ2);
-        BigDecimal priceRMGCZ1 = new BigDecimal(UNIT_PRICE_RMGCZ1);
-        BigDecimal priceRMGCZ2 = new BigDecimal(UNIT_PRICE_RMGCZ2);
-
-        List<ServiceDetailRecord> serviceDetailRecordListCls = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, nowDateTime, SDRCLS.name());
-        if (!serviceDetailRecordListCls.isEmpty()) {
-            for (ServiceDetailRecord sdr : serviceDetailRecordListCls) {
-                duration = duration + sdr.getDuration();
-            }
-            outputResult.setOutputCls(duration);
-        }
-        log.info(" CLS duration = " + duration);
-        List<ServiceDetailRecord> serviceDetailRecordListSms = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, nowDateTime, SDRSMS.name());
-        if (!serviceDetailRecordListSms.isEmpty()) {
-            for (ServiceDetailRecord sdr : serviceDetailRecordListSms) {
-                msgAmount = msgAmount + sdr.getMsgAmount();
-            }
-            outputResult.setOutputSms(msgAmount);
-        }
-        log.info(" SMS msgAmount = " + msgAmount);
-        List<ServiceDetailRecord> serviceDetailRecordListInt = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, nowDateTime, SDRINT.name());
-        if (!serviceDetailRecordListInt.isEmpty()) {
-            for (ServiceDetailRecord sdr : serviceDetailRecordListInt) {
-                mbAmountInt = mbAmountInt.add(sdr.getMbAmount());
-            }
-            outputResult.setOutputInt(mbAmountInt);
-        }
-        log.info(" INT mbAmountInt = " + mbAmountInt);
-        List<ServiceDetailRecord> serviceDetailRecordListAsm = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, nowDateTime, SDRASM.name());
-        if (!serviceDetailRecordListAsm.isEmpty()) {
-            for (ServiceDetailRecord sdr : serviceDetailRecordListAsm) {
-                mbAmountAsm = mbAmountAsm.add(sdr.getMbAmount());
-            }
-            outputResult.setOutputAsm(mbAmountAsm);
-        }
-        log.info(" ASM mbAmountAsm = " + mbAmountAsm);
-        List<ServiceDetailRecord> serviceDetailRecordListIcl1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, nowDateTime, SDRICLCZ1.name());
-        if (!serviceDetailRecordListIcl1.isEmpty()) {
-            for (ServiceDetailRecord sdr : serviceDetailRecordListIcl1) {
-                durationIcl1 = durationIcl1 + sdr.getDuration();
-            }
-        }
-        log.info("ICL durationIclCZ1= " + durationIcl1);
-        priceICLCZ1 = priceICLCZ1.multiply(new BigDecimal(durationIcl1));
-        log.info("ICL priceAmountICLCZ1= " + priceICLCZ1);
-
-        List<ServiceDetailRecord> serviceDetailRecordListIcl2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, nowDateTime, SDRCode.SDRICLCZ2.name());
-        if (!serviceDetailRecordListIcl2.isEmpty()) {
-            for (ServiceDetailRecord sdr : serviceDetailRecordListIcl2) {
-                durationIcl2 = durationIcl2 + sdr.getDuration();
-            }
-        }
-        log.info("ICL durationIclCZ2= " + durationIcl2);
-        priceICLCZ2 = priceICLCZ2.multiply(new BigDecimal(durationIcl2));
-        log.info("ICL priceAmountICLCZ2= " + priceICLCZ2);
-        priceAmountICL = priceAmountICL.add(priceICLCZ1).add(priceICLCZ2);
-        log.info("ICL priceAmountICL= " + priceAmountICL);
-        outputResult.setOutputIcl(priceAmountICL);
-
-        List<ServiceDetailRecord> serviceDetailRecordListRmg1 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, nowDateTime, SDRRMGCZ1.name());
-        if (!serviceDetailRecordListRmg1.isEmpty()) {
-            for (ServiceDetailRecord sdr : serviceDetailRecordListRmg1) {
-                durationRmg1 = durationRmg1 + sdr.getDuration();
-            }
-        }
-        log.info("RMG durationRmgCZ1= " + durationRmg1);
-        priceRMGCZ1 = priceRMGCZ1.multiply(new BigDecimal(durationRmg1));
-        log.info("RMG priceAmountRMGCZ1= " + priceRMGCZ1);
-        List<ServiceDetailRecord> serviceDetailRecordListRmg2 = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, nowDateTime, SDRRMGCZ2.name());
-        if (!serviceDetailRecordListRmg2.isEmpty()) {
-            for (ServiceDetailRecord sdr : serviceDetailRecordListRmg2) {
-                durationRmg2 = durationRmg2 + sdr.getDuration();
-            }
-        }
-        log.info("RMG durationRmgCZ2= " + durationRmg2);
-        priceRMGCZ2 = priceRMGCZ2.multiply(new BigDecimal(durationRmg2));
-        log.info("RMG priceAmountRMGCZ2= " + priceRMGCZ2);
-        priceAmountRMG = priceAmountRMG.add(priceRMGCZ1).add(priceRMGCZ2);
-        log.info("RMG priceAmountRMG= " + priceAmountRMG);
-        outputResult.setOutputRmg(priceAmountRMG);
-
-        return outputResult;
-    }
-
 }

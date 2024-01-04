@@ -15,6 +15,6 @@ public interface ClientService {
 
     List<PackagePlanDTO> getAllCustomersPackagePlans();
 
-    List<AddOnDTO> getAllAddOns();
+    List<AddOnDTO> getAllAddOnDetails();
 
 }

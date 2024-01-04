@@ -162,21 +162,17 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
         monthlyBillFactsValidationService.controlTheTimeForScheduling();
         phoneValidationService.controlThePhoneExists(phoneNumber);
         phoneValidationService.controlThisPhoneHasPostpaidPackageCode(phoneNumber);
-        log.info("after controlThisPhoneHasPostpaidPackageCode(phoneNumber)");
         monthlyBillFactsValidationService.checkYearAndMonth(startYear, startMonth);
         monthlyBillFactsValidationService.checkYearAndMonth(endYear, endMonth);
         LocalDate startDate = LocalDate.of(startYear, startMonth, 1);
         LocalDate endDate = LocalDate.of(endYear, endMonth, 1);
-        log.info("startDate= " +startDate);
-        log.info("endDate= " +endDate);
         monthlyBillFactsValidationService.controlTheStartDateIsLessThanEndDate(startDate, endDate);
-        log.info("after controlTheStartDateIsLessThanEndDate(startDate, endDate)");
         List <MonthlyBillFacts> monthlyBillFactsList = monthlyBillFactsRepo.findByPhone_PhoneNumberAndYearMonthStartsWithAndYearMonthEndsWith (phoneNumber, startDate, endDate);
-        log.info("after List <MonthlyBillFacts> monthlyBillFactsList");
         return monthlyBillFactsMapper.monthlyBillFactsListToMonthlyBillFactsViewDTOList(monthlyBillFactsList);
     }
 
-
+    /* calculates the current total input quota -> monthly package frame quota plus add-on frame(s) monthly quota, if exists at the current moment;
+     set the number of every type add-on frame that user demanded in the current month */
     MonthlyFramesInputTotal inputAmountOfFramesCurrentInfo(PackageFrame packageFrame, List<AddonFrame> addonFrameList) {
         MonthlyFramesInputTotal inputResult = new MonthlyFramesInputTotal(0,0,new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), 0,0,0,0,0,0);
         int inputCls = packageFrame.getPackfrCls();
@@ -230,6 +226,8 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
         return inputResult;
     }
 
+    /* calculates the current output quota -> current sum of SDRs (Service Detail Record) that are recorded in the current month
+    * current info shows what is left (current total input quota - current output quota) */
     SdrOutputTotal outputAmountOfSDRsCurrentInfo(String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime nowDateTime) {
         SdrOutputTotal outputResult = new SdrOutputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
         int duration = 0;
@@ -240,14 +238,12 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
         int durationRmg2 = 0;
         BigDecimal mbAmountInt = new BigDecimal("0.00");
         BigDecimal mbAmountAsm = new BigDecimal("0.00");
-
         BigDecimal priceAmountICL = new BigDecimal("0.00");
         BigDecimal priceAmountRMG = new BigDecimal("0.00");
         BigDecimal priceICLCZ1 = new BigDecimal(UNIT_PRICE_ICLCZ1);
         BigDecimal priceICLCZ2 = new BigDecimal(UNIT_PRICE_ICLCZ2);
         BigDecimal priceRMGCZ1 = new BigDecimal(UNIT_PRICE_RMGCZ1);
         BigDecimal priceRMGCZ2 = new BigDecimal(UNIT_PRICE_RMGCZ2);
-
         List<ServiceDetailRecord> serviceDetailRecordListCls = serviceDetailRecordRepo.findByPhone_PhoneNumberAndSdrStartDateTimeGreaterThanEqualAndSdrEndDateTimeLessThanEqualAndPhoneService_ServiceCode(phoneNumber, monthlyStartDateTime, nowDateTime, SDRCLS.name());
         if (!serviceDetailRecordListCls.isEmpty()) {
             for (ServiceDetailRecord sdr : serviceDetailRecordListCls) {
@@ -327,7 +323,6 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
 
         return outputResult;
     }
-
 
 }
 

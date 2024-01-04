@@ -55,8 +55,8 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     private final ServiceDetailRecordRepo serviceDetailRecordRepo;
 
 
-    /*the method saveNewPackageFame(PackageFrameSaveDTO packageFrameSaveDTO)
-    currently not in use, because of automatic generation of package frames at the beginning of the month*/
+    /* the method saveNewPackageFame(PackageFrameSaveDTO packageFrameSaveDTO)
+    currently not in use, because of automatic generation of package frames at the beginning of the month */
 
     @Override
     public PackageFrameViewDTO findPackageFrameById(Long packfrId) {
@@ -111,7 +111,7 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         packageFrameRepo.delete(packageFrame);
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     @Override
     public void saveNewAddonFrame(AddonFrameSaveDTO addonFrameSaveDTO) {
         Phone phone = phoneValidationService.returnThePhoneIfExists(addonFrameSaveDTO.getPhoneNumber());
@@ -178,7 +178,8 @@ public class FramesSDRServiceImpl implements FramesSDRService {
         addonFrameRepo.delete(addonFrame);
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /* along with validations also includes EOS check before saving the new SDR (Service Detail Record) */
 @Override
 public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO) {
     String message = "Not EOS";
@@ -193,10 +194,8 @@ public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetai
     String packageCode = phone.getPackagePlan().getPackageCode();
     PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCode);
     String serviceCodeStr = serviceDetailRecordSaveDTO.getServiceCode();
-    log.info("serviceCode = " + serviceCodeStr);
     SDRCode serviceCode = SDRCode.valueOf(serviceCodeStr);
     AddonCode addonCode = findAddonCodeFromServiceCode(serviceCode);
-    log.info("addonCode = " + addonCode);
     int duration = SomeUtils.howFarApartTwoLocalDateTime(serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
     log.info("duration = " + duration);
     serviceDetailRecord.setDuration(duration);
@@ -336,7 +335,8 @@ public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetai
         return addonCode;
     }
 
-    /*calculates the total input quota -> monthly package frame quota plus add-on frame(s) monthly quota if exists for the current month */
+    /* calculates the total input quota -> monthly package frame quota plus add-on frame(s) monthly quota (if exists) that corresponds
+     to particular service code, for the current month */
     FramesInputTotal inputAmountOfFrames(PackageFrame packageFrame, List<AddonFrame> addonFrameList, SDRCode serviceCode) {
         FramesInputTotal inputResult = new FramesInputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
         int inputCls = packageFrame.getPackfrCls();
@@ -386,7 +386,7 @@ public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetai
         return inputResult;
     }
 
-    /*calculates the total output quota -> current sum of SDRs (Service Detail Record) quota in the current month*/
+    /* calculates the total output quota -> current sum of SDRs (Service Detail Record) amount in the current month for particular service (code) */
     SdrAmountCalc outputAmountOfSDRs(String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime monthlyEndDateTime, SDRCode serviceCode) {
         SdrAmountCalc outputResult = new SdrAmountCalc(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), "", "", false);
         int duration = 0;
@@ -614,7 +614,7 @@ public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetai
                 break;
             }
         }
-        log.info("result, duration = " + result.getSdrDurationAmount() + ", msgAmount = " + result.getSdrMsgAmount() + ", MBamount = " + result.getSdrMBamount() + ", price = " + result.getSdrPriceAmount() + ", note = " + result.getEosNote() + ", servoceCode = " + result.getServiceCode() + ", eos = " + result.isSdrEOS());
+        log.info("result, duration = " + result.getSdrDurationAmount() + ", msgAmount = " + result.getSdrMsgAmount() + ", MBamount = " + result.getSdrMBamount() + ", price = " + result.getSdrPriceAmount() + ", note = " + result.getEosNote() + ", serviceCode = " + result.getServiceCode() + ", eos = " + result.isSdrEOS());
         return result;
     }
 
