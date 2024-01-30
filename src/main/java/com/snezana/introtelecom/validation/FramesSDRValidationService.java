@@ -3,6 +3,8 @@ package com.snezana.introtelecom.validation;
 import com.snezana.introtelecom.entity.AddonFrame;
 import com.snezana.introtelecom.entity.PackageFrame;
 import com.snezana.introtelecom.entity.ServiceDetailRecord;
+import com.snezana.introtelecom.enums.AddonCode;
+import com.snezana.introtelecom.enums.PackagePlanType;
 import com.snezana.introtelecom.exception.IllegalItemFieldException;
 import com.snezana.introtelecom.exception.ItemNotFoundException;
 import com.snezana.introtelecom.exception.RestAPIErrorMessage;
@@ -60,7 +62,7 @@ public class FramesSDRValidationService {
     public void controlTheAddonFrameHasAlreadyGiven(String phoneNumber, String addonCode, LocalDateTime startDateTime, LocalDateTime endDateTime){
         Optional<AddonFrame> addonFrameOptional = addonFrameRepo.findByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phoneNumber, addonCode, startDateTime, endDateTime);
         addonFrameOptional.ifPresent( addonFrame ->  {
-            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "Addon frame with these parameters has already given for this phone!");
+            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "Addon frame with these parameters has already given to this phone!");
         });
     }
 
@@ -69,6 +71,14 @@ public class FramesSDRValidationService {
         serviceDetailRecordOptional.ifPresent(serviceDetailRecord ->  {
             throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "ServiceDetailRecord with these parameters already exists for this phone!");
         });
+    }
+
+    public void controlIsTheValidAddonFrameToThisPhone (String packageCodeStr, String addonCodeStr){
+        PackagePlanType packagePlanType = PackagePlanType.findByKey(packageCodeStr);
+        AddonCode addonCode = AddonCode.valueOf(addonCodeStr);
+        if ((packagePlanType.equals(PackagePlanType.PRP01) && (addonCode.equals(AddonCode.ADDINT) || addonCode.equals(AddonCode.ADDASM) || addonCode.equals(AddonCode.ADDICL) || addonCode.equals(AddonCode.ADDRMG)))|| (packagePlanType.equals(PackagePlanType.PRP02) && (addonCode.equals(AddonCode.ADDASM) || addonCode.equals(AddonCode.ADDICL) || addonCode.equals(AddonCode.ADDRMG))) || (packagePlanType.equals(PackagePlanType.PST11) && addonCode.equals(AddonCode.ADDASM))){
+            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "The type of Addon Frame is not valid for this phone number!");
+        }
     }
 
 }

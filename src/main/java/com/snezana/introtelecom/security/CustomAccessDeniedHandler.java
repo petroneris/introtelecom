@@ -16,7 +16,9 @@ import java.util.TreeMap;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/* If exception is thrown because user is not authorized for given resource, then CustomAccessDeniedHandler will be called.*/
+/**
+ * If the user is not authorized, an exception is thrown and this method will be called
+ */
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override

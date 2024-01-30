@@ -18,7 +18,6 @@ import java.util.Map;
 public class CustomRestAPIExceptionHandler extends ResponseEntityExceptionHandler {
 
 //    private static final Logger log = org.slf4j.LoggerFactory.getLogger(CustomRestAPIExceptionHandler.class);
-
     @ExceptionHandler
     public final ResponseEntity<Object> handleAll(Exception ex, WebRequest webRequest){
         Map<String, String> errorMap = new HashMap<>();
@@ -49,7 +48,7 @@ public class CustomRestAPIExceptionHandler extends ResponseEntityExceptionHandle
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("error_message","VALIDATION IS FAILED!");
+        errorMap.put("error_message","VALIDATION FAILED!");
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errorMap.put(error.getField(), error.getDefaultMessage());
         });

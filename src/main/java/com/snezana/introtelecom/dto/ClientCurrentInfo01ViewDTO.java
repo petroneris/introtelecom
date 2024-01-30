@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/* Current info view for prepaid 01 - PRP01 users that client can see */
+/**
+ * Current info view for prepaid 01 - PRP01 users that client can see
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

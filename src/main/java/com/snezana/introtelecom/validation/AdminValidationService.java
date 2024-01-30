@@ -25,7 +25,7 @@ public class AdminValidationService {
 
     public Admin returnAdminWithThatPersonalNumberIfExists(String personalNumber) {
         return adminRepo.findByPersonalNumberOpt(personalNumber)
-                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that personalNumber doesn't exist in database!"));
+                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that personal number doesn't exist in database!"));
     }
 
     public void controlTheOtherAdminHasThisPhone(String phoneNumber) {
@@ -42,7 +42,7 @@ public class AdminValidationService {
 
     public Admin returnTheAdminWithThatPhoneIfExists (String phoneNumber){
         return adminRepo.findByPhoneNumberOpt(phoneNumber)
-                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that phone doesn't exist in database!"));
+                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The admin with that phone number doesn't exist in database!"));
     }
 
     public Admin returnTheAdminWithThatEmailIfExists (String email){
@@ -72,7 +72,7 @@ public class AdminValidationService {
         Optional<Admin> adminOptional = adminRepo.findByPhoneNumberOpt(phoneNumber);
         adminOptional.ifPresent(admin -> {
             if(!admin.getAdminId().equals(adminId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that phone already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that phone number already exists in database!");
             }
         });
     }

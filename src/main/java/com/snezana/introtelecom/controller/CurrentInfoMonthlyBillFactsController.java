@@ -28,7 +28,6 @@ import java.util.List;
 public class CurrentInfoMonthlyBillFactsController {
 
 //    private static final Logger log = org.slf4j.LoggerFactory.getLogger(CurrentInfoMonthlyBillFactsController.class);
-
     private final CurrentInfoMonthlyBillFactsService currentInfoMonthlyBillFactsService;
 
     @Operation(tags = "CurrentInfoMonthlyBillFacts Controller", description = "Get current info by phone number")

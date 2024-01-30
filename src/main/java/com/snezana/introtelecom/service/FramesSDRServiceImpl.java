@@ -54,9 +54,10 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     private final PhoneServiceRepo phoneServiceRepo;
     private final ServiceDetailRecordRepo serviceDetailRecordRepo;
 
-
-    /* the method saveNewPackageFame(PackageFrameSaveDTO packageFrameSaveDTO)
-    currently not in use, because of automatic generation of package frames at the beginning of the month */
+    /**
+     * currently, there is no method for saving new package frames
+     * package frames are automatically generated at the beginning of the month
+     */
 
     @Override
     public PackageFrameViewDTO findPackageFrameById(Long packfrId) {
@@ -115,8 +116,10 @@ public class FramesSDRServiceImpl implements FramesSDRService {
     @Override
     public void saveNewAddonFrame(AddonFrameSaveDTO addonFrameSaveDTO) {
         Phone phone = phoneValidationService.returnThePhoneIfExists(addonFrameSaveDTO.getPhoneNumber());
+        String packageCode = phone.getPackagePlan().getPackageCode();
         phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
         packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonFrameSaveDTO.getAddonCode());
+        framesSDRValidationService.controlIsTheValidAddonFrameToThisPhone(packageCode, addonFrameSaveDTO.getAddonCode());
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(addonFrameSaveDTO.getAddfrStartDateTime());
         framesSDRValidationService.controlTheLocalDateTimeInputIsValid(addonFrameSaveDTO.getAddfrEndDateTime());
         framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(addonFrameSaveDTO.getAddfrStartDateTime(), addonFrameSaveDTO.getAddfrEndDateTime());

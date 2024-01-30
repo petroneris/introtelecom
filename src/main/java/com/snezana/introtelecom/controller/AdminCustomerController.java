@@ -33,7 +33,6 @@ import java.util.Map;
 public class AdminCustomerController {
 
 //    private static final Logger log = org.slf4j.LoggerFactory.getLogger(AdminCustomerController.class);
-
     private final AdminCustomerService adminCustomerService;
 
     @Operation(tags = "AdminCustomer Controller", description = "Save a new admin")

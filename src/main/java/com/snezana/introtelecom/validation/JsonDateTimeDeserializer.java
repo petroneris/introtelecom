@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.Month;
 
-/* used for LocalDateTime input data validation */
+/**
+ * used for LocalDateTime input data validation
+ */
 public class JsonDateTimeDeserializer  extends JsonDeserializer <LocalDateTime> {
 
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";

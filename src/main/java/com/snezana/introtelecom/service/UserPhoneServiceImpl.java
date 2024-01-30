@@ -91,7 +91,7 @@ public class UserPhoneServiceImpl implements UserPhoneService {
         List<Phone> phoneList = phoneRepo.findByPackageCode(packageCode);
         return phoneMapper.phonesToPhonesViewDTO(phoneList);
     }
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 @Override
 public void saveNewUser(UserSaveDTO userSaveDto) {
     phoneValidationService.controlThePhoneExists(userSaveDto.getPhoneNumber());

@@ -8,12 +8,10 @@ import com.snezana.introtelecom.mapper.AddOnMapper;
 import com.snezana.introtelecom.mapper.MonthlyBillFactsMapper;
 import com.snezana.introtelecom.mapper.PackagePlanMapper;
 import com.snezana.introtelecom.repository.*;
-import com.snezana.introtelecom.validation.CustomerValidationService;
-import com.snezana.introtelecom.validation.FramesSDRValidationService;
-import com.snezana.introtelecom.validation.MonthlyBillFactsValidationService;
-import com.snezana.introtelecom.validation.PhoneValidationService;
+import com.snezana.introtelecom.validation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +40,8 @@ public class ClientServiceImpl implements ClientService {
     private final AddOnRepo addOnRepo;
     private final PackagePlanMapper packagePlanMapper;
     private final AddOnMapper addOnMapper;
+    private final UserValidationService userValidationService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public CurrentInfo01ViewDTO getCurrentInfo(Authentication authentication) {
@@ -110,6 +110,17 @@ public class ClientServiceImpl implements ClientService {
             cmbf.setUsername(cmbfPrpViewDTO.getUsername());
         }
         return clientMonthlyBillFactsPstViewDTOList;
+    }
+
+    @Override
+    public void changePassword(Authentication authentication, ClientChangePasswordDTO clientChangePasswordDto) {
+        Object principal = authentication.getPrincipal();
+        String username = principal.toString();
+        User user = userRepo.findByUsername(username);
+        String oldPassword = clientChangePasswordDto.getOldPassword();
+        userValidationService.checkIfOldPasswordIsValid(oldPassword, user.getPassword());
+        user.setPassword(passwordEncoder.encode(clientChangePasswordDto.getNewPassword()));
+
     }
 
     @Override

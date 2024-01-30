@@ -31,7 +31,6 @@ import java.util.Map;
 public class UserPhoneController {
 
 //    private static final Logger log = org.slf4j.LoggerFactory.getLogger(UserPhoneController.class);
-
     private final UserPhoneService usersPhonesService;
 
     @Operation(tags = "UserPhone Controller", description = "Save a new phone")

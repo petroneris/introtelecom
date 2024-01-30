@@ -28,5 +28,4 @@ public class UserSaveDTO {
     @NotBlank
     private String roleType;
 
-
 }

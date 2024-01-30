@@ -2,20 +2,21 @@ package com.snezana.introtelecom.controller;
 
 import com.snezana.introtelecom.dto.*;
 import com.snezana.introtelecom.response.RestAPIResponse;
+import com.snezana.introtelecom.response.RestMessage;
 import com.snezana.introtelecom.service.ClientService;
-import com.snezana.introtelecom.service.PackageAddonPhoneServService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
-//import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -29,7 +30,6 @@ import java.util.List;
 public class ClientController {
 
 //    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ClientController.class);
-
     private final ClientService clientService;
 
     @Operation(tags = "Client Controller", description = "Get current info")
@@ -54,6 +54,15 @@ public class ClientController {
     public ResponseEntity<RestAPIResponse<List<? extends ClientMonthlyBillFactsPrpViewDTO>>> getMonthlyBillFactsStartDateToEndDate(Authentication authentication, @RequestParam int startYear, @RequestParam int startMonth, @RequestParam int endYear, @RequestParam int endMonth){
         List<? extends ClientMonthlyBillFactsPrpViewDTO> clientMonthlyBillFactsPrpViewDTOList = clientService.getMonthlyBillFactsFromStartDateToEndDate(authentication, startYear, startMonth, endYear, endMonth);
         return ResponseEntity.ok(RestAPIResponse.of( clientMonthlyBillFactsPrpViewDTOList));
+    }
+
+    @Operation(tags = "Client Controller", description = "Change a password")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PatchMapping(value = "/client/changePassword", consumes = MediaType.APPLICATION_JSON_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RestAPIResponse<Map<String, String>>> changePassword(Authentication authentication, @RequestBody @Valid ClientChangePasswordDTO clientChangePasswordDto){
+        clientService.changePassword(authentication, clientChangePasswordDto);
+        String message = "The password is changed.";
+        return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));
     }
 
     @Operation(tags = "Client Controller", description = "Get all packages")

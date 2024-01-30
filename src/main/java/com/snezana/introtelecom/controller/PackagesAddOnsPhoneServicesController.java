@@ -32,12 +32,10 @@ import java.util.Map;
 public class PackagesAddOnsPhoneServicesController {
 
 //    private static final Logger log = org.slf4j.LoggerFactory.getLogger(PackagesAddOnsPhoneServicesController.class);
-
     private final PackageAddonPhoneServService packageAddonPhoneServService;
 
-    /*
-    some of the methods for Package plans, Add-ons and (Phone) Services
-    there are plenty methods that they can apply to
+    /**
+     * some of the methods for Package plans, Add-ons and (Phone) Services
      */
 
     @Operation(tags = "PackagesAddOnsPhoneServices Controller", description = "Get package by package code")
@@ -114,6 +112,5 @@ public class PackagesAddOnsPhoneServicesController {
         String message = "The service price of service code= " +serviceCode + " is changed.";
         return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));
     }
-
 
 }

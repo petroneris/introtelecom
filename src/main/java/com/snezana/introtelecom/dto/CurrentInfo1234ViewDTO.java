@@ -1,14 +1,15 @@
 package com.snezana.introtelecom.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.snezana.introtelecom.enums.PackagePlanType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/* Current info view for postpaid (12, 13, 14) - PST12, PST13, PST14 users */
+/**
+ * Current info view for postpaid (12, 13, 14) - PST12, PST13, PST14 users
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

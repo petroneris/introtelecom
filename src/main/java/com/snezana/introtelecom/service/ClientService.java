@@ -13,6 +13,7 @@ public interface ClientService {
 
     List<? extends ClientMonthlyBillFactsPrpViewDTO> getMonthlyBillFactsFromStartDateToEndDate (Authentication authentication, int startYear, int startMonth, int endYear, int endMonth);
 
+    void changePassword(Authentication authentication, ClientChangePasswordDTO clientChangePasswordDto);
     List<PackagePlanDTO> getAllCustomersPackagePlans();
 
     List<AddOnDTO> getAllAddOnDetails();

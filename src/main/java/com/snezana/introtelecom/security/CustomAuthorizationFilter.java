@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -17,7 +18,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
 
-/*This filter will read and validate the token given as input by the user in the header with key 'Authorization'*/
+/**
+ * This filter will read and validate a token given in the header name 'Authorization'
+ */
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
@@ -25,7 +28,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
         if (StringUtils.hasText(token)) {
             boolean isValid = jwTtokenGenerator.validateToken(token);
@@ -53,5 +56,4 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         }
         return token;
     }
-
 }

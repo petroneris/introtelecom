@@ -29,7 +29,9 @@ import static com.snezana.introtelecom.enums.PackagePlanType.PRP02;
 
 // In reality this is the process that takes some time, so it would be good to create some service
 
-/*automatic generation of package frames and monthly bills at the beginning of the month*/
+/**
+ * automatic generation of package frames and monthly bills at the beginning of the month
+ */
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(name = "spring.scheduler.enabled", matchIfMissing = true)
@@ -46,7 +48,9 @@ public class SchedulingConfiguration {
     private final AddOnRepo addOnRepo;
     private final MonthlyBillFactsRepo monthlyBillFactsRepo;
 
-    /*automatic generation of package frames at the beginning of the month - “At minute 1 on day-of-month 1." */
+    /**
+     * automatic generation of package frames at the beginning of the month - “At minute 1 on day-of-month 1"
+     */
    @Scheduled(cron = "0 1 0 1 * *")
     public void createMonthlyPackageFrame() {
         LocalDateTime nowDateTime = LocalDateTime.now();
@@ -105,7 +109,9 @@ public class SchedulingConfiguration {
         }
     }
 
-    /*automatic generation of monthly bills at the beginning of the month - “At every minute past hour 10 on day-of-month 1.” */
+    /**
+     * automatic generation of monthly bills at the beginning of the month - “At every minute past hour 10 on day-of-month 1”
+     */
     @Scheduled(cron = "0 0 10 1 * *")
     public void createMonthlyBillFacts() {
         LocalDateTime nowDateTime = LocalDateTime.now();

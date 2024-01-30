@@ -32,7 +32,6 @@ import java.util.Map;
 public class FramesSDRController {
 
 //    private static final Logger log = org.slf4j.LoggerFactory.getLogger(FramesSDRController.class);
-
     private final FramesSDRService framesSDRService;
 
     @Operation(tags = "FramesSDR Controller", description = "Get package frame by id")

@@ -170,8 +170,13 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
         return monthlyBillFactsMapper.monthlyBillFactsListToMonthlyBillFactsViewDTOList(monthlyBillFactsList);
     }
 
-    /* calculates the current total input quota -> monthly package frame quota plus add-on frame(s) monthly quota, if exists at the current moment;
-     set the number of every type add-on frame that user demanded in the current month */
+    /**
+     * calculates the total input amount -> monthly package frame quota plus add-on frame(s) monthly quota (if add-on frame exists at the current moment);
+     * calculates the number of every type add-on frame that user demanded during the current month
+     * @param packageFrame
+     * @param addonFrameList
+     * @return
+     */
     MonthlyFramesInputTotal inputAmountOfFramesCurrentInfo(PackageFrame packageFrame, List<AddonFrame> addonFrameList) {
         MonthlyFramesInputTotal inputResult = new MonthlyFramesInputTotal(0,0,new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), 0,0,0,0,0,0);
         int inputCls = packageFrame.getPackfrCls();
@@ -225,8 +230,14 @@ public class CurrentInfoMonthlyBillFactsServiceImpl implements CurrentInfoMonthl
         return inputResult;
     }
 
-    /* calculates the current output quota -> current sum of SDRs (Service Detail Record) that are recorded in the current month
-    * current info shows what is left (current total input quota - current output quota) */
+    /**
+     * calculates the current output amount -> current sum of all amounts calculated from SDRs (Service Detail Record) data - recorded from the beginning of the current month until now
+     * current info shows what is left (total input amount - current output amount)
+     * @param phoneNumber
+     * @param monthlyStartDateTime
+     * @param nowDateTime
+     * @return
+     */
     SdrOutputTotal outputAmountOfSDRsCurrentInfo(String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime nowDateTime) {
         SdrOutputTotal outputResult = new SdrOutputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
         int duration = 0;

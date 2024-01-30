@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/* Current info view for prepaid (01, 02) users that client can see */
+/**
+ * Monthly bill facts for prepaid (PRP01, PRP02) users that client can see
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

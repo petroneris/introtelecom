@@ -11,7 +11,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-/*Currently not in use, because of automatic generation of package frames at the beginning of the month*/
+/**
+ * Currently not in use, because of automatic generation of package frames at the beginning of the month
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

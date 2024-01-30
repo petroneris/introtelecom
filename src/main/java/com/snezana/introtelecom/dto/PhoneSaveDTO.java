@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotBlank;
 public class PhoneSaveDTO {
 
     @NotBlank
+    @Pattern(regexp = "0[1-9][0-9]{8}", message = "Mobile phone number must have 10 digits, with leading 0 and the second number in range [1-9]")
     private String phoneNumber;
     @NotBlank
     private String checkPhoneNumber;

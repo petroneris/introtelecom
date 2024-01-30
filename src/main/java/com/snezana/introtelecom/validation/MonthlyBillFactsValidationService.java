@@ -43,8 +43,10 @@ public class MonthlyBillFactsValidationService {
         }
     }
 
-    /* services for CurrentInfo and MonthlyBillFacts are not available until 12 o'clock on day-of-month 1.
-    due to granting of monthly package frame quotas and creating monthly bills for the previous month */
+    /**
+     * services for CurrentInfo and MonthlyBillFacts are not available until 12 o'clock on day-of-month 1.
+     * due to monthly package frames and monthly bills creation for the previous month
+     */
     public void controlTheTimeForScheduling (){
         LocalDateTime nowDateTime = LocalDateTime.now();
         Month currentMonth = nowDateTime.getMonth();
