@@ -2,7 +2,7 @@ package com.snezana.introtelecom.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.snezana.introtelecom.validations.JsonDateTimeDeserializer;
+import com.snezana.introtelecom.validation.JsonDateTimeDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

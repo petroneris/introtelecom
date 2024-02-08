@@ -10,6 +10,7 @@ import java.util.Set;
 @Data
 @Table(name = "role", catalog = "intro_telecom")
 public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "role_id", unique = true, nullable = false)
@@ -20,5 +21,4 @@ public class Role {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
     private Set<User> users;
-
 }

@@ -4,7 +4,6 @@ import com.snezana.introtelecom.dto.PackagePlanDTO;
 import com.snezana.introtelecom.entity.PackagePlan;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;

@@ -1,6 +1,7 @@
 package com.snezana.introtelecom.enums;
 
 public enum BearerConstant {
+
     BEARER("Bearer ");
 
     private final String bconst;

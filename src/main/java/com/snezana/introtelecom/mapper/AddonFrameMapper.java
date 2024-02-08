@@ -7,8 +7,8 @@ import com.snezana.introtelecom.entity.AddonFrame;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.enums.AddonCode;
 import com.snezana.introtelecom.enums.StatusType;
-import com.snezana.introtelecom.repositories.AddOnRepo;
-import com.snezana.introtelecom.repositories.PhoneRepo;
+import com.snezana.introtelecom.repository.AddOnRepo;
+import com.snezana.introtelecom.repository.PhoneRepo;
 import org.mapstruct.*;
 
 import java.math.BigDecimal;
@@ -18,7 +18,6 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class AddonFrameMapper {
-
 
     public abstract AddonFrame addonFrameSaveDtoToAddonFrame(AddonFrameSaveDTO addonFrameSaveDto, @Context PhoneRepo phoneRepo, @Context AddOnRepo addOnRepo);
 

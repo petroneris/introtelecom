@@ -48,4 +48,6 @@ public class Phone {
     @OneToMany(mappedBy = "phone")
     private Set<ServiceDetailRecord> serviceDetailRecords;
 
+    @OneToMany(mappedBy = "phone")
+    private Set<MonthlyBillFacts> monthlyBillFacts;
 }

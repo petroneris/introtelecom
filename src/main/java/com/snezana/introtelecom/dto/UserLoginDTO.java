@@ -1,6 +1,5 @@
 package com.snezana.introtelecom.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,7 +11,6 @@ public class UserLoginDTO {
     @NotBlank
     private String username;
     @NotBlank
-//    @Schema(format = "password")
     private String password;
 
 }
