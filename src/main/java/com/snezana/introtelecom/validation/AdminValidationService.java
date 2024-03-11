@@ -54,7 +54,7 @@ public class AdminValidationService {
         Optional<Admin> adminOptional = adminRepo.findByPersonalNumberOpt(personalNumber);
         adminOptional.ifPresent(admin -> {
             if(!admin.getAdminId().equals(adminId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that personal number already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "Another admin with that personal number already exists in database!");
             }
         });
     }
@@ -63,7 +63,7 @@ public class AdminValidationService {
         Optional<Admin> adminOptional = adminRepo.findByEmailOpt(email);
         adminOptional.ifPresent(admin -> {
             if(!admin.getAdminId().equals(adminId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that email already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "Another admin with that email already exists in database!");
             }
         });
     }
@@ -72,7 +72,7 @@ public class AdminValidationService {
         Optional<Admin> adminOptional = adminRepo.findByPhoneNumberOpt(phoneNumber);
         adminOptional.ifPresent(admin -> {
             if(!admin.getAdminId().equals(adminId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other admin with that phone number already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "Another admin with that phone number already exists in database!");
             }
         });
     }

@@ -197,7 +197,7 @@ public class FramesSDRController {
         return ResponseEntity.ok(RestAPIResponse.of(serviceDetailRecordViewDTOList));
     }
 
-    @Operation(tags = "FramesSDR Controller", description = "Get ServiceDetailRecords by phone number, Sdr code, start time, end time")
+    @Operation(tags = "FramesSDR Controller", description = "Get ServiceDetailRecords by phone number, SDR code, start time, end time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "sdr/getServiceDetailRecordsByPhoneNumberSdrCodeStartTimeEndTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecordByPhoneNumberSdrCodeStartTimeEndTime(@PathVariable String phoneNumber, @RequestParam String sdrCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrEndDateTime){
@@ -205,7 +205,7 @@ public class FramesSDRController {
         return ResponseEntity.ok(RestAPIResponse.of(serviceDetailRecordViewDTOList));
     }
 
-    @Operation(tags = "FramesSDR Controller", description = "Get ServiceDetailRecords by phone number, Sdr code, start time")
+    @Operation(tags = "FramesSDR Controller", description = "Get ServiceDetailRecords by phone number, SDR code, start time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "sdr/getServiceDetailRecordsByPhoneNumberSdrCodeStartTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecordByPhoneNumberSdrCodeStartTime(@PathVariable String phoneNumber, @RequestParam String sdrCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime){

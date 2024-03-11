@@ -40,7 +40,7 @@ public class AdminCustomerController {
     @PostMapping(value = "/admin/saveNewAdmin", consumes = MediaType.APPLICATION_JSON_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestAPIResponse<Map<String, String>>> saveAdmin(@RequestBody @Valid AdminSaveDTO adminSaveDto){
         adminCustomerService.saveNewAdmin(adminSaveDto);
-        String message = "The new admin is saved.";
+        String message = "New admin is saved.";
         return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));
     }
 
@@ -98,7 +98,7 @@ public class AdminCustomerController {
     @PostMapping(value = "/customer/saveNewCustomer", consumes = MediaType.APPLICATION_JSON_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestAPIResponse<Map<String, String>>> saveCustomer(@RequestBody @Valid CustomerSaveDTO customerSaveDto){
         adminCustomerService.saveNewCustomer(customerSaveDto);
-        String message = "The new customer is saved.";
+        String message = "New customer is saved.";
         return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));
     }
 

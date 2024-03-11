@@ -19,11 +19,9 @@ public interface PackageFrameRepo extends JpaRepository<PackageFrame, Long> {
 
     List<PackageFrame> findByPhone_PackagePlan_PackageCodeAndPackfrStartDateTimeGreaterThanEqual (String packageCode, LocalDateTime packfrStartDateTime);
 
-    Optional<PackageFrame> findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeGreaterThanEqualAndPackfrEndDateTimeLessThanEqual (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
+    List<PackageFrame> findByPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals (LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
 
     Optional<PackageFrame> findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
-
-    List<PackageFrame> findByPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals (LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime);
 
     @Query(
             "SELECT " +

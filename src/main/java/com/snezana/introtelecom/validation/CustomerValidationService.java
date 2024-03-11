@@ -53,7 +53,7 @@ public class CustomerValidationService {
         Optional<Customer> customerOptional = customerRepo.findByPersonalNumberOpt(personalNumber);
         customerOptional.ifPresent(customer ->  {
             if(!customer.getCustomerId().equals(customerId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other customer with that personal number already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "Another customer with that personal number already exists in database!");
             }
         });
     }
@@ -62,7 +62,7 @@ public class CustomerValidationService {
         Optional<Customer> customerOptional = customerRepo.findByEmailOpt(email);
         customerOptional.ifPresent(customer ->  {
             if(!customer.getCustomerId().equals(customerId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other customer with that email already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "Another customer with that email already exists in database!");
             }
         });
     }

@@ -127,11 +127,13 @@ public class SchedulingConfiguration {
             if (!(pf.getPhone().getPackagePlan().getPackageCode().equals(PRP01.getPackageCode()) || pf.getPhone().getPackagePlan().getPackageCode().equals(PRP02.getPackageCode()))) {
                 pfYMList.add(new MonthlyData(pf.getPackfrId(), pf.getPhone().getPhoneNumber(), pf.getPhone().getPackagePlan().getPackageCode()));
             }
+            pf.setPackfrStatus(StatusType.NOT_IN_USE.getStatus());
         }
         for (AddonFrame af : addonFrameList) {
             if (!(af.getPhone().getPackagePlan().getPackageCode().equals(PRP01.getPackageCode()) || af.getPhone().getPackagePlan().getPackageCode().equals(PRP02.getPackageCode()))) {
                 afYMlist.add(new MonthlyData(af.getAddfrId(), af.getPhone().getPhoneNumber(), af.getAddOn().getAddonCode()));
             }
+            af.setAddfrStatus(StatusType.NOT_IN_USE.getStatus());
         }
         for (MonthlyData md : pfYMList) {
             String phoneNumb = md.getPhoneNumber();

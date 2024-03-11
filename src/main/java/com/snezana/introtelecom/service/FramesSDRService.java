@@ -110,11 +110,12 @@ public class FramesSDRService {
         phoneValidationService.controlThisPhoneHasCustomersPackageCode(phone);
         packageAddonPhoneServValidationService.controlTheAddOnCodeExists(addonFrameSaveDTO.getAddonCode());
         framesSDRValidationService.controlIsTheValidAddonFrameToThisPhone(packageCode, addonFrameSaveDTO.getAddonCode());
-        framesSDRValidationService.controlTheLocalDateTimeInputIsValid(addonFrameSaveDTO.getAddfrStartDateTime());
-        framesSDRValidationService.controlTheLocalDateTimeInputIsValid(addonFrameSaveDTO.getAddfrEndDateTime());
-        framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(addonFrameSaveDTO.getAddfrStartDateTime(), addonFrameSaveDTO.getAddfrEndDateTime());
-        framesSDRValidationService.controlTheAddonFrameHasAlreadyGiven(addonFrameSaveDTO.getPhoneNumber(), addonFrameSaveDTO.getAddonCode(), addonFrameSaveDTO.getAddfrStartDateTime(), addonFrameSaveDTO.getAddfrEndDateTime());
-        AddonFrame addonFrame = addonFrameMapper.addonFrameSaveDtoToAddonFrame(addonFrameSaveDTO, phoneRepo, addOnRepo);
+        LocalDateTime nowDateTime = LocalDateTime.now();
+        LocalDateTime startDateTime = LocalDateTime.of(nowDateTime.getYear(), nowDateTime.getMonth(), nowDateTime.getDayOfMonth(), 0, 0, 0, 0);
+        LocalDateTime nextMonthDateTime = nowDateTime.plusMonths(1);
+        LocalDateTime endDateTime = LocalDateTime.of(nextMonthDateTime.getYear(), nextMonthDateTime.getMonth(), 1, 0, 0, 0, 0);
+        framesSDRValidationService.controlTheAddonFrameHasAlreadyGiven(addonFrameSaveDTO.getPhoneNumber(), addonFrameSaveDTO.getAddonCode(), endDateTime);
+        AddonFrame addonFrame = addonFrameMapper.addonFrameSaveDtoToAddonFrame(addonFrameSaveDTO, phoneRepo, addOnRepo, startDateTime, endDateTime);
         addonFrameRepo.save(addonFrame);
     }
 
@@ -177,6 +178,7 @@ public class FramesSDRService {
     framesSDRValidationService.controlTheLocalDateTimeInputIsValid(serviceDetailRecordSaveDTO.getSdrStartDateTime());
     framesSDRValidationService.controlTheLocalDateTimeInputIsValid(serviceDetailRecordSaveDTO.getSdrEndDateTime());
     framesSDRValidationService.controlTheStartTimeIsLessThanEndTime(serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
+    framesSDRValidationService.controlTheEndTimeIsLessThanEndOfTheMonth(serviceDetailRecordSaveDTO.getSdrEndDateTime());
     framesSDRValidationService.controlTheServiceDetailRecordAlreadyExists(serviceDetailRecordSaveDTO.getPhoneNumber(), serviceDetailRecordSaveDTO.getServiceCode(), serviceDetailRecordSaveDTO.getSdrStartDateTime(), serviceDetailRecordSaveDTO.getSdrEndDateTime());
     ServiceDetailRecord serviceDetailRecord = new ServiceDetailRecord();
     String packageCode = phone.getPackagePlan().getPackageCode();
