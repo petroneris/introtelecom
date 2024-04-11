@@ -44,4 +44,17 @@ public interface CustomerRepo extends JpaRepository<Customer, Long> {
                     "WHERE customer.email = :email "
     )
     Optional<Customer> findByEmailOpt(@Param("email") String email);
+
+    @Query(value = "SELECT MAX(customer.customerId) FROM Customer customer")
+    Long maxCustomer_id();
+
+    @Query(
+            "SELECT " +
+                    "customer "+
+                    "FROM Customer customer "+
+                    "JOIN FETCH customer.phones "+
+                    "WHERE customer.personalNumber = :personalNumber "
+    )
+    Customer findCustomerByPersonalNumberOtherWay(String personalNumber);
+
 }

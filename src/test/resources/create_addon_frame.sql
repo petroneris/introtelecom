@@ -1,0 +1,2 @@
+insert into addon_frame (phone_number, addon_code, addfr_cls, addfr_sms, addfr_int, addfr_asm, addfr_icl, addfr_rmg, addfr_startdatetime, addfr_enddatetime, addfr_status)
+values ('0798512435', 'ADDINT', 100, 0, '0.00', '0.00', '0.00', '0.00', '2023-07-22 00:00:00.0', '2023-08-01 00:00:00.0', 'ACTIVE');

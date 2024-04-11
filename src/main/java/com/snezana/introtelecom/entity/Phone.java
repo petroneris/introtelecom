@@ -1,6 +1,8 @@
 package com.snezana.introtelecom.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -8,7 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "phone", catalog = "intro_telecom")
 public class Phone {
 

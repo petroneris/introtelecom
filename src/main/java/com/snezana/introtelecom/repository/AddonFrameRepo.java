@@ -34,4 +34,7 @@ public interface AddonFrameRepo extends JpaRepository<AddonFrame, Long> {
     )
     Optional<AddonFrame> findByAddfrIdOpt(@Param("addfrId") Long addfrId);
 
+    @Query(value = "SELECT MAX(addonFrame.addfrId) FROM AddonFrame addonFrame")
+    Long maxAddfr_id();
+
 }

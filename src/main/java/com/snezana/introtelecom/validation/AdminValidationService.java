@@ -68,11 +68,11 @@ public class AdminValidationService {
         });
     }
 
-    public void controlTheOtherAdminHasThisPhone(String phoneNumber, Long adminId){
+    public void controlThatAnotherAdminHasThisPhoneNumber(String phoneNumber, Long adminId){
         Optional<Admin> adminOptional = adminRepo.findByPhoneNumberOpt(phoneNumber);
         adminOptional.ifPresent(admin -> {
             if(!admin.getAdminId().equals(adminId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "Another admin with that phone number already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "Another admin with this phone number already exists in database!");
             }
         });
     }

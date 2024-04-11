@@ -25,7 +25,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class PackageAddonPhoneServService{
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(PackageAddonPhoneServService.class);
+//    private static final Logger log = org.slf4j.LoggerFactory.getLogger(PackageAddonPhoneServService.class);
 
     private final PackageAddonPhoneServValidationService packageAddonPhoneServValidationService;
     private final PackagePlanRepo packagePlanRepo;
@@ -37,9 +37,6 @@ public class PackageAddonPhoneServService{
 
     public PackagePlanDTO getPackagePlanByPackageCode(String packageCode) {
         PackagePlan packagePlan = packageAddonPhoneServValidationService.returnThePackagePlanIfPackageCodeExists(packageCode);
-        log.info(packagePlan.getPackageCode());
-        log.info(packagePlan.getPackageName());
-        log.info(packagePlan.getPackagePrice().toString());
         return packagePlanMapper.packagePlanToPackagePlanDTO(packagePlan);
     }
 

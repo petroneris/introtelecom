@@ -137,7 +137,7 @@ public class UserPhoneService {
     public void deleteUser(String username) {
         User user = userValidationService.returnTheUserWithThisUsernameIfExists(username);
         userValidationService.checkIfUserIsAdmin(user);
-        userRepo.delete(user);
+        userRepo.deleteByUsername(user.getUsername());
     }
 
 }

@@ -44,4 +44,6 @@ public interface AdminRepo extends JpaRepository<Admin, Long> {
     )
     Optional<Admin> findByEmailOpt(@Param("email") String email);
 
+    @Query(value = "SELECT MAX(admin.adminId) FROM Admin admin")
+    Long maxAdmin_id();
 }

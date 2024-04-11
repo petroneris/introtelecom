@@ -33,7 +33,7 @@ public class Customer {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @ManyToMany(fetch = FetchType.LAZY )
+    @ManyToMany
     @JoinTable(
             name = "customer_phone", catalog = "intro_telecom",
             joinColumns = { @JoinColumn(name = "customer_id") },
