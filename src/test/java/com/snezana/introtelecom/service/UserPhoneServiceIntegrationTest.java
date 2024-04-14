@@ -1,9 +1,6 @@
 package com.snezana.introtelecom.service;
 
-import com.snezana.introtelecom.dto.PhoneSaveDTO;
-import com.snezana.introtelecom.dto.PhoneViewDTO;
-import com.snezana.introtelecom.dto.UserSaveDTO;
-import com.snezana.introtelecom.dto.UserViewDTO;
+import com.snezana.introtelecom.dto.*;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.entity.User;
 import com.snezana.introtelecom.repository.PhoneRepo;
@@ -12,6 +9,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -37,6 +35,10 @@ public class UserPhoneServiceIntegrationTest {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @Test
     @Sql(scripts = {"/delete_phone.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -179,6 +181,25 @@ public class UserPhoneServiceIntegrationTest {
         Optional<User> userOpt = userRepo.findByPhoneNumberOpt(phoneNumber);
         assertThat(userOpt).isNotEmpty();
         assertThat(userOpt.get().getUserStatus()).isEqualTo(changedStatus);
+    }
+
+    @Test
+    @Sql(scripts = {"/update_user_data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void testChangeUserPassword(){
+        String username = "sava3";
+        String oldPassword = "sava3";
+        String rawNewPassword = "newWorld";
+        String checkNewPassword = "newWorld";
+        UserChangePasswordDTO userChangePasswordDTO = new UserChangePasswordDTO();
+        userChangePasswordDTO.setUsername(username);
+        userChangePasswordDTO.setOldPassword(oldPassword);
+        userChangePasswordDTO.setNewPassword(rawNewPassword);
+        userChangePasswordDTO.setCheckNewPassword(checkNewPassword);
+        userPhoneService.changeUserPassword(userChangePasswordDTO);
+        User user = userRepo.findByUsername(username);
+        String encodedPassword = user.getPassword();
+        boolean passwordMatches = passwordEncoder.matches(rawNewPassword, encodedPassword);
+        assertThat(passwordMatches).isTrue();
     }
 
     @Test

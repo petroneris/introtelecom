@@ -37,9 +37,9 @@ import static com.snezana.introtelecom.enums.PackagePlanType.PRP02;
 @ConditionalOnProperty(name = "spring.scheduler.enabled", matchIfMissing = true)
 @RequiredArgsConstructor
 @Transactional
-public class SchedulingConfiguration {
+public class SchedulingJobs {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(SchedulingConfiguration.class);
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(SchedulingJobs.class);
 
     private final PackageFrameRepo packageFrameRepo;
     private final AddonFrameRepo addonFrameRepo;

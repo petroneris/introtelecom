@@ -31,4 +31,6 @@ public interface PackageFrameRepo extends JpaRepository<PackageFrame, Long> {
     )
     Optional<PackageFrame> findByPackfrIdOpt(@Param("packfrId") Long packfrId);
 
+    @Query(value = "SELECT MAX(packageFrame.packfrId) FROM PackageFrame packageFrame")
+    Long maxPackfr_id();
 }

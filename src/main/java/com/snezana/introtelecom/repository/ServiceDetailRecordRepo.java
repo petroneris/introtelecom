@@ -29,4 +29,6 @@ public interface ServiceDetailRecordRepo extends JpaRepository<ServiceDetailReco
     )
     Optional<ServiceDetailRecord> findBySdrIdOpt(@Param("sdrId") Long sdrId);
 
+    @Query(value = "SELECT MAX(serviceDetailRecord.sdrId) FROM ServiceDetailRecord serviceDetailRecord")
+    Long maxSdr_id();
 }
