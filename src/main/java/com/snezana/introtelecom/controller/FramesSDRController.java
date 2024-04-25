@@ -45,7 +45,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get package frame by phone number, start time, end time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "packageFrame/getPackageFramesByPhoneNumberStartTimeEndTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<PackageFrameViewDTO>>> getPackageFrameByPhoneNumberStartTimeEndTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrEndDateTime){
+    public ResponseEntity<RestAPIResponse<List<PackageFrameViewDTO>>> getPackageFramesByPhoneNumberStartTimeEndTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrEndDateTime){
         List<PackageFrameViewDTO> packageFrameViewDTOList = framesSDRService.findPackageFramesByPhoneNumberStartTimeEndTime(phoneNumber, packfrStartDateTime, packfrEndDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(packageFrameViewDTOList));
     }
@@ -53,7 +53,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get package frame by phone number, start time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "packageFrame/getPackageFramesByPhoneNumberStartTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<PackageFrameViewDTO>>> getPackageFrameByPhoneNumberStartTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrStartDateTime){
+    public ResponseEntity<RestAPIResponse<List<PackageFrameViewDTO>>> getPackageFramesByPhoneNumberStartTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrStartDateTime){
         List<PackageFrameViewDTO> packageFrameViewDTOList = framesSDRService.findPackageFramesByPhoneNumberStartTime(phoneNumber, packfrStartDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(packageFrameViewDTOList));
     }
@@ -61,7 +61,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get package frame by package code, start time, end time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "packageFrame/getPackageFramesByPackageCodeStartTimeEndTime/{packageCode}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<PackageFrameViewDTO>>> getPackageFrameByPackageCodeStartTimeEndTime(@PathVariable String packageCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrStartDateTime, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrEndDateTime){
+    public ResponseEntity<RestAPIResponse<List<PackageFrameViewDTO>>> getPackageFramesByPackageCodeStartTimeEndTime(@PathVariable String packageCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrStartDateTime, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrEndDateTime){
         List<PackageFrameViewDTO> packageFrameViewDTOList = framesSDRService.findPackageFramesByPackageCodeStartTimeEndTime(packageCode, packfrStartDateTime, packfrEndDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(packageFrameViewDTOList));
     }
@@ -69,7 +69,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get package frame by package code, start time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "packageFrame/getPackageFramesByPackageCodeStartTime/{packageCode}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<PackageFrameViewDTO>>> getPackageFrameByPackageCodeStartTime(@PathVariable String packageCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrStartDateTime){
+    public ResponseEntity<RestAPIResponse<List<PackageFrameViewDTO>>> getPackageFramesByPackageCodeStartTime(@PathVariable String packageCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime packfrStartDateTime){
         List<PackageFrameViewDTO> packageFrameViewDTOList = framesSDRService.findPackageFramesByPackageCodeStartTime(packageCode, packfrStartDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(packageFrameViewDTOList));
     }
@@ -79,7 +79,7 @@ public class FramesSDRController {
     @PatchMapping(value = "/packageFrame/changePackageFrameStatus/{packfrId}")
     public ResponseEntity<RestAPIResponse<Map<String, String>>> changePackageFrameStatus(@PathVariable Long packfrId){
         framesSDRService.changePackageFrameStatus(packfrId);
-        String message = "The paackage frame status is changed.";
+        String message = "The package frame status is changed.";
         return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));
     }
 
@@ -113,7 +113,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get addon frame by phone number, start time, end time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "addonFrame/getAddonFramesByPhoneNumberStartTimeEndTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<AddonFrameViewDTO>>> getAddonFrameByPhoneNumberStartTimeEndTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrEndDateTime){
+    public ResponseEntity<RestAPIResponse<List<AddonFrameViewDTO>>> getAddonFramesByPhoneNumberStartTimeEndTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrEndDateTime){
         List<AddonFrameViewDTO> addonFrameViewDTOList = framesSDRService.findAddonFramesByPhoneNumberStartTimeEndTime(phoneNumber, addfrStartDateTime, addfrEndDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(addonFrameViewDTOList));
     }
@@ -121,7 +121,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get addon frame by phone number, start time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "addonFrame/getAddonFramesByPhoneNumberStartTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<AddonFrameViewDTO>>> getAddonFrameByPhoneNumberStartTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrStartDateTime){
+    public ResponseEntity<RestAPIResponse<List<AddonFrameViewDTO>>> getAddonFramesByPhoneNumberStartTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrStartDateTime){
         List<AddonFrameViewDTO> addonFrameViewDTOList = framesSDRService.findAddonFramesByPhoneNumberStartTime(phoneNumber, addfrStartDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(addonFrameViewDTOList));
     }
@@ -129,7 +129,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get addon frame by addon code, start time, end time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "addonFrame/getAddonFramesByAddonCodeStartTimeEndTime/{addonCode}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<AddonFrameViewDTO>>> getAddonFrameByAddonCodeStartTimeEndTime(@PathVariable String addonCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrEndDateTime){
+    public ResponseEntity<RestAPIResponse<List<AddonFrameViewDTO>>> getAddonFramesByAddonCodeStartTimeEndTime(@PathVariable String addonCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrEndDateTime){
         List<AddonFrameViewDTO> addonFrameViewDTOList = framesSDRService.findAddonFramesByAddonCodeStartTimeEndTime(addonCode, addfrStartDateTime, addfrEndDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(addonFrameViewDTOList));
     }
@@ -137,7 +137,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get addon frame by addon code, start time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "addonFrame/getAddonFramesByAddonCodeStartTime/{addonCode}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<AddonFrameViewDTO>>> getAddonFrameByAddonCodeStartTime(@PathVariable String addonCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrStartDateTime){
+    public ResponseEntity<RestAPIResponse<List<AddonFrameViewDTO>>> getAddonFramesByAddonCodeStartTime(@PathVariable String addonCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime addfrStartDateTime){
         List<AddonFrameViewDTO> addonFrameViewDTOList = framesSDRService.findAddonFramesByAddonCodeStartTime(addonCode, addfrStartDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(addonFrameViewDTOList));
     }
@@ -184,7 +184,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get ServiceDetailRecords by phone number, start time, end time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "sdr/getServiceDetailRecordsByPhoneNumberStartTimeEndTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecordByPhoneNumberStartTimeEndTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrEndDateTime){
+    public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecordsByPhoneNumberStartTimeEndTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrEndDateTime){
         List<ServiceDetailRecordViewDTO> serviceDetailRecordViewDTOList = framesSDRService.findServiceDetailRecordsByPhoneNumberStartTimeEndTime(phoneNumber, sdrStartDateTime, sdrEndDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(serviceDetailRecordViewDTOList));
     }
@@ -192,7 +192,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get ServiceDetailRecords by phone number, start time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "sdr/getServiceDetailRecordsByPhoneNumberStartTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecordByPhoneNumberStartTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime){
+    public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecorsdByPhoneNumberStartTime(@PathVariable String phoneNumber, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime){
         List<ServiceDetailRecordViewDTO> serviceDetailRecordViewDTOList = framesSDRService.findServiceDetailRecordsByPhoneNumberStartTime(phoneNumber, sdrStartDateTime);
         return ResponseEntity.ok(RestAPIResponse.of(serviceDetailRecordViewDTOList));
     }
@@ -200,7 +200,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get ServiceDetailRecords by phone number, SDR code, start time, end time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "sdr/getServiceDetailRecordsByPhoneNumberSdrCodeStartTimeEndTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecordByPhoneNumberSdrCodeStartTimeEndTime(@PathVariable String phoneNumber, @RequestParam String sdrCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrEndDateTime){
+    public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecordsByPhoneNumberSdrCodeStartTimeEndTime(@PathVariable String phoneNumber, @RequestParam String sdrCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrEndDateTime){
         List<ServiceDetailRecordViewDTO> serviceDetailRecordViewDTOList = framesSDRService.findServiceDetailRecordsByPhoneNumberStartTimeEndTimeServiceCode(phoneNumber, sdrStartDateTime, sdrEndDateTime, sdrCode);
         return ResponseEntity.ok(RestAPIResponse.of(serviceDetailRecordViewDTOList));
     }
@@ -208,7 +208,7 @@ public class FramesSDRController {
     @Operation(tags = "FramesSDR Controller", description = "Get ServiceDetailRecords by phone number, SDR code, start time")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "sdr/getServiceDetailRecordsByPhoneNumberSdrCodeStartTime/{phoneNumber}" , produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecordByPhoneNumberSdrCodeStartTime(@PathVariable String phoneNumber, @RequestParam String sdrCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime){
+    public ResponseEntity<RestAPIResponse<List<ServiceDetailRecordViewDTO>>> getServiceDetailRecordsByPhoneNumberSdrCodeStartTime(@PathVariable String phoneNumber, @RequestParam String sdrCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sdrStartDateTime){
         List<ServiceDetailRecordViewDTO> serviceDetailRecordViewDTOList = framesSDRService.findServiceDetailRecordsByPhoneNumberStartTimeServiceCode(phoneNumber, sdrStartDateTime, sdrCode);
         return ResponseEntity.ok(RestAPIResponse.of(serviceDetailRecordViewDTOList));
     }
