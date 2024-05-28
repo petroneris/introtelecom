@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,7 +71,6 @@ public class MonthlyBillFactsRepoIntegrationTest {
     }
 
     @Test
-
     void findMonthlyBillFactsList_byPhoneNumber_startYearMonth_endYearMonth(){
         int listSize = 3;
         String phoneNumber = "0769317426";
@@ -81,6 +81,19 @@ public class MonthlyBillFactsRepoIntegrationTest {
                 .isNotEmpty()
                 .filteredOn(monthlyBillFacts -> monthlyBillFacts.getPhone().getPhoneNumber().equals(phoneNumber)
                         && ((monthlyBillFacts.getYearMonth().isEqual(startYearMonth)|| monthlyBillFacts.getYearMonth().isAfter(startYearMonth)) && (monthlyBillFacts.getYearMonth().isEqual(endYearMonth)|| monthlyBillFacts.getYearMonth().isBefore(endYearMonth))))
+                .hasSize(listSize);
+    }
+
+    @Test
+    void findMonthlyBillFactsList_byMonthAndYear(){
+        int listSize = 1;
+        String phoneNumber = "0769317426";
+        LocalDate yearMonth = LocalDate.of(2024, Month.JANUARY, 1);
+        List<MonthlyBillFacts> foundList = monthlyBillFactsRepo.findByMonthAndYear (yearMonth);
+        assertThat(foundList)
+                .isNotEmpty()
+                .filteredOn(monthlyBillFacts -> monthlyBillFacts.getPhone().getPhoneNumber().equals(phoneNumber)
+                        && ((monthlyBillFacts.getYearMonth().isEqual(yearMonth))))
                 .hasSize(listSize);
     }
 

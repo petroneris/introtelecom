@@ -157,5 +157,4 @@ public class AddonFrameRepoIntegrationTest {
                 .hasSize(listSize);
     }
 
-
 }

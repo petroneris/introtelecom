@@ -52,7 +52,7 @@ public interface CustomerRepo extends JpaRepository<Customer, Long> {
             "SELECT " +
                     "customer "+
                     "FROM Customer customer "+
-                    "JOIN FETCH customer.phones "+
+                    "JOIN FETCH customer.phones "+                      //  to handle LazyInitializationException
                     "WHERE customer.personalNumber = :personalNumber "
     )
     Customer findCustomerByPersonalNumberOtherWay(String personalNumber);

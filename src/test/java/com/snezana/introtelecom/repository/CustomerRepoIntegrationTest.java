@@ -125,4 +125,24 @@ public class CustomerRepoIntegrationTest {
         Optional<Customer> found = customerRepo.findByEmailOpt(email);
         assertThat(found).isEmpty();
     }
+
+    @Test
+    void findCustomer_byPersonalNumberOtherWay_returnCustomerIfExists(){
+        String firstName = "Lana";
+        String lastName = "Jovanović";
+        String email = "lana@greenphone.com";
+        String personalNumber = "3277645392";
+        Customer found = customerRepo.findCustomerByPersonalNumberOtherWay(personalNumber);
+        assertThat(found.getFirstName()).isEqualTo(firstName);
+        assertThat(found.getLastName()).isEqualTo(lastName);
+        assertThat(found.getEmail()).isEqualTo(email);
+        assertThat(found.getPersonalNumber()).isEqualTo(personalNumber);
+    }
+
+    @Test
+    void findCustomer_byPersonalNumberOtherWay_expectedNull_ifPersonalNumberDoesNotExist(){
+        String personalNumber = "UNKNOWN";
+        Customer found = customerRepo.findCustomerByPersonalNumberOtherWay(personalNumber);
+        assertThat(found).isNull();
+    }
 }

@@ -23,7 +23,7 @@ public class AdminRepoIntegrationTest {
 
     @Test
     void findAdminOpt_byAdminId_whenIsNotEmpty(){
-        Long id = 2L;
+        Long id = 1L;
         String aFirstName = "Mihailo";
         String aLastName = "Maksić";
         String aEmail = "mika@introtelecom.com";
@@ -33,7 +33,7 @@ public class AdminRepoIntegrationTest {
                 .isNotEmpty()
                 .containsInstanceOf(Admin.class)
                 .hasValueSatisfying(admin-> {
-                    assertThat(admin.getAdminId()).isEqualTo(2L);
+                    assertThat(admin.getAdminId()).isEqualTo(id);
                     assertThat(admin.getFirstName()).isEqualTo(aFirstName);
                     assertThat(admin.getLastName()).isEqualTo(aLastName);
                     assertThat(admin.getEmail()).isEqualTo(aEmail);

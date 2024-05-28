@@ -25,7 +25,6 @@ public interface AddonFrameRepo extends JpaRepository<AddonFrame, Long> {
 
     Optional<AddonFrame> findByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrEndDateTimeEquals (String phoneNumber, String addonCode, LocalDateTime addfrEndDateTime);
 
-
     @Query(
             "SELECT " +
                     "addonFrame "+

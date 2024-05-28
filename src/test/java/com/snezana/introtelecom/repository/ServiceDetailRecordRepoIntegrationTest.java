@@ -58,7 +58,7 @@ public class ServiceDetailRecordRepoIntegrationTest {
                 .isNotEmpty()
                 .containsInstanceOf(ServiceDetailRecord.class)
                 .hasValueSatisfying(sdr-> {
-                    assertThat(sdr.getSdrId()).isEqualTo(1L);
+                    assertThat(sdr.getSdrId()).isEqualTo(id);
                     assertThat(sdr.getPhone().getPhoneNumber()).isEqualTo(phoneNumber);
                     assertThat(sdr.getSdrStartDateTime()).isEqualTo(startDateTime);
                     assertThat(sdr.getSdrEndDateTime()).isEqualTo(endDateTime);
@@ -105,7 +105,6 @@ public class ServiceDetailRecordRepoIntegrationTest {
                 .hasSize(listSize);
     }
 
-
     @Test
     void findServiceDetailRecordList_byPhoneNumber_startDateTime_endDateTime_serviceCode(){
         int listSize = 2;
@@ -137,7 +136,5 @@ public class ServiceDetailRecordRepoIntegrationTest {
                         && (sdr.getSdrStartDateTime().equals(startDateTime)|| sdr.getSdrStartDateTime().isAfter(startDateTime)))
                 .hasSize(listSize);
     }
-
-
 
 }

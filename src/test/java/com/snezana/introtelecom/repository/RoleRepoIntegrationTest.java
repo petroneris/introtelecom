@@ -56,5 +56,4 @@ public class RoleRepoIntegrationTest {
         assertThat(found).isEmpty();
     }
 
-
 }

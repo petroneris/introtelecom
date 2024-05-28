@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepo extends JpaRepository<User, Long> {
+
     User findByUsername (String username);
 
     @Query(
@@ -34,6 +35,10 @@ public interface UserRepo extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.role.roleType='CUSTOMER'")
     List<User> findAllCustomersUsers();
 
+/*
+    custom delete query to enable delete operation in UserPhoneServiceIntegrationTest.java - method testDeleteUser()
+    @Modifying is used for DELETE operation
+ */
     @Modifying
     @Query("DELETE FROM User u where u.username = :username")
     void deleteByUsername (@Param("username") String username);

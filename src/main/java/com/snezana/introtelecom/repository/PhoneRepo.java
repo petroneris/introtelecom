@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PhoneRepo extends JpaRepository<Phone, Long> {
+
     Phone findByPhoneNumber (String phoneNumber);
+
     @Query(
             "SELECT " +
                     "phone "+
