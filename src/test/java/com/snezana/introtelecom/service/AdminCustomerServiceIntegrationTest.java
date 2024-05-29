@@ -7,7 +7,6 @@ import com.snezana.introtelecom.dto.CustomerViewDTO;
 import com.snezana.introtelecom.entity.Admin;
 import com.snezana.introtelecom.entity.Customer;
 import com.snezana.introtelecom.entity.Phone;
-import com.snezana.introtelecom.mapper.CustomerMapper;
 import com.snezana.introtelecom.repository.AdminRepo;
 import com.snezana.introtelecom.repository.CustomerRepo;
 import org.assertj.core.api.Condition;
@@ -22,7 +21,6 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -39,9 +37,6 @@ public class AdminCustomerServiceIntegrationTest {
 
     @Autowired
     private CustomerRepo customerRepo;
-
-    @Autowired
-    private CustomerMapper customerMapper;
 
     @Test
     @Sql(scripts = {"/create_admin_phone.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -71,7 +66,7 @@ public class AdminCustomerServiceIntegrationTest {
     @Test
     @Sql(scripts = {"/update_admin.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testUpdateAdmin(){
-        Long id = 2L;
+        Long id = 1L;
         String personalNumber = "0720123763";
         String firstName = "Mihailo";
         String lastName = "Maksimović";
@@ -96,7 +91,7 @@ public class AdminCustomerServiceIntegrationTest {
 
     @Test
     void testGetAdminById(){
-        Long id = 2L;
+        Long id = 1L;
         String personalNumber = "9283478122";
         String firstName = "Mihailo";
         String lastName = "Maksić";
@@ -113,7 +108,6 @@ public class AdminCustomerServiceIntegrationTest {
 
     @Test
     void testGetAdminByPhone(){
-        Long id = 2L;
         String personalNumber = "9283478122";
         String firstName = "Mihailo";
         String lastName = "Maksić";
@@ -130,7 +124,6 @@ public class AdminCustomerServiceIntegrationTest {
 
     @Test
     void testGetAdminByPersonalNumber(){
-        Long id = 2L;
         String personalNumber = "9283478122";
         String firstName = "Mihailo";
         String lastName = "Maksić";
@@ -147,7 +140,6 @@ public class AdminCustomerServiceIntegrationTest {
 
     @Test
     void testGetAdminByEmail(){
-        Long id = 2L;
         String personalNumber = "9283478122";
         String firstName = "Mihailo";
         String lastName = "Maksić";
@@ -344,6 +336,5 @@ public class AdminCustomerServiceIntegrationTest {
             assertThat(newCustomer.getPhones()).doNotHave(phone0788995677);
         }
     }
-
 
 }

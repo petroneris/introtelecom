@@ -18,7 +18,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.test.context.jdbc.Sql;
 
-import javax.validation.constraints.NotBlank;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -26,12 +25,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ClientServiceIntegrationTest {
+    // some tests need Mocked Custom User to get Authentication from SecurityContextHolder
 
     @Autowired
     private ClientService clientService;
@@ -42,7 +41,7 @@ public class ClientServiceIntegrationTest {
     @Autowired
     private UserRepo userRepo;
 
-
+    // current time is mocked to fixedLocalDateTime
     @Test
     @WithMockCustomUser(username = "dana2", password = "pwd")
     void testGetCurrentInfo(){

@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SchedulingJobsIntegrationTest {
+    // current time is mocked to fixedLocalDateTime
 
     @Autowired
     private SchedulingJobs schedulingJobs;
@@ -72,7 +73,5 @@ public class SchedulingJobsIntegrationTest {
             assertThat(monthlyBillFactsList).hasSize(size);
         }
     }
-
-
 
 }

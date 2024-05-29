@@ -55,7 +55,7 @@ public class FramesSDRService {
     private final ServiceDetailRecordRepo serviceDetailRecordRepo;
 
     /**
-     * currently, there is no method for saving new package frames
+     * currently, there is no method for saving new package frames;
      * package frames are automatically generated at the beginning of the month
      */
     public PackageFrameViewDTO findPackageFrameById(Long packfrId) {
@@ -166,9 +166,9 @@ public class FramesSDRService {
     }
 
     /**
-     * this method includes EOS check before saving the new SDR (Service Detail Record)
+     * this method includes EOS (End of Service) check before saving the new SDR (Service Detail Record)
      * @param serviceDetailRecordSaveDTO
-     * @return
+     * @return message
      */
     public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO) {
     String message = "Not EOS";
@@ -211,7 +211,6 @@ public class FramesSDRService {
                 LocalDateTime endDateTime = serviceDetailRecordSaveDTO.getSdrStartDateTime().plus(durationMin);
                 serviceDetailRecordSaveDTO.setSdrEndDateTime(endDateTime);
                 serviceDetailRecord.setDuration(result.getSdrDurationAmount());
-
             }
         }
         if (serviceCode == SDRCode.SDRINT || serviceCode == SDRCode.SDRASM) {
@@ -490,7 +489,7 @@ public class FramesSDRService {
      * @param framesInput
      * @param sdrOutput
      * @param duration
-     * @return
+     * @return result
      */
     SdrAmountCalc checkEOSforThisSDR(ServiceDetailRecordSaveDTO sdrSaveDTO, FramesInputTotal framesInput, SdrAmountCalc sdrOutput, int duration) {
         BigDecimal priceICLCZ1 = new BigDecimal(UNIT_PRICE_ICLCZ1);
@@ -629,7 +628,6 @@ public class FramesSDRService {
 @NoArgsConstructor
 @AllArgsConstructor
 class FramesInputTotal {
-
     private int inputCls;
     private int inputSms;
     private BigDecimal inputInt;
@@ -642,7 +640,6 @@ class FramesInputTotal {
 @NoArgsConstructor
 @AllArgsConstructor
 class SdrAmountCalc {
-
     private int sdrDurationAmount;
     private int sdrMsgAmount;
     private BigDecimal sdrMBamount;

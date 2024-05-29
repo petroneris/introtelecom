@@ -110,7 +110,7 @@ public class SchedulingJobs {
     }
 
     /**
-     * automatic generation of monthly bills at the beginning of the month - “At every minute past hour 10 on day-of-month 1”
+     * automatic generation of monthly bills for the previous month, at the beginning of the month - “At every minute past hour 10 on day-of-month 1”
      */
     @Scheduled(cron = "0 0 10 1 * *")
     public void createMonthlyBillFacts() {

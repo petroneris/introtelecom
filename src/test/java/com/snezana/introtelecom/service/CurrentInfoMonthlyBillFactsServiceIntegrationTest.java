@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -29,6 +28,7 @@ public class CurrentInfoMonthlyBillFactsServiceIntegrationTest {
     @Autowired
     private CurrentInfoMonthlyBillFactsService  currentInfoMonthlyBillFactsService;
 
+    // current time is mocked to fixedLocalDateTime
     @Test
     void testGetCurrentInfoByPhone() {
         String phoneNumber = "0769317426";
@@ -75,7 +75,6 @@ public class CurrentInfoMonthlyBillFactsServiceIntegrationTest {
 
     @Test
     void testGetMonthlyBillFactsByPhoneAndYearAndMonth(){
-        Long id = 1L;
         String phoneNumber = "0769317426";
         String packageCode = "12";
         int month = 12;
@@ -104,4 +103,5 @@ public class CurrentInfoMonthlyBillFactsServiceIntegrationTest {
         assertThat(monthlyBillFactsViewDTOList).isNotEmpty();
         assertThat(monthlyBillFactsViewDTOList.size()).isEqualTo(size);
     }
+
 }

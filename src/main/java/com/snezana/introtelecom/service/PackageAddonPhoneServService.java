@@ -14,7 +14,6 @@ import com.snezana.introtelecom.repository.PackagePlanRepo;
 import com.snezana.introtelecom.repository.PhoneServiceRepo;
 import com.snezana.introtelecom.validation.PackageAddonPhoneServValidationService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +24,6 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class PackageAddonPhoneServService{
-//    private static final Logger log = org.slf4j.LoggerFactory.getLogger(PackageAddonPhoneServService.class);
 
     private final PackageAddonPhoneServValidationService packageAddonPhoneServValidationService;
     private final PackagePlanRepo packagePlanRepo;
@@ -82,4 +80,5 @@ public class PackageAddonPhoneServService{
         phoneService.setServicePrice(servicePrice);
         phoneServiceRepo.save(phoneService);
     }
+
 }
