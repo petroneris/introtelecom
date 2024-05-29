@@ -3,21 +3,16 @@ package com.snezana.introtelecom.validation;
 import com.snezana.introtelecom.entity.AddOn;
 import com.snezana.introtelecom.entity.PackagePlan;
 import com.snezana.introtelecom.entity.PhoneService;
-import com.snezana.introtelecom.entity.ServiceDetailRecord;
 import com.snezana.introtelecom.exception.ItemNotFoundException;
 import com.snezana.introtelecom.exception.RestAPIErrorMessage;
 import com.snezana.introtelecom.repository.AddOnRepo;
 import com.snezana.introtelecom.repository.PackagePlanRepo;
 import com.snezana.introtelecom.repository.PhoneServiceRepo;
-import com.snezana.introtelecom.repository.ServiceDetailRecordRepo;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.access.method.P;
 
 import java.util.Optional;
 
@@ -39,14 +34,6 @@ class PackageAddonPhoneServValidationServiceTest {
 
     @InjectMocks
     private PackageAddonPhoneServValidationService packageAddonPhoneServValidationService;
-
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
     void testControlThePackageCodeExists_exists() {

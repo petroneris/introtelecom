@@ -4,7 +4,6 @@ import com.snezana.introtelecom.dto.ClientChangePasswordDTO;
 import com.snezana.introtelecom.dto.PhoneSaveDTO;
 import com.snezana.introtelecom.dto.UserChangePasswordDTO;
 import com.snezana.introtelecom.dto.UserSaveDTO;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +19,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
 class FieldMatchValidatorTest {
 
@@ -35,17 +33,8 @@ class FieldMatchValidatorTest {
         validator = validatorFactory.getValidator();
     }
 
-    @AfterEach
-    void tearDown() {
-    }
-//
-//    @Test
-//    void initialize() {
-//    }
-
     @Test
-    void testisValid_PhoneSaveDTO_isValid() {
-
+    void testIsValid_PhoneSaveDTO_isValid() {
         when(fieldMatch.baseField()).thenReturn("phoneNumber");
         when(fieldMatch.matchField()).thenReturn("checkPhoneNumber");
         when(fieldMatch.message()).thenReturn("The phoneNumber and checkPhoneNumber fields must match");
@@ -66,7 +55,7 @@ class FieldMatchValidatorTest {
     }
 
     @Test
-    public void testisValid_PhoneSaveDTO_isNotValid() {
+    public void testIsValid_PhoneSaveDTO_isNotValid() {
         when(fieldMatch.baseField()).thenReturn("phoneNumber");
         when(fieldMatch.matchField()).thenReturn("checkPhoneNumber");
         when(fieldMatch.message()).thenReturn("The phoneNumber and checkPhoneNumber fields must match");
@@ -86,19 +75,18 @@ class FieldMatchValidatorTest {
         phoneSaveDTO.setCheckPhoneNumber(checkPhoneNumber);
         phoneSaveDTO.setPackageCode(packageCode);
         Set<ConstraintViolation<PhoneSaveDTO>> violations = validator.validate(phoneSaveDTO);
-
         for(ConstraintViolation<PhoneSaveDTO> violation : violations) {
             actualPropertyPath = violation.getPropertyPath().toString();
             actualMessage = violation.getMessage();
         }
+
         assertThat(violations.size()).isEqualTo(1);
         assertThat(actualMessage).isEqualTo(expectedMessage);
         assertThat(actualPropertyPath).isEqualTo(expectedPropertyPath);
     }
 
     @Test
-    void testisValid_UserSaveDTO_isValid() {
-
+    void testIsValid_UserSaveDTO_isValid() {
         when(fieldMatch.baseField()).thenReturn("password");
         when(fieldMatch.matchField()).thenReturn("checkPassword");
         when(fieldMatch.message()).thenReturn("The password and checkPassword fields must match");
@@ -123,7 +111,7 @@ class FieldMatchValidatorTest {
     }
 
     @Test
-    public void testisValid_UserSaveDTO_isNotValid() {
+    public void testIsValid_UserSaveDTO_isNotValid() {
         when(fieldMatch.baseField()).thenReturn("password");
         when(fieldMatch.matchField()).thenReturn("checkPassword");
         when(fieldMatch.message()).thenReturn("The password and checkPassword fields must match");
@@ -147,19 +135,18 @@ class FieldMatchValidatorTest {
         userSaveDTO.setUsername(username);
         userSaveDTO.setRoleType(roleType);
         Set<ConstraintViolation<UserSaveDTO>> violations = validator.validate(userSaveDTO);
-
         for(ConstraintViolation<UserSaveDTO> violation : violations) {
             actualPropertyPath = violation.getPropertyPath().toString();
             actualMessage = violation.getMessage();
         }
+
         assertThat(violations.size()).isEqualTo(1);
         assertThat(actualMessage).isEqualTo(expectedMessage);
         assertThat(actualPropertyPath).isEqualTo(expectedPropertyPath);
     }
 
     @Test
-    void testisValid_UserChangePasswordDTO_isValid() {
-
+    void testIsValid_UserChangePasswordDTO_isValid() {
         when(fieldMatch.baseField()).thenReturn("newPassword");
         when(fieldMatch.matchField()).thenReturn("checkNewPassword");
         when(fieldMatch.message()).thenReturn("The newPassword and checkNewPassword fields must match");
@@ -182,8 +169,7 @@ class FieldMatchValidatorTest {
     }
 
     @Test
-    void testisValid_UserChangePasswordDTO_isNotValid() {
-
+    void testIsValid_UserChangePasswordDTO_isNotValid() {
         when(fieldMatch.baseField()).thenReturn("newPassword");
         when(fieldMatch.matchField()).thenReturn("checkNewPassword");
         when(fieldMatch.message()).thenReturn("The newPassword and checkNewPassword fields must match");
@@ -205,19 +191,18 @@ class FieldMatchValidatorTest {
         userChangePasswordDTO.setNewPassword(newPassword);
         userChangePasswordDTO.setCheckNewPassword(checkNewPassword);
         Set<ConstraintViolation<UserChangePasswordDTO>> violations = validator.validate(userChangePasswordDTO);
-
         for(ConstraintViolation<UserChangePasswordDTO> violation : violations) {
             actualPropertyPath = violation.getPropertyPath().toString();
             actualMessage = violation.getMessage();
         }
+
         assertThat(violations.size()).isEqualTo(1);
         assertThat(actualMessage).isEqualTo(expectedMessage);
         assertThat(actualPropertyPath).isEqualTo(expectedPropertyPath);
     }
 
     @Test
-    void testisValid_ClientChangePasswordDTO_isValid() {
-
+    void testIsValid_ClientChangePasswordDTO_isValid() {
         when(fieldMatch.baseField()).thenReturn("newPassword");
         when(fieldMatch.matchField()).thenReturn("checkNewPassword");
         when(fieldMatch.message()).thenReturn("The newPassword and checkNewPassword fields must match");
@@ -238,8 +223,7 @@ class FieldMatchValidatorTest {
     }
 
     @Test
-    void testisValid_ClientChangePasswordDTO_isNotValid() {
-
+    void testIsValid_ClientChangePasswordDTO_isNotValid() {
         when(fieldMatch.baseField()).thenReturn("newPassword");
         when(fieldMatch.matchField()).thenReturn("checkNewPassword");
         when(fieldMatch.message()).thenReturn("The newPassword and checkNewPassword fields must match");
@@ -259,11 +243,11 @@ class FieldMatchValidatorTest {
         clientChangePasswordDTO.setNewPassword(newPassword);
         clientChangePasswordDTO.setCheckNewPassword(checkNewPassword);
         Set<ConstraintViolation<ClientChangePasswordDTO>> violations = validator.validate(clientChangePasswordDTO);
-
         for(ConstraintViolation<ClientChangePasswordDTO> violation : violations) {
             actualPropertyPath = violation.getPropertyPath().toString();
             actualMessage = violation.getMessage();
         }
+
         assertThat(violations.size()).isEqualTo(1);
         assertThat(actualMessage).isEqualTo(expectedMessage);
         assertThat(actualPropertyPath).isEqualTo(expectedPropertyPath);

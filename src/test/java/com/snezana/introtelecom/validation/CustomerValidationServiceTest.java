@@ -6,8 +6,6 @@ import com.snezana.introtelecom.exception.IllegalItemFieldException;
 import com.snezana.introtelecom.exception.ItemNotFoundException;
 import com.snezana.introtelecom.exception.RestAPIErrorMessage;
 import com.snezana.introtelecom.repository.CustomerRepo;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,14 +30,6 @@ class CustomerValidationServiceTest {
 
     @InjectMocks
     private CustomerValidationService customerValidationService;
-
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
     void testControlThePersonalNumberIsUnique_isUnique() {
@@ -154,7 +144,7 @@ class CustomerValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherCustomerHasThisPersonalNumber_itHasNot() {
+    void testControlTheOtherCustomerHasThisPersonalNumber_itHasNot_noCustomer() {
         String personalNumber = "3998734833";
         Long id = 3L;
         when(customerRepo.findByPersonalNumberOpt(personalNumber)).thenReturn(Optional.empty());
@@ -164,7 +154,7 @@ class CustomerValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherCustomerHasThisPersonalNumber_itHasNot2() {
+    void testControlTheOtherCustomerHasThisPersonalNumber_itHasNot_theSameCustomer() {
         String personalNumber = "3998734833";
         Long id = 3L;
         Customer customer = new Customer();
@@ -177,7 +167,7 @@ class CustomerValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherCustomerHasThisPersonalNumber_itHas() {
+    void testControlTheOtherCustomerHasThisPersonalNumber_itHas_theOtherCustomer() {
         String personalNumber = "3998734833";
         Long customerId = 3L;
         Long otherId = 4L;
@@ -194,7 +184,7 @@ class CustomerValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherCustomerHasThisEmail_itHasNot() {
+    void testControlTheOtherCustomerHasThisEmail_itHasNot_noCustomer() {
         String email = "sneza@bluephone.com";
         Long id = 3L;
         when(customerRepo.findByEmailOpt(email)).thenReturn(Optional.empty());
@@ -204,7 +194,7 @@ class CustomerValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherCustomerHasThisEmail_itHasNot2() {
+    void testControlTheOtherCustomerHasThisEmail_itHasNot_theSameCustomer() {
         String email = "sneza@bluephone.com";
         Long id = 3L;
         Customer customer = new Customer();
@@ -217,7 +207,7 @@ class CustomerValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherCustomerHasThisEmail_itHas() {
+    void testControlTheOtherCustomerHasThisEmail_itHas_theOtherCustomer() {
         String email = "sneza@bluephone.com";
         Long customerId = 3L;
         Long otherId = 4L;
@@ -291,7 +281,6 @@ class CustomerValidationServiceTest {
         });
         assertEquals(RestAPIErrorMessage.WRONG_ITEM, exception.getErrorMessage());
         assertEquals(description, exception.getDescription());
-
     }
 
     @Test
@@ -323,7 +312,6 @@ class CustomerValidationServiceTest {
         Customer newCustomer = customerValidationService.returnTheCustomerWithThisPhoneIfExists(phone, text);
         assertThat(newCustomer.getPhones().contains(phone)).isTrue();
         assertThat(newCustomer.getPhones()).haveExactly(1, phone0732283498);
-
     }
 
     @Test

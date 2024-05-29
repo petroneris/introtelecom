@@ -6,8 +6,6 @@ import com.snezana.introtelecom.exception.IllegalItemFieldException;
 import com.snezana.introtelecom.exception.ItemNotFoundException;
 import com.snezana.introtelecom.exception.RestAPIErrorMessage;
 import com.snezana.introtelecom.repository.MonthlyBillFactsRepo;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -31,14 +29,6 @@ class MonthlyBillFactsValidationServiceTest {
 
     @InjectMocks
     private MonthlyBillFactsValidationService monthlyBillFactsValidationService;
-
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
     void testReturnTheMonthlyBillFactsByIdIfExists_exists() {
@@ -145,7 +135,7 @@ class MonthlyBillFactsValidationServiceTest {
     }
 
     @Test
-    void testControlTheTimeForScheduling_timeIntervalValid() {
+    void testControlTheTimeForScheduling_timeIsValid_after12oclockOnDayOfMonth1() {
         LocalDateTime fixedLocalDateTime = LocalDateTime.of(2023, Month.MARCH, 22, 15, 10, 0, 0);
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(() -> LocalDateTime.now(ArgumentMatchers.any(Clock.class))).thenReturn(fixedLocalDateTime);
@@ -156,7 +146,7 @@ class MonthlyBillFactsValidationServiceTest {
     }
 
     @Test
-    void testControlTheTimeForScheduling_timeInterval_NotValid() {
+    void testControlTheTimeForScheduling_timeIsNotValid_before12oclockOnDayOfMonth1() {
         LocalDateTime fixedLocalDateTime = LocalDateTime.of(2023, Month.MARCH, 1, 9, 10, 0, 0);
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(() -> LocalDateTime.now(ArgumentMatchers.any(Clock.class))).thenReturn(fixedLocalDateTime);

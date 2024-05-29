@@ -1,6 +1,5 @@
 package com.snezana.introtelecom.validation;
 
-import com.snezana.introtelecom.entity.PackageFrame;
 import com.snezana.introtelecom.entity.PackagePlan;
 import com.snezana.introtelecom.entity.Phone;
 import com.snezana.introtelecom.enums.PackagePlanType;
@@ -8,8 +7,6 @@ import com.snezana.introtelecom.exception.IllegalItemFieldException;
 import com.snezana.introtelecom.exception.ItemNotFoundException;
 import com.snezana.introtelecom.exception.RestAPIErrorMessage;
 import com.snezana.introtelecom.repository.PhoneRepo;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 import static org.assertj.core.api.Assertions.*;
 
-
 @ExtendWith(MockitoExtension.class)
 class PhoneValidationServiceTest {
 
@@ -33,23 +29,13 @@ class PhoneValidationServiceTest {
     @InjectMocks
     private PhoneValidationService phoneValidationService;
 
-    @BeforeEach
-    void setUp() {
-
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
-    void testControlThePhoneNumberIsUnique_not() {
+    void testControlThePhoneNumberIsUnique_notUnique() {
         Phone phone = new Phone();
         String phoneNumber = "0732283498";
         phone.setPhoneNumber(phoneNumber);
         String description = "The phone number = " + phoneNumber + " already exists in database!";
         when(phoneRepo.findByPhoneNumberOpt(phoneNumber)).thenReturn(Optional.of(phone));
-
         IllegalItemFieldException exception = assertThrows(IllegalItemFieldException.class, () -> {
             phoneValidationService.controlThePhoneNumberIsUnique(phoneNumber);
         });
@@ -58,11 +44,9 @@ class PhoneValidationServiceTest {
     }
 
     @Test
-    void testControlThePhoneNumberIsUnique_itIs() {
+    void testControlThePhoneNumberIsUnique_isUnique() {
         String phoneNumber = "0732283498";
-
         when(phoneRepo.findByPhoneNumberOpt(phoneNumber)).thenReturn(Optional.empty());
-
         assertDoesNotThrow(() -> {
             phoneValidationService.controlThePhoneNumberIsUnique(phoneNumber);
         });
@@ -80,17 +64,15 @@ class PhoneValidationServiceTest {
     }
 
     @Test
-    void testControlThePhoneExists_doesNot() {
+    void testControlThePhoneExists_doesNotExists() {
         String phoneNumber = "0732283498";
         String description = "The phone number = " +phoneNumber + " doesn't exist in database!";
         when(phoneRepo.findByPhoneNumberOpt(phoneNumber)).thenReturn(Optional.empty());
-
         ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () -> {
             phoneValidationService.controlThePhoneExists(phoneNumber);
         });
         assertEquals(RestAPIErrorMessage.ITEM_NOT_FOUND, exception.getErrorMessage());
         assertEquals(description, exception.getDescription());
-
     }
 
     @Test
@@ -104,7 +86,7 @@ class PhoneValidationServiceTest {
     }
 
     @Test
-    void testReturnThePhoneIfExists_doesNot() {
+    void testReturnThePhoneIfExists_doesNotExists() {
         String phoneNumber = "0732283498";
         String description = "The phone number = " +phoneNumber + " doesn't exist in database!";
         when(phoneRepo.findByPhoneNumberOpt(phoneNumber)).thenReturn(Optional.empty());
@@ -114,10 +96,6 @@ class PhoneValidationServiceTest {
         assertEquals(RestAPIErrorMessage.ITEM_NOT_FOUND, exception.getErrorMessage());
         assertEquals(description, exception.getDescription());
     }
-    /////////////////////////////////////////////////////////////////////
-
-
-
 
     @Test
     void testControlThisPhoneHasTheAdminPackageCode_itHas() {
@@ -169,8 +147,6 @@ class PhoneValidationServiceTest {
         assertEquals(description, exception.getDescription());
     }
 
-
-/////////////////////////////////////////////////////////////////////////////
     @Test
     void testControlThisPhoneHasPostpaidPackageCode_hasPostpaid() {
         PackagePlan packagePlan = new PackagePlan();
@@ -201,4 +177,5 @@ class PhoneValidationServiceTest {
         assertEquals(RestAPIErrorMessage.WRONG_ITEM, exception.getErrorMessage());
         assertEquals(description, exception.getDescription());
     }
+
 }

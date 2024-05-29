@@ -2,8 +2,6 @@ package com.snezana.introtelecom.validation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,14 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class JsonDateTimeDeserializerTest {
-
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
     void testDeserialize_valid_dateTime() throws IOException {
@@ -38,7 +28,7 @@ class JsonDateTimeDeserializerTest {
     }
 
     @Test
-    void testDeserialize_notValid_dateTime() throws IOException {
+    void testDeserialize_notValid_dateTimeWithoutT() throws IOException {
         LocalDateTime dateTime = LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0, 0);
         String jsonStr = "\"2024-01-1715:41:23.000Z\""; // JSON string of the LocalDateTime field value
         ObjectMapper mapper = new ObjectMapper();
@@ -50,7 +40,7 @@ class JsonDateTimeDeserializerTest {
     }
 
     @Test
-    void testDeserialize_notValid_dateTime2() throws IOException {
+    void testDeserialize_notValid_dateTimeDay35() throws IOException {
         LocalDateTime dateTime = LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0, 0);
         String jsonStr = "\"2024-01-35T15:41:23.000Z\""; // JSON string of the LocalDateTime field value
         ObjectMapper mapper = new ObjectMapper();

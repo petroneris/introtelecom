@@ -7,8 +7,6 @@ import com.snezana.introtelecom.enums.PackagePlanType;
 import com.snezana.introtelecom.exception.IllegalItemFieldException;
 import com.snezana.introtelecom.exception.RestAPIErrorMessage;
 import com.snezana.introtelecom.repository.UserRepo;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,14 +32,6 @@ class UserValidationServiceTest {
     @InjectMocks
     private UserValidationService userValidationService;
 
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
     void testControlTheUserWithThisPhoneNumberAlreadyExists_alreadyExists() {
         String phoneNumber = "0732283498";
@@ -49,13 +39,11 @@ class UserValidationServiceTest {
         user.setPhoneNumber(phoneNumber);
         String description = "The user with this phone number = " + phoneNumber + " already exists in database!";
         when(userRepo.findByPhoneNumberOpt(phoneNumber)).thenReturn(Optional.of(user));
-
         IllegalItemFieldException exception = assertThrows(IllegalItemFieldException.class, () -> {
             userValidationService.controlTheUserWithThisPhoneNumberAlreadyExists(phoneNumber);
         });
         assertEquals(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, exception.getErrorMessage());
         assertEquals(description, exception.getDescription());
-
     }
 
     @Test
@@ -65,7 +53,6 @@ class UserValidationServiceTest {
         assertDoesNotThrow(() -> {
             userValidationService.controlTheUserWithThisPhoneNumberAlreadyExists(phoneNumber);
         });
-
     }
 
     @Test
@@ -76,7 +63,6 @@ class UserValidationServiceTest {
         when(userRepo.findByPhoneNumberOpt(phoneNumber)).thenReturn(Optional.of(user));
         User newUser = userValidationService.returnTheUserWithThisPhoneNumberIfExists(phoneNumber);
         assertThat(newUser.getPhoneNumber()).isEqualTo(phoneNumber);
-
     }
 
     @Test
@@ -112,7 +98,6 @@ class UserValidationServiceTest {
         });
         assertEquals(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, exception.getErrorMessage());
         assertEquals(description, exception.getDescription());
-
     }
 
     @Test

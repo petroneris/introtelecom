@@ -29,7 +29,6 @@ public class CustomerValidationService {
     public Customer returnTheCustomerWithThatPersonalNumberIfExists(String personalNumber) {
         return customerRepo.findByPersonalNumberOpt(personalNumber)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that personal number doesn't exist in database!"));
-
     }
 
     public Customer returnTheCustomerWithThatIdIfExists (Long customerId){

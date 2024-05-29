@@ -6,8 +6,6 @@ import com.snezana.introtelecom.exception.IllegalItemFieldException;
 import com.snezana.introtelecom.exception.ItemNotFoundException;
 import com.snezana.introtelecom.exception.RestAPIErrorMessage;
 import com.snezana.introtelecom.repository.AdminRepo;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,14 +26,6 @@ class AdminValidationServiceTest {
 
     @InjectMocks
     private AdminValidationService adminValidationService;
-
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
     void testControlThePersonalNumberIsUnique_isUnique() {
@@ -105,7 +95,6 @@ class AdminValidationServiceTest {
         assertDoesNotThrow(() -> {
             adminValidationService.controlTheOtherAdminHasThisPhone(phoneNumber);
         });
-
     }
 
     @Test
@@ -177,7 +166,7 @@ class AdminValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherAdminHasThisPersonalNumber_itHasNot() {
+    void testControlTheOtherAdminHasThisPersonalNumber_itHasNot_noAdmin() {
         String personalNumber = "3998734832";
         Long id = 3L;
         when(adminRepo.findByPersonalNumberOpt(personalNumber)).thenReturn(Optional.empty());
@@ -187,7 +176,7 @@ class AdminValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherAdminHasThisPersonalNumber_itHasNot2() {
+    void testControlTheOtherAdminHasThisPersonalNumber_itHasNot_theSameAdmin() {
         String personalNumber = "3998734832";
         Long id = 3L;
         Admin admin = new Admin();
@@ -197,11 +186,10 @@ class AdminValidationServiceTest {
         assertDoesNotThrow(() -> {
             adminValidationService.controlTheOtherAdminHasThisPersonalNumber(personalNumber, id);
         });
-
     }
 
     @Test
-    void testControlTheOtherAdminHasThisPersonalNumber_itHas() {
+    void testControlTheOtherAdminHasThisPersonalNumber_itHas_theOtherAdmin() {
         String personalNumber = "3998734832";
         Long adminId = 3L;
         Long otherId = 4L;
@@ -215,11 +203,10 @@ class AdminValidationServiceTest {
         });
         assertEquals(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, exception.getErrorMessage());
         assertEquals(description, exception.getDescription());
-
     }
 
     @Test
-    void testControlTheOtherAdminHasThisEmail_itHasNot() {
+    void testControlTheOtherAdminHasThisEmail_itHasNot_noAdmin() {
         String email = "sneza@bluephone.com";
         Long id = 3L;
         when(adminRepo.findByEmailOpt(email)).thenReturn(Optional.empty());
@@ -229,7 +216,7 @@ class AdminValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherAdminHasThisEmail_itHasNot2() {
+    void testControlTheOtherAdminHasThisEmail_itHasNot_theSameAdmin() {
         String email = "sneza@bluephone.com";
         Long id = 3L;
         Admin admin = new Admin();
@@ -242,7 +229,7 @@ class AdminValidationServiceTest {
     }
 
     @Test
-    void testControlTheOtherAdminHasThisEmail_itHas() {
+    void testControlTheOtherAdminHasThisEmail_itHas_theOtherAdmin() {
         String email = "sneza@bluephone.com";
         Long id = 3L;
         Long otherId = 4L;
@@ -259,7 +246,7 @@ class AdminValidationServiceTest {
     }
 
     @Test
-    void testControlThatAnotherAdminHasThisPhoneNumber_itHasNot() {
+    void testControlThatAnotherAdminHasThisPhoneNumber_itHasNot_noAdmin() {
         String phoneNumber = "0732283498";
         Long id = 3L;
         when(adminRepo.findByPhoneNumberOpt(phoneNumber)).thenReturn(Optional.empty());
@@ -269,7 +256,7 @@ class AdminValidationServiceTest {
     }
 
     @Test
-    void testControlThatAnotherAdminHasThisPhoneNumber_itHasNot2() {
+    void testControlThatAnotherAdminHasThisPhoneNumber_itHasNot_theSameAdmin() {
         String phoneNumber = "0732283498";
         Long id = 3L;
         Phone phone = new Phone();
@@ -284,7 +271,7 @@ class AdminValidationServiceTest {
     }
 
     @Test
-    void testControlThatAnotherAdminHasThisPhoneNumber_itHas() {
+    void testControlThatAnotherAdminHasThisPhoneNumber_itHas_theOtherAdmin() {
         String phoneNumber = "0732283498";
         Long id = 3L;
         Long otherId = 4L;
@@ -301,6 +288,5 @@ class AdminValidationServiceTest {
         assertEquals(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, exception.getErrorMessage());
         assertEquals(description, exception.getDescription());
     }
-
 
 }

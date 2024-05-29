@@ -7,8 +7,6 @@ import com.snezana.introtelecom.exception.RestAPIErrorMessage;
 import com.snezana.introtelecom.repository.AddonFrameRepo;
 import com.snezana.introtelecom.repository.PackageFrameRepo;
 import com.snezana.introtelecom.repository.ServiceDetailRecordRepo;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,16 +38,8 @@ class FramesSDRValidationServiceTest {
 
     public static final String LOCAL_DATE_TIME_FORMAT = "'yyyy-MM-ddTHH:mm:ss.SSSZ'";
 
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
-    void testControlTheLocalDateTimeInputIsValid_valid() {
+    void testControlTheLocalDateTimeInputIsValid_isValid() {
         LocalDateTime dateTime = LocalDateTime.of(2023, Month.JANUARY, 1, 0, 0, 0);
         assertDoesNotThrow(() -> {
             framesSDRValidationService.controlTheLocalDateTimeInputIsValid(dateTime);
@@ -57,7 +47,7 @@ class FramesSDRValidationServiceTest {
     }
 
     @Test
-    void testControlTheLocalDateTimeInputIsValid_invalid() {
+    void testControlTheLocalDateTimeInputIsValid_isNotValid() {
         LocalDateTime dateTime = LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0, 0);
         String description = String.format("Local DateTime format should be %s", LOCAL_DATE_TIME_FORMAT);
         IllegalItemFieldException exception = assertThrows(IllegalItemFieldException.class, () -> {
@@ -156,8 +146,6 @@ class FramesSDRValidationServiceTest {
     @Test
     void testReturnTheServiceDetailRecordIfExists_doesNotExist() {
         Long id = 3L;
-        ServiceDetailRecord serviceDetailRecord = new ServiceDetailRecord();
-        serviceDetailRecord.setSdrId(id);
         when(serviceDetailRecordRepo.findBySdrIdOpt(id)).thenReturn(Optional.empty());
         String description = "Service Detail Record is not found.";
         ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () -> {
@@ -274,7 +262,7 @@ class FramesSDRValidationServiceTest {
     }
 
     @Test
-    void testControlIsTheValidAddonFrameToThisPhone_valid() {
+    void testControlIsTheValidAddonFrameToThisPhone_isValid() {
         String packageCode = "12";
         String addonCode = "ADDASM";
         assertDoesNotThrow(() -> {
@@ -283,7 +271,7 @@ class FramesSDRValidationServiceTest {
     }
 
     @Test
-    void testControlIsTheValidAddonFrameToThisPhone_notValid() {
+    void testControlIsTheValidAddonFrameToThisPhone_isNotValid() {
         String packageCode = "11";
         String addonCode = "ADDASM";
         String description = "The type of Addon Frame is not valid for this phone number!";
@@ -293,6 +281,5 @@ class FramesSDRValidationServiceTest {
         assertEquals(RestAPIErrorMessage.WRONG_ITEM, exception.getErrorMessage());
         assertEquals(description, exception.getDescription());
     }
-
 
 }
