@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PackagesAddOnsPhoneServicesController.class)
-@WithMockUser(username ="mika", roles="ADMIN")
+@WithMockUser(username ="mika", roles="ADMIN")  // to eliminate status 401(Unauthorized) and enable testing
 class PackagesAddOnsPhoneServicesControllerTest {
 
     @Autowired

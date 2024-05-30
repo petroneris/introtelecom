@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(FramesSDRController.class)
-@WithMockUser(username ="mika", roles="ADMIN")
+@WithMockUser(username ="mika", roles="ADMIN")   // to eliminate status 401(Unauthorized) and enable testing
 class FramesSDRControllerTest {
 
     @Autowired
@@ -425,6 +425,7 @@ class FramesSDRControllerTest {
                 .andExpect(jsonPath("$.success").value(true));
     }
 
+    // when service is completed without interruption (no End of Service)
     @Test
     void testSaveServiceDetailRecord_notEOS() throws Exception {
         String phoneNumber = "0747634418";
@@ -455,6 +456,7 @@ class FramesSDRControllerTest {
                 .andExpect(jsonPath("$.success").value(true));
     }
 
+    //  one service example (SDRINT - Internet) of six possibilities (services)
     @Test
     void testSaveServiceDetailRecord_EOS() throws Exception {
         String phoneNumber = "0747634418";

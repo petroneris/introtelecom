@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
-//import org.slf4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +30,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FramesSDRController {
 
-//    private static final Logger log = org.slf4j.LoggerFactory.getLogger(FramesSDRController.class);
     private final FramesSDRService framesSDRService;
 
     @Operation(tags = "FramesSDR Controller", description = "Get package frame by id")
@@ -91,7 +89,6 @@ public class FramesSDRController {
         String message = "The package frame '" +packfrId + "' is deleted!";
         return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));
     }
-
 
     @Operation(tags = "FramesSDR Controller", description = "Save a new addon frame")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -159,8 +156,6 @@ public class FramesSDRController {
         String message = "The addon frame '" +addfrId + "' is deleted!";
         return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Operation(tags = "FramesSDR Controller", description = "Save a ServiceDetailRecord")
     @SecurityRequirement(name = "Bearer Authentication")

@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(AccessController.class)
-@WithMockUser(username ="sneza1", password = "snezana")
+@WithMockUser(username ="sneza1", password = "snezana")   // to eliminate status 401(Unauthorized) and enable testing
 class AccessControllerTest {
 
     @Autowired
@@ -28,7 +28,6 @@ class AccessControllerTest {
 
     @MockBean
     private AuthenticationService authenticationService;
-
 
     @Test
     void testLogin() throws Exception {

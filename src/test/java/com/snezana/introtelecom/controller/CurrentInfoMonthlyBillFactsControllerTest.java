@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(CurrentInfoMonthlyBillFactsController.class)
-@WithMockUser(username ="mika", roles="ADMIN")
+@WithMockUser(username ="mika", roles="ADMIN")  // to eliminate status 401(Unauthorized) and enable testing
 class CurrentInfoMonthlyBillFactsControllerTest {
 
     @Autowired
@@ -29,7 +29,6 @@ class CurrentInfoMonthlyBillFactsControllerTest {
 
     @MockBean
     private CurrentInfoMonthlyBillFactsService currentInfoMonthlyBillFactsService;
-
 
     @Test
     void testGetCurrentInfoByPhoneNumber() throws Exception {

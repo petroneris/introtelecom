@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(AdminCustomerController.class)
-@WithMockUser(username ="mika", roles="ADMIN")
+@WithMockUser(username ="mika", roles="ADMIN")  // to eliminate status 401(Unauthorized) and enable testing
 class AdminCustomerControllerTest {
 
     @Autowired
@@ -246,14 +246,14 @@ class AdminCustomerControllerTest {
         customerSaveDTO.setAddress(address);
         String message = "New customer is saved.";
 
-       doNothing().when(adminCustomerService).saveNewCustomer(customerSaveDTO);
+        doNothing().when(adminCustomerService).saveNewCustomer(customerSaveDTO);
 
-       mockMvc.perform(post("/api/customer/saveNewCustomer")
-                       .with(csrf())
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .content(objectMapper.writeValueAsString(customerSaveDTO)))
-               .andExpect(jsonPath("$.data.message").value(message))
-               .andExpect(jsonPath("$.success").value(true));
+        mockMvc.perform(post("/api/customer/saveNewCustomer")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customerSaveDTO)))
+                .andExpect(jsonPath("$.data.message").value(message))
+                .andExpect(jsonPath("$.success").value(true));
     }
 
     @Test

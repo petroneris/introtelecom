@@ -21,9 +21,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-
 @WebMvcTest(UserPhoneController.class)
-@WithMockUser(username ="mika", roles="ADMIN")
+@WithMockUser(username ="mika", roles="ADMIN") // to eliminate status 401(Unauthorized) and enable testing
 class UserPhoneControllerTest {
 
     @Autowired
@@ -64,7 +63,7 @@ class UserPhoneControllerTest {
 
         doNothing().when(usersPhonesService).changePackageCode(phoneNumber, newPackageCode);
 
-        mockMvc.perform(patch("/api/phone/changePackageCode/{phoneNumber}", phoneNumber).param("packageCode", newPackageCode.toString())
+        mockMvc.perform(patch("/api/phone/changePackageCode/{phoneNumber}", phoneNumber).param("packageCode", newPackageCode)
                         .with(csrf()))
                 .andExpect(jsonPath("$.data.message").value(message))
                 .andExpect(jsonPath("$.success").value(true));

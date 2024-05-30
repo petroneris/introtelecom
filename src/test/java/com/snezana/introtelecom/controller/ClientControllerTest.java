@@ -1,9 +1,7 @@
 package com.snezana.introtelecom.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snezana.introtelecom.dto.*;
-import com.snezana.introtelecom.securitycontext.WithMockCustomUser;
 import com.snezana.introtelecom.service.ClientService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(ClientController.class)
-@WithMockUser(username ="dana2", roles="CUSTOMER")
+@WithMockUser(username ="dana2", roles="CUSTOMER")  // to eliminate status 401(Unauthorized) and enable testing
 class ClientControllerTest {
 
     @Autowired
