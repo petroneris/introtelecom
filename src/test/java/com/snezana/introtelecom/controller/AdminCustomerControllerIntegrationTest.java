@@ -52,7 +52,7 @@ public class AdminCustomerControllerIntegrationTest {
 
     @BeforeEach
     void setupUser(){
-        String username = "mika";
+        String username = "mika"; // ADMIN
         String password = "mika";
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -101,7 +101,7 @@ public class AdminCustomerControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_admin.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testUpdateAdminIT(){
-        Long id = 2L;
+        Long id = 1L;
         String personalNumber = "0720123763";
         String firstName = "Mihailo";
         String lastName = "Maksimović";
@@ -137,7 +137,7 @@ public class AdminCustomerControllerIntegrationTest {
 
     @Test
     void testGetAdminByIdIT(){
-        Long id = 2L;
+        Long id = 1L;
         String personalNumber = "9283478122";
         String firstName = "Mihailo";
         String lastName = "Maksić";
@@ -170,7 +170,7 @@ public class AdminCustomerControllerIntegrationTest {
 
     @Test
     void testGetAdminByPhoneNumberIT(){
-        Long id = 2L;
+        Long id = 1L;
         String phoneNumber = "0770000001";
         String personalNumber = "9283478122";
         String firstName = "Mihailo";
@@ -204,7 +204,7 @@ public class AdminCustomerControllerIntegrationTest {
 
     @Test
     void testGetAdminByPersonalNumberIT(){
-        Long id = 2L;
+        Long id = 1L;
         String phoneNumber = "0770000001";
         String personalNumber = "9283478122";
         String firstName = "Mihailo";
@@ -238,7 +238,7 @@ public class AdminCustomerControllerIntegrationTest {
 
     @Test
     void testGetAdminByEmailIT(){
-        Long id = 2L;
+        Long id = 1L;
         String phoneNumber = "0770000001";
         String personalNumber = "9283478122";
         String firstName = "Mihailo";
@@ -562,9 +562,7 @@ public class AdminCustomerControllerIntegrationTest {
         @Order(1)
         @Sql(scripts = {"/create_phone.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
         void testAddPhoneToCustomerIT(){
-
-            testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+            testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
             Long id = 1L;
             String phoneNumber = "0788995677";
             String message = "The phone is added to customer.";
@@ -592,9 +590,7 @@ public class AdminCustomerControllerIntegrationTest {
         @Order(2)
         @Sql(scripts = {"/delete_phone.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
         void testRemovePhoneFromCustomerIT(){
-
-            testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+            testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
             Long id = 1L;
             String phoneNumber = "0788995677";
             String message = "The phone is removed from customer.";

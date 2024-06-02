@@ -36,7 +36,7 @@ public class AccessControllerIntegrationTest {
     TestRestTemplate testRestTemplate = new TestRestTemplate();
 
     @Test
-    void testLoginIT(){
+    void testLogin_validInput_getAccesToken_IT(){
         String username = "dana2";
         String password = "dana2";
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -64,7 +64,7 @@ public class AccessControllerIntegrationTest {
     }
 
     @Test
-    void testLogin_invalidIT(){
+    void testLogin_invalidInput_errorMessage_IT(){
         String username = "dana2";
         String password = "pswd";
         String error_message = "ERROR OCCURED!";

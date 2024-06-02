@@ -68,7 +68,7 @@ public class FramesSDRControllerIntegrationTest {
 
     @BeforeEach
     void setupUser(){
-        String username = "mika";
+        String username = "mika"; // ADMIN
         String password = "mika";
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -234,9 +234,7 @@ public class FramesSDRControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_package_frame.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangePackageFrameStatusIT(){
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         Long id = 3L;
         String message = "The package frame status is changed.";
 
@@ -464,9 +462,7 @@ public class FramesSDRControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_addon_frame.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangeAddonFrameStatusIT(){
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         Long id = 3L;
         String message = "The addon frame status is changed.";
 
@@ -509,9 +505,12 @@ public class FramesSDRControllerIntegrationTest {
         assertThat(mapResponse.getData().get("message")).isEqualTo(message);
     }
 
+    /*
+       it is a test for normal completion of SDR (message =  "The new Service Detail Record is saved.");
+   */
     @Test
     @Sql(scripts = {"/delete_sdr.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void testSaveServiceDetailRecordIT() {
+    void testSaveServiceDetailRecord_notEOS_IT() {
         String phoneNumber = "0769317426";
         String serviceCode = "SDRINT";
         String calledNumber = "-";
@@ -551,6 +550,11 @@ public class FramesSDRControllerIntegrationTest {
         assertThat(mapResponse.getData().get("message")).isEqualTo(message);
     }
 
+    /*
+       it is a test where internet service is interrupted by EOS (End of Service);
+       there are other five service cases where SDR service is interrupted, but these tests
+       demand more test data with complex relation and time dependence among them
+   */
     @Test
     @Sql(scripts = {"/delete_sdr.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testSaveServiceDetailRecord_EOS_IT() {

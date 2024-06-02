@@ -456,9 +456,9 @@ class FramesSDRControllerTest {
                 .andExpect(jsonPath("$.success").value(true));
     }
 
-    //  one service example (SDRINT - Internet) of six possibilities (services)
+    //  one service interrupt example (SDRINT - Internet) of six possibilities for EOS
     @Test
-    void testSaveServiceDetailRecord_EOS() throws Exception {
+    void testSaveServiceDetailRecord_EOS_forINT() throws Exception {
         String phoneNumber = "0747634418";
         String serviceCode = "SDRINT";
         String calledNumber = "-";

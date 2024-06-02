@@ -55,7 +55,7 @@ public class ClientControllerIntegrationTest {
 
     @BeforeEach
     void setupUser(){
-        String username = "dana2";
+        String username = "dana2"; // CUSTOMER
         String password = "dana2";
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -187,9 +187,7 @@ public class ClientControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_client_password.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangePasswordIT() {
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         String oldPassword = "dana2";
         String rawNewPassword = "newWorld";
         String checkNewPassword = "newWorld";
@@ -197,7 +195,6 @@ public class ClientControllerIntegrationTest {
         clientChangePasswordDTO.setOldPassword(oldPassword);
         clientChangePasswordDTO.setNewPassword(rawNewPassword);
         clientChangePasswordDTO.setCheckNewPassword(checkNewPassword);
-
         String message = "The password is changed.";
 
         String url = "http://localhost:" + port + "/api/client/changePassword";

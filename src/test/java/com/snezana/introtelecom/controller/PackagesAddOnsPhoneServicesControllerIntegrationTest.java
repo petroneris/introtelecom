@@ -57,7 +57,7 @@ public class PackagesAddOnsPhoneServicesControllerIntegrationTest {
 
     @BeforeEach
     void setupUser(){
-        String username = "mika";
+        String username = "mika"; // ADMIN
         String password = "mika";
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -116,9 +116,7 @@ public class PackagesAddOnsPhoneServicesControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_package_plan.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangePackagePriceIT(){
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         String packageCode = "01";
         String message = "The package price of package code= " + packageCode + " is changed.";
         BigDecimal packagePrice = BigDecimal.valueOf(350.00);
@@ -191,9 +189,7 @@ public class PackagesAddOnsPhoneServicesControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_addon.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangeAddOnPriceIT(){
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         String addonCode = "ADDCLS";
         String message = "The addon price of addon code= " +addonCode + " is changed.";
         BigDecimal addonPrice = BigDecimal.valueOf(150.00);
@@ -266,9 +262,7 @@ public class PackagesAddOnsPhoneServicesControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_service.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangeServicePriceIT(){
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         String serviceCode = "SDRRMGSZ1";
         String message = "The service price of service code= " +serviceCode + " is changed.";
         BigDecimal servicePrice = BigDecimal.valueOf(3.00);

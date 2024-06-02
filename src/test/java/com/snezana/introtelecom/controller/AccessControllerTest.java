@@ -30,7 +30,7 @@ class AccessControllerTest {
     private AuthenticationService authenticationService;
 
     @Test
-    void testLogin() throws Exception {
+    void testLogin_validInput_getAccesToken() throws Exception {
         String username = "sneza1";
         String password = "snezana";
         UserLoginDTO userDTO = new UserLoginDTO(username, password);

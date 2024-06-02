@@ -53,7 +53,7 @@ public class UserPhoneControllerIntegrationTest {
 
     @BeforeEach
     void setupUser(){
-        String username = "mika";
+        String username = "mika"; // ADMIN
         String password = "mika";
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -97,9 +97,7 @@ public class UserPhoneControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_phone.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangePackageCodeIT(){
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         String phoneNumber = "0742347426";
         String packageCode = "14";
         String message = "The package code is changed.";
@@ -125,9 +123,7 @@ public class UserPhoneControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_phone.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangePhoneStatusIT() {
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         String phoneNumber = "0742347426";
         String message = "The phone status is changed.";
 
@@ -378,9 +374,7 @@ public class UserPhoneControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_user_data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangeUserStatusIT() {
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         String phoneNumber = "0758519203";
         String message = "The user status is changed.";
 
@@ -403,9 +397,7 @@ public class UserPhoneControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/update_user_data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testChangeUserPasswordIT() {
-
-        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
+        testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory()); // for PATCH request
         String username = "sava3";
         String oldPassword = "sava3";
         String rawNewPassword = "newWorld";

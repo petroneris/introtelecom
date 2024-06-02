@@ -54,7 +54,7 @@ public class CurrentInfoMonthlyBillFactsControllerIntegrationTest {
 
     @BeforeEach
     void setupUser(){
-        String username = "mika";
+        String username = "mika"; // ADMIN
         String password = "mika";
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -65,7 +65,7 @@ public class CurrentInfoMonthlyBillFactsControllerIntegrationTest {
     @Test
     @Sql(scripts = {"/create_currentInfo_data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {"/delete_currentInfo_data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void testGetCurrentInfoByPhoneIT() {
+    void testGetCurrentInfoByPhoneNumberIT() {
         String phoneNumber = "0769317426";
         String packageCode = "12";
         String currCls = "400 min left";
@@ -138,7 +138,7 @@ public class CurrentInfoMonthlyBillFactsControllerIntegrationTest {
     }
 
     @Test
-    void testGetMonthlyBillFactsByPhoneAndYearMonthIT() {
+    void testGetMonthlyBillFactsByPhoneNumberAndYearMonthIT() {
         Long monthlybillId = 1L;
         String phoneNumber = "0769317426";
         String packageCode = "12";
