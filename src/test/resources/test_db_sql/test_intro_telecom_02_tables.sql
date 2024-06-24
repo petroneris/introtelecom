@@ -1,14 +1,7 @@
-
 -- -----------------------------------------------------
--- Schema test_intro_telecom
+-- this script should be executed by test user ("test")
+-- db: PostgreSQL
 -- -----------------------------------------------------
-CREATE DATABASE test_intro_telecom 
-   ENCODING='UTF8';
-CREATE USER "test";
-GRANT ALL ON DATABASE test_intro_telecom to test;
-
--- -----------------------------------------------------
-
 CREATE TABLE IF NOT EXISTS package_plan (
   package_code VARCHAR(45) PRIMARY KEY NOT NULL,
   package_name VARCHAR(45) UNIQUE NOT NULL,			

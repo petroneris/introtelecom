@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
@@ -26,7 +25,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ClientServiceIntegrationTest {
