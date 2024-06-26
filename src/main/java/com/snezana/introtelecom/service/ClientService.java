@@ -116,7 +116,6 @@ public class ClientService {
         String oldPassword = clientChangePasswordDto.getOldPassword();
         userValidationService.checkIfOldPasswordIsValid(oldPassword, user.getPassword());
         user.setPassword(passwordEncoder.encode(clientChangePasswordDto.getNewPassword()));
-
     }
 
     public List<PackagePlanDTO> getAllCustomersPackagePlans() {
@@ -156,4 +155,5 @@ public class ClientService {
         String lastName = customer.getLastName();
         return new ClientMonthlyBillFactsPrpViewDTO(phoneNumber, firstName, lastName, username, packageName, packageCode);
     }
+
 }

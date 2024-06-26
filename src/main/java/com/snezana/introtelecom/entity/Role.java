@@ -1,13 +1,16 @@
 package com.snezana.introtelecom.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;
 
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "role", catalog = "intro_telecom")
 public class Role {
 
@@ -19,6 +22,6 @@ public class Role {
     @Column(name = "role_type", unique = true, nullable = false)
     private String roleType;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
+    @OneToMany(mappedBy = "role")
     private Set<User> users;
 }

@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PackagePlanRepo extends JpaRepository<PackagePlan, Long> {
+
     PackagePlan findByPackageCode (String packageCode);
+
     @Query(
             "SELECT " +
                     "packagePlan "+

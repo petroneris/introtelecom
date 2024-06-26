@@ -13,21 +13,24 @@ import org.mapstruct.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class AddonFrameMapper {
 
-    public abstract AddonFrame addonFrameSaveDtoToAddonFrame(AddonFrameSaveDTO addonFrameSaveDto, @Context PhoneRepo phoneRepo, @Context AddOnRepo addOnRepo);
+    public abstract AddonFrame addonFrameSaveDtoToAddonFrame(AddonFrameSaveDTO addonFrameSaveDto, @Context PhoneRepo phoneRepo, @Context AddOnRepo addOnRepo, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
 
     @BeforeMapping
     protected void beforeAddonFrameSaveDtoToAddonFrame(AddonFrameSaveDTO addonFrameSaveDto, @MappingTarget AddonFrame addonFrame,
-                                                         @Context PhoneRepo phoneRepo, @Context AddOnRepo addOnRepo) {
+                                                         @Context PhoneRepo phoneRepo, @Context AddOnRepo addOnRepo, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime) {
         Phone phone = phoneRepo.findByPhoneNumber(addonFrameSaveDto.getPhoneNumber());
         addonFrame.setPhone(phone);
         AddOn addOn = addOnRepo.findByAddonCode(addonFrameSaveDto.getAddonCode());
         addonFrame.setAddOn(addOn);
+        addonFrame.setAddfrStartDateTime(addfrStartDateTime);
+        addonFrame.setAddfrEndDateTime(addfrEndDateTime);
         addonFrame.setAddfrStatus(StatusType.PRESENT.getStatus());
     }
 

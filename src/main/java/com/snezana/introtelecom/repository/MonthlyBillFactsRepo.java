@@ -38,4 +38,11 @@ public interface MonthlyBillFactsRepo extends JpaRepository<MonthlyBillFacts, Lo
     )
     List <MonthlyBillFacts> findByPhone_PhoneNumberAndYearMonthStartsWithAndYearMonthEndsWith (@Param("phoneNumber") String phoneNumber, @Param("startYearMonth") LocalDate startYearMonth, @Param("endYearMonth") LocalDate endYearMonth);
 
+    @Query(
+            "SELECT " +
+                    "monthlybillFacts "+
+                    "FROM MonthlyBillFacts monthlybillFacts "+
+                    "WHERE monthlybillFacts.yearMonth = :yearMonth "
+    )
+    List<MonthlyBillFacts> findByMonthAndYear(@Param("yearMonth") LocalDate yearMonth);
 }

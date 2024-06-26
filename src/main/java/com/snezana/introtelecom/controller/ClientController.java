@@ -29,7 +29,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ClientController {
 
-//    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ClientController.class);
     private final ClientService clientService;
 
     @Operation(tags = "Client Controller", description = "Get current info")

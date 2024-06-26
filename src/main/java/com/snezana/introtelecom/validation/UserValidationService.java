@@ -45,7 +45,7 @@ public class UserValidationService {
     public void checkIfOldPasswordIsValid(String oldPassword, String newPassword) {
         boolean match = passwordEncoder.matches(oldPassword, newPassword);
         if (!match) {
-            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEMS_NOT_MATCH, "Input password doesn't match to the old password!");
+            throw new IllegalItemFieldException(RestAPIErrorMessage.ITEMS_NOT_MATCH, "Invalid old password!");
         }
     }
 

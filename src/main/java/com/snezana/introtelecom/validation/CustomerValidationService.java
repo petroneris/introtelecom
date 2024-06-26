@@ -29,7 +29,6 @@ public class CustomerValidationService {
     public Customer returnTheCustomerWithThatPersonalNumberIfExists(String personalNumber) {
         return customerRepo.findByPersonalNumberOpt(personalNumber)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The customer with that personal number doesn't exist in database!"));
-
     }
 
     public Customer returnTheCustomerWithThatIdIfExists (Long customerId){
@@ -45,7 +44,7 @@ public class CustomerValidationService {
     public void controlTheEmailIsUnique (String email){
         Optional<Customer> customerOptional = customerRepo.findByEmailOpt(email);
         customerOptional.ifPresent(customer ->  {
-                throw new ItemNotFoundException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The customer with that email already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The customer with that email already exists in database!");
         });
     }
 
@@ -53,7 +52,7 @@ public class CustomerValidationService {
         Optional<Customer> customerOptional = customerRepo.findByPersonalNumberOpt(personalNumber);
         customerOptional.ifPresent(customer ->  {
             if(!customer.getCustomerId().equals(customerId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other customer with that personal number already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "Another customer with that personal number already exists in database!");
             }
         });
     }
@@ -62,14 +61,14 @@ public class CustomerValidationService {
         Optional<Customer> customerOptional = customerRepo.findByEmailOpt(email);
         customerOptional.ifPresent(customer ->  {
             if(!customer.getCustomerId().equals(customerId)){
-                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "The other customer with that email already exists in database!");
+                throw new IllegalItemFieldException(RestAPIErrorMessage.ITEM_IS_NOT_UNIQUE, "Another customer with that email already exists in database!");
             }
         });
     }
 
-    public void checkThatPhoneBelongsToCustomerWithThisId (Customer customer, Phone phone){
+    public void checkThePhoneBelongsToThisCustomer (Customer customer, Phone phone){
         if(!customer.getPhones().contains(phone)){
-            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "This phone number doesn't belong to this customer!");
+            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "This phone doesn't belong to this customer!");
         }
     }
 

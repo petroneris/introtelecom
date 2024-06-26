@@ -19,11 +19,11 @@ public interface AddonFrameRepo extends JpaRepository<AddonFrame, Long> {
 
     List<AddonFrame> findByAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqual (String addonCode, LocalDateTime addfrStartDateTime);
 
-    Optional<AddonFrame> findByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual (String phoneNumber, String addonCode, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
-
     List<AddonFrame> findAddonFramesByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual (String phoneNumber, String addonCode, LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
 
     List<AddonFrame> findByAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeEquals(LocalDateTime addfrStartDateTime, LocalDateTime addfrEndDateTime);
+
+    Optional<AddonFrame> findByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrEndDateTimeEquals (String phoneNumber, String addonCode, LocalDateTime addfrEndDateTime);
 
     @Query(
             "SELECT " +
@@ -32,5 +32,8 @@ public interface AddonFrameRepo extends JpaRepository<AddonFrame, Long> {
                     "WHERE addonFrame.addfrId = :addfrId "
     )
     Optional<AddonFrame> findByAddfrIdOpt(@Param("addfrId") Long addfrId);
+
+    @Query(value = "SELECT MAX(addonFrame.addfrId) FROM AddonFrame addonFrame")
+    Long maxAddfr_id();
 
 }

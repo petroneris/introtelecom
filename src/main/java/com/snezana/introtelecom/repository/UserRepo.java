@@ -2,6 +2,7 @@ package com.snezana.introtelecom.repository;
 
 import com.snezana.introtelecom.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepo extends JpaRepository<User, Long> {
+
     User findByUsername (String username);
 
     @Query(
@@ -32,4 +34,12 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.role.roleType='CUSTOMER'")
     List<User> findAllCustomersUsers();
+
+/*
+    custom delete query to enable delete operation in UserPhoneServiceIntegrationTest.java - method testDeleteUser()
+    @Modifying is used for DELETE operation
+ */
+    @Modifying
+    @Query("DELETE FROM User u where u.username = :username")
+    void deleteByUsername (@Param("username") String username);
 }

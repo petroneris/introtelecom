@@ -52,7 +52,7 @@ public class AdminCustomerService{
         Admin admin = adminValidationService.returnTheAdminWithThatIdIfExists(id);
         adminValidationService.controlTheOtherAdminHasThisPersonalNumber(adminSaveDto.getPersonalNumber(), id);
         adminValidationService.controlTheOtherAdminHasThisEmail(adminSaveDto.getEmail(), id);
-        adminValidationService.controlTheOtherAdminHasThisPhone(adminSaveDto.getPhoneNumber(), id);
+        adminValidationService.controlThatAnotherAdminHasThisPhoneNumber(adminSaveDto.getPhoneNumber(), id);
         adminMapper.adminSaveDtoToAdmin(adminSaveDto, admin, phoneRepo);
         adminRepo.save(admin);
     }
@@ -144,7 +144,7 @@ public class AdminCustomerService{
     public void removePhoneFromCustomer(Long customerId, String phoneNumber) {
         Customer customer = customerValidationService.returnTheCustomerWithThatIdIfExists(customerId);
         Phone phone = phoneValidationService.returnThePhoneIfExists(phoneNumber);
-        customerValidationService.checkThatPhoneBelongsToCustomerWithThisId(customer, phone);
+        customerValidationService.checkThePhoneBelongsToThisCustomer(customer, phone);
         customer.getPhones().remove(phone);
     }
 

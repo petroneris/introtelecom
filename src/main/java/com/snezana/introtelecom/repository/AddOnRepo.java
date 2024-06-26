@@ -8,7 +8,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface AddOnRepo extends JpaRepository<AddOn, Long> {
+
     AddOn findByAddonCode (String addonCode);
+
     @Query(
             "SELECT " +
                     "addOn "+

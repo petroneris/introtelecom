@@ -38,9 +38,10 @@ public class FramesSDRValidationService {
         return packageFrameRepo.findByPackfrIdOpt(packfrId)
                 .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Package frame is not found."));
     }
+
     public PackageFrame returnTheMonthlyPackageFrameIfExists (String phoneNumber, LocalDateTime packfrStartDateTime, LocalDateTime packfrEndDateTime) {
         return packageFrameRepo.findPackageFrameByPhone_PhoneNumberAndPackfrStartDateTimeEqualsAndPackfrEndDateTimeEquals(phoneNumber, packfrStartDateTime, packfrEndDateTime)
-                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "The monthly package frame is not found."));
+                .orElseThrow(() -> new ItemNotFoundException(RestAPIErrorMessage.ITEM_NOT_FOUND, "Monthly package frame is not found."));
     }
 
     public AddonFrame returnTheAddonFrameIfExists (Long addfrId){
@@ -59,10 +60,19 @@ public class FramesSDRValidationService {
         }
     }
 
-    public void controlTheAddonFrameHasAlreadyGiven(String phoneNumber, String addonCode, LocalDateTime startDateTime, LocalDateTime endDateTime){
-        Optional<AddonFrame> addonFrameOptional = addonFrameRepo.findByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrStartDateTimeGreaterThanEqualAndAddfrEndDateTimeLessThanEqual(phoneNumber, addonCode, startDateTime, endDateTime);
+    public void controlTheEndTimeIsLessThanEndOfTheMonth(LocalDateTime endDateTime){
+        LocalDateTime nowDateTime = LocalDateTime.now();
+        LocalDateTime nextMonthDateTime = nowDateTime.plusMonths(1);
+        LocalDateTime endOfTheMonth = LocalDateTime.of(nextMonthDateTime.getYear(), nextMonthDateTime.getMonth(), 1, 0, 0, 0, 0);
+        if(endDateTime.isAfter(endOfTheMonth) || endDateTime.isEqual(endOfTheMonth)){
+            throw new IllegalItemFieldException(RestAPIErrorMessage.INVALID_STARTDATETIME_OR_ENDDATETIME, "End DateTime must be before End of the month!");
+        }
+    }
+
+    public void controlTheAddonFrameHasAlreadyGiven(String phoneNumber, String addonCode, LocalDateTime endDateTime){
+        Optional<AddonFrame> addonFrameOptional = addonFrameRepo.findByPhone_PhoneNumberAndAddOn_AddonCodeAndAddfrEndDateTimeEquals(phoneNumber, addonCode, endDateTime);
         addonFrameOptional.ifPresent( addonFrame ->  {
-            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "Addon frame with these parameters has already given to this phone!");
+            throw new IllegalItemFieldException(RestAPIErrorMessage.WRONG_ITEM, "Addon frame with these parameters has already been given to this phone!");
         });
     }
 

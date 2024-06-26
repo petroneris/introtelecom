@@ -44,8 +44,8 @@ public class MonthlyBillFactsValidationService {
     }
 
     /**
-     * services for CurrentInfo and MonthlyBillFacts are not available until 12 o'clock on day-of-month 1.
-     * due to monthly package frames and monthly bills creation for the previous month
+     * CurrentInfo service and MonthlyBillFacts service are not available until 12 o'clock on day-of-month 1.
+     * due to creation of package frames for the current month and creation of monthly bills for the previous month
      */
     public void controlTheTimeForScheduling (){
         LocalDateTime nowDateTime = LocalDateTime.now();
@@ -57,4 +57,5 @@ public class MonthlyBillFactsValidationService {
             throw new IllegalItemFieldException(RestAPIErrorMessage.INVALID_DATETIME_INTERVAL, "Data are not available until 12 o'clock today!");
         }
     }
+
 }

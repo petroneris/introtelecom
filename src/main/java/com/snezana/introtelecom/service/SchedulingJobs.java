@@ -37,9 +37,9 @@ import static com.snezana.introtelecom.enums.PackagePlanType.PRP02;
 @ConditionalOnProperty(name = "spring.scheduler.enabled", matchIfMissing = true)
 @RequiredArgsConstructor
 @Transactional
-public class SchedulingConfiguration {
+public class SchedulingJobs {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(SchedulingConfiguration.class);
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(SchedulingJobs.class);
 
     private final PackageFrameRepo packageFrameRepo;
     private final AddonFrameRepo addonFrameRepo;
@@ -110,7 +110,7 @@ public class SchedulingConfiguration {
     }
 
     /**
-     * automatic generation of monthly bills at the beginning of the month - “At every minute past hour 10 on day-of-month 1”
+     * automatic generation of monthly bills for the previous month, at the beginning of the month - “At every minute past hour 10 on day-of-month 1”
      */
     @Scheduled(cron = "0 0 10 1 * *")
     public void createMonthlyBillFacts() {
@@ -127,11 +127,13 @@ public class SchedulingConfiguration {
             if (!(pf.getPhone().getPackagePlan().getPackageCode().equals(PRP01.getPackageCode()) || pf.getPhone().getPackagePlan().getPackageCode().equals(PRP02.getPackageCode()))) {
                 pfYMList.add(new MonthlyData(pf.getPackfrId(), pf.getPhone().getPhoneNumber(), pf.getPhone().getPackagePlan().getPackageCode()));
             }
+            pf.setPackfrStatus(StatusType.NOT_IN_USE.getStatus());
         }
         for (AddonFrame af : addonFrameList) {
             if (!(af.getPhone().getPackagePlan().getPackageCode().equals(PRP01.getPackageCode()) || af.getPhone().getPackagePlan().getPackageCode().equals(PRP02.getPackageCode()))) {
                 afYMlist.add(new MonthlyData(af.getAddfrId(), af.getPhone().getPhoneNumber(), af.getAddOn().getAddonCode()));
             }
+            af.setAddfrStatus(StatusType.NOT_IN_USE.getStatus());
         }
         for (MonthlyData md : pfYMList) {
             String phoneNumb = md.getPhoneNumber();

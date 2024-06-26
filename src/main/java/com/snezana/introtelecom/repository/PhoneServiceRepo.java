@@ -8,7 +8,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface PhoneServiceRepo extends JpaRepository<PhoneService, Long> {
+
     PhoneService findByServiceCode (String serviceCode);
+
     @Query(
             "SELECT " +
                     "phoneService "+

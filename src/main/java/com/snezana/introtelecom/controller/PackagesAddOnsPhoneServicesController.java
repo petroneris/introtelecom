@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
-//import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +30,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PackagesAddOnsPhoneServicesController {
 
-//    private static final Logger log = org.slf4j.LoggerFactory.getLogger(PackagesAddOnsPhoneServicesController.class);
     private final PackageAddonPhoneServService packageAddonPhoneServService;
 
     /**
