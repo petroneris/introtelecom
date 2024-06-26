@@ -552,10 +552,14 @@ public class AdminCustomerControllerIntegrationTest {
         assertThat(customerViewDTOListResponse.getData().size()).isEqualTo(listSize);
     }
 
+    /**
+     * these tests must always be executed together
+     */
     @Nested
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class CustomerAddRemovePhoneIT {
 
+        // do not execute this test standalone
         @Test
         @Order(1)
         @Sql(scripts = {"/create_phone.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -584,6 +588,7 @@ public class AdminCustomerControllerIntegrationTest {
             assertThat(mapResponse.getData().get("message")).isEqualTo(message);
         }
 
+        // do not execute this test standalone
         @Test
         @Order(2)
         @Sql(scripts = {"/delete_phone.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

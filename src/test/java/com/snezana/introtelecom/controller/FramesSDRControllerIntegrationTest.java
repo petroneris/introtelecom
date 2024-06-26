@@ -503,12 +503,12 @@ public class FramesSDRControllerIntegrationTest {
         assertThat(mapResponse.getData().get("message")).isEqualTo(message);
     }
 
-    /*
-       it is a test for normal completion of SDR (message =  "The new Service Detail Record is saved.");
-   */
+    /**
+     * it is a test for normal completion of SDR (message =  "The new Service Detail Record is saved.")
+     */
     @Test
     @Sql(scripts = {"/delete_sdr.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void testSaveServiceDetailRecord_notEOS_IT() {
+    void testSaveServiceDetailRecord_willBeSaved_IT() {
         String phoneNumber = "0769317426";
         String serviceCode = "SDRINT";
         String calledNumber = "-";
@@ -548,11 +548,11 @@ public class FramesSDRControllerIntegrationTest {
         assertThat(mapResponse.getData().get("message")).isEqualTo(message);
     }
 
-    /*
-       it is a test where internet service is interrupted by EOS (End of Service);
-       there are other five service cases where SDR service is interrupted, but these tests
-       demand more test data with complex relation and time dependence among them
-   */
+    /**
+     * it is a test where internet service (SDRINT) is interrupted by EOS (End of Service);
+     * there are other five service cases where SDR service is interrupted, but these tests
+     * demand more test data with complex relations and time dependence among them
+     */
     @Test
     @Sql(scripts = {"/delete_sdr.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testSaveServiceDetailRecord_EOS_IT() {

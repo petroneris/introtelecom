@@ -425,7 +425,9 @@ class FramesSDRControllerTest {
                 .andExpect(jsonPath("$.success").value(true));
     }
 
-    // when service is completed without interruption (no End of Service)
+    /**
+     * this test should pass when service is completed without interruption (no End of Service)
+     */
     @Test
     void testSaveServiceDetailRecord_notEOS() throws Exception {
         String phoneNumber = "0747634418";
@@ -456,7 +458,9 @@ class FramesSDRControllerTest {
                 .andExpect(jsonPath("$.success").value(true));
     }
 
-    //  one service interrupt example (SDRINT - Internet) of six possibilities for EOS
+    /**
+     * one service (SDRINT - Internet service) interrupt example of six possibilities for EOS
+     */
     @Test
     void testSaveServiceDetailRecord_EOS_forINT() throws Exception {
         String phoneNumber = "0747634418";

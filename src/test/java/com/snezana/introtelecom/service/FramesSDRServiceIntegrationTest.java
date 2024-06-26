@@ -200,11 +200,11 @@ public class FramesSDRServiceIntegrationTest {
         assertThat(addonFrameRepo.findAll().stream().filter(addonFrame -> Objects.equals(addonFrame.getAddfrId(), maxId)).count()).isEqualTo(0);
     }
 
-    /*
-        it is a test for normal completion of SDR (messageEOS = "Not EOS");
-        there are other six cases where SDR service is interrupted (EOS), but these tests
-        demand more test data with complex relation and time dependence among them
-    */
+    /**
+     * it is a test for normal completion of SDR (messageEOS = "Not EOS");
+     * there are other six cases where SDR service is interrupted (EOS), but these tests
+     *  demand more test data with complex relations and time dependence among them
+     */
     @Test
     @Sql(scripts = {"/delete_sdr.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testSaveNewServiceDetailRecord_notEOS(){

@@ -298,10 +298,14 @@ public class AdminCustomerServiceIntegrationTest {
         assertThat(customerViewDTO.getAddress()).isEqualTo(address);
     }
 
+    /**
+     * these tests must always be executed together
+     */
     @Nested
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class CustomerAddRemovePhoneIntegrationTest {
 
+        // do not execute this test standalone
         @Test
         @Order(1)
         @Sql(scripts = {"/create_phone.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -317,6 +321,7 @@ public class AdminCustomerServiceIntegrationTest {
             assertThat(customerViewDTO.getPhoneNumbers().contains(phoneNumber)).isTrue();
         }
 
+        // do not execute this test standalone
         @Test
         @Order(2)
         @Sql(scripts = {"/delete_phone.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
