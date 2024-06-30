@@ -100,9 +100,9 @@ INSERT INTO phone (phone_number, package_code, phonestart_datetime, phone_status
 VALUES ('0770000001', '00', '2021-01-27 09:30:17', 'ACTIVE', 'Admin phone for support');
 
 INSERT INTO user_data (phone_number, username, password, role_id, user_status)
-VALUES ('0770000001', 'mika', '***', '1', 'ACTIVE');
+VALUES ('0770000001', 'mika', '$2a$10$rPTIsLfLqtXcd6jYCFo27OisYLB5CQZ/dQTwHrC48zINSEEzlqWpm', '1', 'ACTIVE');
 
--- '***' - represents encrypted admin password supplied from utility class QuickPasswordEncodingGenerator.java
+-- admin password can be generated from utility class QuickPasswordEncodingGenerator.java
 
 
 
