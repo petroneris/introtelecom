@@ -1,6 +1,7 @@
 package com.snezana.introtelecom.exception;
 
 import com.snezana.introtelecom.response.RestAPIResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.http.HttpHeaders;
@@ -44,6 +45,7 @@ public class CustomRestAPIExceptionHandler extends ResponseEntityExceptionHandle
     }
 
     @Override
+    @NonNull
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error_message","VALIDATION FAILED!");
