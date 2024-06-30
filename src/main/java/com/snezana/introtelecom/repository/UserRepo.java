@@ -35,9 +35,8 @@ public interface UserRepo extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.role.roleType='CUSTOMER'")
     List<User> findAllCustomersUsers();
 
-/*
-    custom delete query to enable delete operation in UserPhoneServiceIntegrationTest.java - method testDeleteUser()
-    @Modifying is used for DELETE operation
+/**
+ *   custom delete query is used to enable delete operation in method testDeleteUser() - UserPhoneServiceIntegrationTest.java
  */
     @Modifying
     @Query("DELETE FROM User u where u.username = :username")

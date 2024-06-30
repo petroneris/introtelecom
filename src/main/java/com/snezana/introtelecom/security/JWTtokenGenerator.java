@@ -35,14 +35,6 @@ public class JWTtokenGenerator {
         return token;
     }
 
-    public Long findUserByToken(String token){
-        Jws<Claims> claimsJws = parseToken(token);
-        String userIdStr = claimsJws
-                .getBody()
-                .getSubject();
-        return Long.parseLong(userIdStr);
-    }
-
     public String findUsernameByToken(String token){
         Jws<Claims> claimsJws = parseToken(token);
         String username = claimsJws

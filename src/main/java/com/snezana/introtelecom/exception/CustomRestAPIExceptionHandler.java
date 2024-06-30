@@ -1,7 +1,6 @@
 package com.snezana.introtelecom.exception;
 
 import com.snezana.introtelecom.response.RestAPIResponse;
-//import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +16,6 @@ import java.util.Map;
 @ControllerAdvice
 public class CustomRestAPIExceptionHandler extends ResponseEntityExceptionHandler {
 
-//    private static final Logger log = org.slf4j.LoggerFactory.getLogger(CustomRestAPIExceptionHandler.class);
     @ExceptionHandler
     public final ResponseEntity<Object> handleAll(Exception ex, WebRequest webRequest){
         Map<String, String> errorMap = new HashMap<>();
@@ -63,7 +61,6 @@ public class CustomRestAPIExceptionHandler extends ResponseEntityExceptionHandle
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error_message", ex.getErrorMessage().toString());
         errorMap.put("description", ex.getDescription());
-        RestAPIResponse<Map<String, String>> restAPIResponse = RestAPIResponse.error(errorMap);
-        return restAPIResponse;
+        return RestAPIResponse.error(errorMap);
     }
 }

@@ -1,6 +1,5 @@
 package com.snezana.introtelecom.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
