@@ -37,6 +37,7 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
 /**
  *   custom delete query is used to enable delete operation in method testDeleteUser() - UserPhoneServiceIntegrationTest.java
+ *   for some reason this test could not be run properly with generic method
  */
     @Modifying
     @Query("DELETE FROM User u where u.username = :username")

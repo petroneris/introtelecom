@@ -54,7 +54,7 @@ public class FramesSDRService {
     private final PhoneServiceRepo phoneServiceRepo;
     private final ServiceDetailRecordRepo serviceDetailRecordRepo;
 
-    /**
+    /*
      * currently, there is no method for saving new package frames;
      * package frames are automatically generated at the beginning of the month
      */
