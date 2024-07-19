@@ -46,5 +46,6 @@ Several types of tests are used in this app:
 - @SpringBootTest with webEnvironment set to NONE are used for services
 - @WebMvcTest "sliced" tests are used for controller layer
 - @SpringBootTest with WebEnvironment.RANDOM_PORT is used for testing the whole application
+
 Some of the test types use the real test database “test_intro_telecom”, described in the code and documentation.
 
