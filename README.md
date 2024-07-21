@@ -26,17 +26,18 @@ Mobile phone services are an area of modern technology that requires the most co
 - Lombok - java library that eliminates boilerplate code
 - Slf4j-with-Logback library for logging
 
-A standard Java servlet container (Tomcat) is used as a server platform.
+A standard Java servlet container (Tomcat) is used as a server platform, as part of the Spring Boot package.
 
 Maven is used as the build system.
 
 The code is Java8 – compliant.
 
-A short description of coding technologies used in application design, application rules, configuration and design details are presented in [documentation](docs/introtelecom.pdf).
+A short description of coding technologies used in application design, application rules, configuration and design details are presented in [documentation](docs/introtelecom_text.pdf).
 
 Prior to starting the application you need to create and populate PostgreSQL database “intro_telecom” as described in the code and documentation.
 
 Once you have started the app, you can reach it on localhost like so:
+
 `http://localhost:8080/swagger-ui/index.html`
 
 Several types of tests are used in this app:
