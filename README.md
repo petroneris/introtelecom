@@ -1,8 +1,7 @@
 # introtelecom
-Spring Boot REST API app provides an introduction to the mobile phone service management
+Spring Boot REST API app that provides an introduction to the mobile phone service management
 
 <img src="docs/mobileNet.png" width="400">
-<br/>
 
 ### THE SPRING BOOT REST API APPLICATION 'introtelecom'
   
@@ -47,5 +46,5 @@ Several types of tests are used in this app:
 - @WebMvcTest "sliced" tests are used for controller layer
 - @SpringBootTest with WebEnvironment.RANDOM_PORT is used for testing the whole application
 
-Some of the test types use the real test database “test_intro_telecom”, described in the code and documentation.
+Some of the test types (for repository, service layer, the whole application) use the real test database “test_intro_telecom”, described in the code and documentation.
 
