@@ -13,6 +13,7 @@ Mobile phone services are an area of modern technology that requires the most co
 - provide the user with details of the current information (what amount of service is left until the end of the month) 
 - generate monthly bill facts for the previous month  
 
+
 “introtelecom” application demonstrates a usage of the following technologies:
 - Spring Boot - packaging and deployment for REST (REpresentational State Transfer) API 
 - Spring Data JPA – ORM and transaction-driven data handling
@@ -39,6 +40,7 @@ Prior to starting the application you need to create and populate PostgreSQL dat
 Once you have started the app, you can reach it on localhost like so:
 
 `http://localhost:8080/swagger-ui/index.html`
+
 
 Several types of tests are used in this app:
 - @DataJpaTest "sliced" integration tests are used for repository testing
