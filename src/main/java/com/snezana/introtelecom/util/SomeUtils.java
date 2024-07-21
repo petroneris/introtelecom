@@ -5,7 +5,8 @@ import java.time.temporal.ChronoUnit;
 
 /**
  * Utility method for Local-Date-Time manipulation.
- */public class SomeUtils {
+ */
+public class SomeUtils {
 
     public static int howFarApartTwoLocalDateTime (LocalDateTime ldt1, LocalDateTime ldt2) {
         int resMin =0;

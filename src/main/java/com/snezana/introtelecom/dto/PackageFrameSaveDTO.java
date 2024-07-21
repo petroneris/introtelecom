@@ -32,6 +32,4 @@ public class PackageFrameSaveDTO {
     @JsonDeserialize(using = JsonDateTimeDeserializer.class)
     private LocalDateTime packfrEndDateTime;
 
-
-
 }

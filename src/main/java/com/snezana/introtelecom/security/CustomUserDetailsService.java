@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/*Used to retrieve user-related data */
+/**
+ * Used to retrieve user-related data
+ */
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {

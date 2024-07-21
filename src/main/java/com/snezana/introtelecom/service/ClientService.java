@@ -43,6 +43,11 @@ public class ClientService {
     private final UserValidationService userValidationService;
     private final PasswordEncoder passwordEncoder;
 
+
+    /**
+     * current info shows what amount of services is left
+     * Client (customer role User) view
+     */
     public CurrentInfo01ViewDTO getCurrentInfo(Authentication authentication) {
         Object principal = authentication.getPrincipal();
         String username = principal.toString();

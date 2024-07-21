@@ -40,6 +40,10 @@ public class CurrentInfoMonthlyBillFactsService{
     private final ServiceDetailRecordRepo serviceDetailRecordRepo;
     private final FramesSDRValidationService framesSDRValidationService;
 
+    /**
+     * current info shows what amount of services is left for the particular phone
+     * admin role User view
+     */
     public CurrentInfo01ViewDTO getCurrentInfoByPhone(String phoneNumber) {
         monthlyBillFactsValidationService.controlTheTimeForScheduling();
         String currCls;
@@ -168,10 +172,7 @@ public class CurrentInfoMonthlyBillFactsService{
 
     /**
      * calculates the total input amount -> monthly package frame quota plus add-on frame(s) monthly quota (if add-on frame exists at the current moment);
-     * calculates the number of every type add-on frame that user demanded during the current month
-     * @param packageFrame
-     * @param addonFrameList
-     * @return
+     * considers every type add-on frame that user demanded during the current month
      */
     MonthlyFramesInputTotal inputAmountOfFramesCurrentInfo(PackageFrame packageFrame, List<AddonFrame> addonFrameList) {
         MonthlyFramesInputTotal inputResult = new MonthlyFramesInputTotal(0,0,new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), 0,0,0,0,0,0);
@@ -228,11 +229,6 @@ public class CurrentInfoMonthlyBillFactsService{
 
     /**
      * calculates the current output amount -> current sum of all amounts calculated from SDRs (Service Detail Record) data - recorded from the beginning of the current month until now
-     * current info shows what is left (total input amount - current output amount)
-     * @param phoneNumber
-     * @param monthlyStartDateTime
-     * @param nowDateTime
-     * @return
      */
     SdrOutputTotal outputAmountOfSDRsCurrentInfo(String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime nowDateTime) {
         SdrOutputTotal outputResult = new SdrOutputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));

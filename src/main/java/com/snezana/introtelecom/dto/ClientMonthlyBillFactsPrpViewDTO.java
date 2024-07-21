@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Monthly bill facts for prepaid (PRP01, PRP02) users that client can see
+ * There are no monthly bills for prepaid (01, 02) - PRP01, PRP02 users
+ * they can only get the following info:
+ * "packageCode": "01  -> THERE IS NO MONTHLY BILL FOR PREPAID PHONE PACKAGES."
+ * "packageCode": "02  -> THERE IS NO MONTHLY BILL FOR PREPAID PHONE PACKAGES."
  */
 @Data
 @NoArgsConstructor

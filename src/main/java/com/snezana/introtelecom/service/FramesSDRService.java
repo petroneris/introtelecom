@@ -54,10 +54,11 @@ public class FramesSDRService {
     private final PhoneServiceRepo phoneServiceRepo;
     private final ServiceDetailRecordRepo serviceDetailRecordRepo;
 
-    /**
+    /*
      * currently, there is no method for saving new package frames;
      * package frames are automatically generated at the beginning of the month
      */
+
     public PackageFrameViewDTO findPackageFrameById(Long packfrId) {
         PackageFrame packageFrame = framesSDRValidationService.returnThePackageFrameIfExists(packfrId);
         return packageFrameMapper.packageFrameToPackageFrameViewDTO(packageFrame);
@@ -166,9 +167,7 @@ public class FramesSDRService {
     }
 
     /**
-     * this method includes EOS (End of Service) check before saving the new SDR (Service Detail Record)
-     * @param serviceDetailRecordSaveDTO
-     * @return message
+     * this method includes EOS (End of Service) check, before saving the new SDR (Service Detail Record)
      */
     public String saveNewServiceDetailRecord(ServiceDetailRecordSaveDTO serviceDetailRecordSaveDTO) {
     String message = "Not EOS";
@@ -321,10 +320,6 @@ public class FramesSDRService {
     /**
      * calculates the total input amount -> monthly package frame quota plus add-on frame(s) monthly quota (if add-on frame exists) that corresponds
      * to particular service code, for the current month
-     * @param packageFrame
-     * @param addonFrameList
-     * @param serviceCode
-     * @return
      */
     FramesInputTotal inputAmountOfFrames(PackageFrame packageFrame, List<AddonFrame> addonFrameList, SDRCode serviceCode) {
         FramesInputTotal inputResult = new FramesInputTotal(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
@@ -378,11 +373,6 @@ public class FramesSDRService {
     /**
      * calculates the  current output amount -> current sum of all amounts calculated from SDRs (Service Detail Record) data
      * for particular service (code) - recorded from the beginning of the current month until now
-     * @param phoneNumber
-     * @param monthlyStartDateTime
-     * @param monthlyEndDateTime
-     * @param serviceCode
-     * @return
      */
     SdrAmountCalc outputAmountOfSDRs(String phoneNumber, LocalDateTime monthlyStartDateTime, LocalDateTime monthlyEndDateTime, SDRCode serviceCode) {
         SdrAmountCalc outputResult = new SdrAmountCalc(0, 0, new BigDecimal("0.00"), new BigDecimal("0.00"), "", "", false);
@@ -484,12 +474,7 @@ public class FramesSDRService {
     }
 
     /**
-     * check EOS (End Of Service) for particular input SDR data
-     * @param sdrSaveDTO
-     * @param framesInput
-     * @param sdrOutput
-     * @param duration
-     * @return result
+     * check EOS (End Of Service) for particular SDR input data
      */
     SdrAmountCalc checkEOSforThisSDR(ServiceDetailRecordSaveDTO sdrSaveDTO, FramesInputTotal framesInput, SdrAmountCalc sdrOutput, int duration) {
         BigDecimal priceICLCZ1 = new BigDecimal(UNIT_PRICE_ICLCZ1);

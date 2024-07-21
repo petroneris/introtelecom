@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.13</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>com.snezana</groupId>
 	<artifactId>introtelecom</artifactId>
@@ -15,7 +15,6 @@
 	<description>Demo REST API project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
-<!--		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>-->
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 	</properties>
 	<dependencies>
@@ -45,11 +44,6 @@
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.9.4</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.mapstruct</groupId>-->
-<!--			<artifactId>mapstruct-processor</artifactId>-->
-<!--			<version>${org.mapstruct.version}</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -66,11 +60,6 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.projectlombok</groupId>-->
-<!--			<artifactId>lombok-mapstruct-binding</artifactId>-->
-<!--			<version>0.2.0</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -81,7 +70,6 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
@@ -104,7 +92,6 @@
 			<version>5.2.0</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -114,18 +101,6 @@
 
 	<build>
 		<plugins>
-<!--			<plugin>-->
-<!--				<groupId>org.springframework.boot</groupId>-->
-<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--				<configuration>-->
-<!--					<excludes>-->
-<!--						<exclude>-->
-<!--							<groupId>org.projectlombok</groupId>-->
-<!--							<artifactId>lombok</artifactId>-->
-<!--						</exclude>-->
-<!--					</excludes>-->
-<!--				</configuration>-->
-<!--			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

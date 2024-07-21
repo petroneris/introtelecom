@@ -9,7 +9,7 @@ public enum PackagePlanType {
 
     private final String packageCode;
 
-    private PackagePlanType(String packageCode) {
+    PackagePlanType(String packageCode) {
         this.packageCode = packageCode;
     }
 

@@ -94,8 +94,6 @@ public class UserPhoneController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(value = "/user/saveNewUser" , consumes = MediaType.APPLICATION_JSON_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestAPIResponse<Map<String, String>>> saveUser(@RequestBody @Valid UserSaveDTO userSaveDto){
-        final HttpHeaders httpHeaders= new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         usersPhonesService.saveNewUser(userSaveDto);
         String message = "The user '" + userSaveDto.getUsername() + "' is saved.";
         return ResponseEntity.ok(RestAPIResponse.of(RestMessage.view(message)));

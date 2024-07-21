@@ -6,7 +6,7 @@ public enum StatusType {
 
     private String status;
 
-    private  StatusType(String status){
+    StatusType(String status){
         this.status = status;
     }
 

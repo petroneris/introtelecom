@@ -22,7 +22,6 @@ public abstract class PackageFrameMapper {
 
     public abstract List<PackageFrameViewDTO> packageFramesToPackageFramesViewDTO(List<PackageFrame> packageFrameList);
 
-
     @Named("calls")
     public static String clsConversion (PackageFrame packageFrame) {
         if (packageFrame.getPackfrCls() < 0) {

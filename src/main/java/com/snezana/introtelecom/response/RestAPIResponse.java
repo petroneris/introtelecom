@@ -29,8 +29,4 @@ public class RestAPIResponse<T> implements Serializable {
         return new RestAPIResponse<>(t, false);
     }
 
-    public static <T> RestAPIResponse<T> empty(){
-        return new RestAPIResponse<>(null, true);
-    }
-
 }
